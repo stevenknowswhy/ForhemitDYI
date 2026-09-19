@@ -1,6 +1,6 @@
 # Document Index
 
-The complete annotated roster of the design documents — **50 documents in ten groups**. Each entry links to the document and describes what it covers.
+The complete annotated roster of the design documents — **51 documents in ten groups**. Each entry links to the document and describes what it covers.
 
 This file is the reference. For the project overview — the thesis, the load-bearing principles, and the architecture at a glance — see the [README](README.md).
 
@@ -72,7 +72,7 @@ Curated discovery, role fit, and the vendor governance behind it.
 
 ## 5. Evidence, Confidence & Documents
 
-Turning reality and documents into verifiable fact, confidence, and readiness.
+Turning reality and documents into verifiable fact, confidence, readiness, and modeled outcomes.
 
 | Document | What it covers |
 | --- | --- |
@@ -81,6 +81,7 @@ Turning reality and documents into verifiable fact, confidence, and readiness.
 | [Goal-to-Reality Confidence Research Engine](Goal-to-Reality%20Confidence%20Research%20Engine.md) | The research agent, privacy-first research inputs, the evidence ledger, multi-dimensional confidence, non-monotonic confidence, and no false precision. |
 | [Stakeholder Document & Visibility Architecture](Stakeholder%20Document%20&%20Visibility%20Architecture.md) | "One source, many views": the three visibility levels as data-permission policies, per-stakeholder packages, and the document visibility matrix. |
 | [Document Readiness & Checklist Engine v1.0](Document%20Readiness%20&%20Checklist%20Engine%20v1.0.md) | The dynamic checklist: document categories and statuses, local-first availability, professional-specific requirements, duplication control, and package readiness. |
+| [Financial Modeling Engine](Financial%20Modeling%20Engine.md) | The platform's quantitative laboratory — *"the engine calculates, it does not decide."* Covers the hard boundary that it tells us what the numbers are under stated assumptions and never what they mean for the decision; assumptions as first-class objects (ID, name, value, unit, currency, period, source, source version, date, confidence/status, owner-entered and professional-reviewed flags, scenario, model version, notes); the six assumption classes (historical fact / current fact / forecast assumption / platform scenario assumption / professional input / owner assumption) and why a modeled assumption is not a verified business fact; the nine model families (transaction, cash-flow, capital-stack, seller proceeds, seller-note, ownership, scenario, sensitivity, what-if); source provenance and formula provenance, and the rule that no number may be unexplainable; currency and the explicit recording of any conversion; explicit periods and date logic; sources and uses, the capital gap calculation, debt modeling and debt service, seller-note structures, seller proceeds, ownership allocation and modeled dilution; cash-flow modeling and forecasting; sensitivity, multi-variable sensitivity, what-if exploration and what-if branching, break-even, and coverage ratios with their formula definitions; assumption sensitivity; model status; model versioning, calculation reproducibility and formula versioning; model dependencies, stale inputs and conflict inputs; the scenario, professional-input, professional-determination, owner-decision, capital, seller-note and ownership-lifecycle boundaries; local-first, cloud and hybrid model execution; output sharing and calculation output provenance; rounding and stored-vs-display precision; negative values and edge cases; model validation; circular dependencies; base / conservative / upside / stress cases; stress testing; model comparison; the "why did this number change?" and "what is driving this model?" surfaces; the engine contract and events; the worked examples (seller wants $5M at closing, employee ownership, financing stress test); the relationships to Confidence, Research, Decision Records and Audit; the never-do list; the 31-item architectural lock; and the architectural boundary summary. |
 
 ---
 
