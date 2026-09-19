@@ -1,0 +1,1488 @@
+Yes. This is the engine that turns the platform from a **planning tool into a professional collaboration system**.
+
+Its job is not to decide what the transaction should be. Its job is to manage the handoff:
+
+> **Owner's thinking → professional review → professional response → revised plan**
+
+And it needs to preserve the distinction we've locked in between **Owner Objective, Platform Scenario, and Professional Determination**.
+
+# Professional Review Engine v1.0
+
+## Professional Review, Feedback & Determination
+
+## 1. Purpose
+
+The Professional Review Engine is a standalone engine responsible for managing the interaction between the business owner and the qualified professionals involved in the ownership-transition journey.
+
+Its purpose is to make professional review:
+
+* Organized
+* Role-specific
+* Traceable
+* Actionable
+* Collaborative
+* Versioned
+* Easy for the owner to understand
+
+The engine manages:
+
+* Invitations
+* Assignments
+* Review requests
+* Questions
+* Information requests
+* Professional feedback
+* Professional determinations
+* Requested changes
+* Review status
+* Follow-up actions
+* Review history
+
+The engine does **not** provide professional advice or generate professional determinations itself.
+
+---
+
+# 2. CORE PRINCIPLE
+
+The Professional Review Engine sits between:
+
+**Owner's Desired Outcome**
+
+and
+
+**Professional Determination**
+
+The workflow is:
+
+```text id="x41m8w"
+OWNER
+  │
+  ▼
+Professional Review Package
+  │
+  ▼
+Professional Review
+  │
+  ├── Questions
+  ├── Information Requests
+  ├── Feedback
+  ├── Requested Changes
+  └── Determination
+  │
+  ▼
+Owner Review
+  │
+  ├── Accept
+  ├── Ask Question
+  ├── Revise Objective
+  └── Explore Another Scenario
+```
+
+The engine coordinates the process.
+
+It does not become the advisor.
+
+---
+
+# 3. CORE REVIEW OBJECT
+
+The primary object is:
+
+## `ProfessionalReview`
+
+It represents a professional's review of a specific piece of the owner's journey.
+
+It contains:
+
+* Review ID
+* Transaction ID
+* Journey ID
+* Destination version
+* Scenario version
+* Professional
+* Organization
+* Professional role
+* Review scope
+* Review package version
+* Start date
+* Due date
+* Status
+* Questions
+* Information requests
+* Feedback
+* Determinations
+* Requested changes
+* Follow-up tasks
+* Version history
+
+---
+
+# 4. REVIEW SCOPE
+
+A professional should never receive a vague instruction:
+
+> "Please review everything."
+
+The owner or system should define:
+
+### What would you like this professional to review?
+
+Potential scopes:
+
+* Owner objectives
+* Destination
+* Financial assumptions
+* Ownership structure exploration
+* Financing scenario
+* Seller financing
+* Seller-note liquidity
+* Business readiness
+* Tax questions
+* Legal questions
+* Valuation questions
+* Employee ownership questions
+* Transaction preparation
+* Other
+
+The scope becomes part of the review record.
+
+---
+
+# 5. INVITATIONS
+
+A professional can be invited from:
+
+* Marketplace
+* Owner's existing professional
+* Existing transaction stakeholder
+* Direct invitation
+
+The invitation should contain:
+
+* Professional
+* Organization
+* Role
+* Review purpose
+* Requested scope
+* Package level
+* Due date, if applicable
+* Requested response
+
+The owner sees:
+
+> **You're inviting Jane Smith to review your Employee Ownership Plan.**
+
+---
+
+# 6. INVITATION STATES
+
+```text id="q8ur4e"
+Draft
+  ↓
+Sent
+  ↓
+Delivered
+  ↓
+Accepted
+  ↓
+Declined
+  ↓
+Expired
+```
+
+A professional can also respond:
+
+**I can help**
+
+**I can help with part of this**
+
+**This is outside my role**
+
+That last option is valuable because professionals often should not be asked to perform work outside their specialty.
+
+---
+
+# 7. PROFESSIONAL ASSIGNMENT
+
+Once an invitation is accepted, create:
+
+## `ProfessionalAssignment`
+
+Contains:
+
+* Professional
+* Role
+* Organization
+* Scope
+* Responsibilities
+* Related scenario
+* Related documents
+* Required responses
+* Due dates
+* Status
+
+Example:
+
+### Assignment
+
+**Jane Smith, Employee Ownership Attorney**
+
+Review:
+
+* Desired ownership outcome
+* Ownership scenarios
+* Governance preferences
+* Legal questions
+
+Not assigned:
+
+* Tax determination
+* Business valuation
+* Financing approval
+
+---
+
+# 8. RESPONSIBILITY MATRIX
+
+The platform should display:
+
+# Who Is Reviewing What?
+
+| Professional           | Primary responsibility              |
+| ---------------------- | ----------------------------------- |
+| Attorney               | Legal/transaction issues            |
+| CPA                    | Tax/accounting questions            |
+| Valuation Professional | Valuation                           |
+| Lender                 | Financing                           |
+| ESOP Professional      | Employee-ownership structure        |
+| Trustee                | Applicable trustee/fiduciary review |
+| Financial Advisor      | Owner liquidity/financial planning  |
+
+This prevents overlapping or missing responsibilities.
+
+---
+
+# 9. REVIEW PACKAGE INPUT
+
+The Professional Review Engine consumes a package generated by the:
+
+**Professional Review Package Engine**
+
+It should not independently assemble arbitrary information.
+
+The package specifies:
+
+* Destination
+* Objectives
+* Relevant assumptions
+* Relevant scenarios
+* Questions
+* Authorized documents
+* Research findings
+* Evidence
+* Current State information
+
+---
+
+# 10. PROFESSIONAL REVIEW WORKSPACE
+
+The professional should see a focused workspace.
+
+## Owner's Objective
+
+What the owner wants.
+
+## Current Business Snapshot
+
+Relevant business facts.
+
+## Scenario Under Review
+
+What the platform is exploring.
+
+## Research
+
+Relevant evidence.
+
+## Questions
+
+What the owner wants answered.
+
+## Documents
+
+Authorized materials.
+
+## Your Response
+
+The professional can provide feedback and determinations.
+
+The professional shouldn't have to navigate the entire owner application.
+
+---
+
+# 11. PROFESSIONAL QUESTIONS
+
+The platform should support structured questions.
+
+Example:
+
+### Owner question
+
+> "Could you review these three potential employee-ownership structures and tell me which ones warrant further consideration based on my stated objectives?"
+
+The professional can answer directly.
+
+---
+
+# 12. QUESTION OBJECT
+
+## `ProfessionalQuestion`
+
+Contains:
+
+* Question ID
+* Review ID
+* Author
+* Recipient
+* Related objective
+* Related scenario
+* Question text
+* Attachments
+* Status
+* Response
+* Date
+* Follow-up
+
+Statuses:
+
+**Open**
+
+**Answered**
+
+**Needs Clarification**
+
+**Closed**
+
+---
+
+# 13. INFORMATION REQUESTS
+
+Professionals may need more information.
+
+Example:
+
+> **Please provide three years of financial statements.**
+
+The engine creates:
+
+## `ProfessionalInformationRequest`
+
+It connects directly to the Document Readiness Engine.
+
+The user sees:
+
+### Your CPA requested:
+
+**2023–2025 financial statements**
+
+Status:
+
+**Available locally**
+
+The owner can authorize sharing.
+
+---
+
+# 14. INFORMATION REQUEST STATUS
+
+```text id="8npv0b"
+Requested
+   ↓
+Owner Notified
+   ↓
+Located
+   ↓
+Prepared
+   ↓
+Shared
+   ↓
+Received
+   ↓
+Accepted
+```
+
+Alternative outcomes:
+
+**Unable to Provide**
+
+**Not Applicable**
+
+**Needs Clarification**
+
+---
+
+# 15. PROFESSIONAL FEEDBACK
+
+Feedback should be structured rather than one giant comment box.
+
+Possible categories:
+
+### Supports
+
+> "This objective appears appropriate to continue exploring."
+
+### Concern
+
+> "This assumption may require further analysis."
+
+### Modification
+
+> "Consider changing this assumption."
+
+### Alternative
+
+> "Consider exploring another structure."
+
+### Additional Information Needed
+
+> "I need additional information before evaluating this."
+
+### Outside Scope
+
+> "This should be reviewed by another professional."
+
+These are professional statements, not platform-generated classifications.
+
+---
+
+# 16. PROFESSIONAL DETERMINATION
+
+The professional can provide a formal determination where their role and engagement call for one.
+
+Examples:
+
+**Scenario should be evaluated further**
+
+**Scenario requires modification**
+
+**Scenario should not be pursued**
+
+**Additional analysis required**
+
+**Alternative structure should be investigated**
+
+**Information insufficient to determine**
+
+The professional's own language should be retained.
+
+The platform should not reinterpret:
+
+> "I don't think this works"
+
+into:
+
+> "Not feasible."
+
+unless the professional explicitly states that conclusion.
+
+---
+
+# 17. PROFESSIONAL DETERMINATION OBJECT
+
+## `ProfessionalDetermination`
+
+Contains:
+
+* Determination ID
+* Professional
+* Role
+* Organization
+* Review ID
+* Related scenario
+* Date
+* Determination text
+* Determination category
+* Supporting information
+* Related documents
+* Follow-up actions
+* Professional version
+* Owner acknowledgment
+
+This is a key record in the system.
+
+---
+
+# 18. PROFESSIONAL DETERMINATION IS ATTRIBUTED
+
+The user should always know:
+
+> **Who made this determination?**
+
+Display:
+
+**Jane Smith**
+Partner, Smith & Jones LLP
+Employee Ownership Attorney
+Reviewed September 2026
+
+The platform itself should not be visually positioned as the source of professional conclusions.
+
+---
+
+# 19. REQUESTED CHANGES
+
+Professionals may request specific changes.
+
+Example:
+
+> **Please revise the projected transition period from 12 months to 24 months for further analysis.**
+
+The engine creates:
+
+## `ProfessionalRequestedChange`
+
+Contains:
+
+* What should change
+* Why
+* Related scenario
+* Related objective
+* Professional
+* Required / Suggested
+* Status
+* Owner response
+
+---
+
+# 20. PROFESSIONAL REQUEST VS. OWNER DECISION
+
+The platform must preserve:
+
+### Professional says
+
+> "We recommend investigating a longer transition."
+
+### Owner decides
+
+> "I want to keep my 18-month objective."
+
+These are different records.
+
+The owner is not required to accept every professional suggestion.
+
+---
+
+# 21. CHANGE RESPONSE OPTIONS
+
+When the owner receives a requested change:
+
+**Accept Change**
+
+**Ask Why**
+
+**Explore Alternative**
+
+**Keep My Current Objective**
+
+**Ask Another Professional**
+
+This follows our standard journey philosophy.
+
+---
+
+# 22. MULTI-PROFESSIONAL REVIEW
+
+Several professionals may review the same scenario.
+
+Example:
+
+### Scenario A
+
+ESOP structure
+
+Reviewed by:
+
+* ESOP professional
+* Attorney
+* CPA
+* Valuation professional
+
+Each provides separate feedback.
+
+The system does not merge them into one AI-generated opinion.
+
+Instead:
+
+## Professional Review Summary
+
+**Attorney**
+
+Feedback...
+
+**CPA**
+
+Feedback...
+
+**Valuation Professional**
+
+Feedback...
+
+Then the owner and professionals determine how to proceed.
+
+---
+
+# 23. CONFLICTING PROFESSIONAL OPINIONS
+
+This is extremely important.
+
+Suppose:
+
+**CPA**
+
+> "Concern about tax consequences."
+
+**Attorney**
+
+> "Structure may still be viable."
+
+The platform should not pick a winner.
+
+It should say:
+
+> ⚠️ **Professional perspectives differ.**
+
+Then show:
+
+**CPA's view**
+
+**Attorney's view**
+
+**Open question**
+
+**Suggested follow-up**
+
+The owner can:
+
+**Ask both**
+
+**Request another specialist**
+
+**Continue exploring**
+
+---
+
+# 24. PROFESSIONAL SCOPE CONFLICTS
+
+Suppose an owner asks their CPA:
+
+> "Is this legal?"
+
+The professional may respond:
+
+> "That's a legal question and should be addressed by counsel."
+
+The engine should capture:
+
+**Outside Professional Scope**
+
+and optionally recommend a relevant stakeholder role.
+
+---
+
+# 25. REVIEW STATUS
+
+Every review should have a state:
+
+### Not Started
+
+Assigned but untouched.
+
+### In Progress
+
+Professional is reviewing.
+
+### Waiting for Owner
+
+Professional needs information.
+
+### Waiting for Another Professional
+
+Dependency exists.
+
+### Submitted
+
+Professional completed their response.
+
+### Follow-Up Required
+
+Additional interaction needed.
+
+### Complete
+
+Review completed.
+
+### Closed
+
+No further activity expected.
+
+---
+
+# 26. PROFESSIONAL DASHBOARD
+
+A professional should see:
+
+# My Reviews
+
+### Active
+
+3
+
+### Waiting for Owner
+
+2
+
+### Due Soon
+
+1
+
+### Completed
+
+14
+
+Then:
+
+**Review: Employee Ownership Transaction**
+
+Owner:
+
+[Name]
+
+Role:
+
+Employee Ownership Attorney
+
+Due:
+
+September 30
+
+Status:
+
+Waiting for owner information
+
+---
+
+# 27. OWNER DASHBOARD
+
+The owner should see:
+
+# Professional Reviews
+
+### Attorney
+
+🟢 Reviewed
+
+### CPA
+
+🟡 Waiting for financial documents
+
+### Valuation
+
+🟡 In progress
+
+### Financing
+
+🟢 Indicative feedback received
+
+### ESOP Specialist
+
+🔵 Not yet started
+
+This gives a very clear picture.
+
+---
+
+# 28. REVIEW DEPENDENCIES
+
+A review can depend on another review.
+
+Example:
+
+**Valuation**
+
+must occur before:
+
+**Certain financing review**
+
+The Workflow Engine manages dependency execution.
+
+The Professional Review Engine stores the relationship.
+
+---
+
+# 29. PROFESSIONAL REVIEW EVENTS
+
+The engine should emit structured events.
+
+Examples:
+
+```text id="pqr3b0"
+ProfessionalInvited
+ProfessionalAccepted
+AssignmentCreated
+QuestionCreated
+InformationRequested
+InformationReceived
+FeedbackSubmitted
+DeterminationSubmitted
+ChangeRequested
+ReviewCompleted
+ReviewReopened
+ReviewDeclined
+```
+
+Other engines can subscribe.
+
+---
+
+# 30. PROFESSIONAL REVIEW + JOURNEY ENGINE
+
+Professional review may create a new journey branch.
+
+Example:
+
+Professional says:
+
+> "We need to examine another employee-ownership structure."
+
+The Journey Engine can create:
+
+**New Exploration Path**
+
+The Professional Review Engine records why that path was initiated.
+
+---
+
+# 31. PROFESSIONAL REVIEW + DESTINATION ENGINE
+
+A professional may identify:
+
+> "Your current desired outcome contains a conflict."
+
+The Destination Engine should **not automatically change it**.
+
+Instead:
+
+Professional feedback:
+
+> "The closing proceeds target may need reconsideration."
+
+Owner:
+
+**Keep**
+
+or:
+
+**Revise**
+
+If the owner revises it:
+
+**Destination v2**
+
+is created.
+
+---
+
+# 32. PROFESSIONAL REVIEW + SCENARIO ENGINE
+
+Professional feedback can trigger:
+
+**Scenario Revision**
+
+or:
+
+**New Scenario**
+
+Example:
+
+Scenario A
+
+↓
+
+Attorney requests alternative structure
+
+↓
+
+Scenario B created
+
+The original Scenario A remains available historically.
+
+---
+
+# 33. PROFESSIONAL REVIEW + RESEARCH ENGINE
+
+Professionals can ask:
+
+> "Can we research current financing practices for businesses of this size?"
+
+The engine creates a research request.
+
+The Research Engine performs it.
+
+The Evidence Ledger records the findings.
+
+The Professional Review workspace receives the results.
+
+---
+
+# 34. PROFESSIONAL REVIEW + CONFIDENCE ENGINE
+
+Professional input should affect Goal-to-Reality Confidence only through structured professional-review status.
+
+For example:
+
+> **CPA confirmed the financial assumptions.**
+
+This increases evidence quality.
+
+But the Confidence Engine still performs its own calculation.
+
+It does not simply say:
+
+> "CPA approved it, therefore 100%."
+
+---
+
+# 35. PROFESSIONAL REVIEW + DOCUMENT READINESS
+
+This is one of the most important integrations.
+
+Professional requests:
+
+> "Please provide the last three years of financial statements."
+
+↓
+
+Document Readiness Engine
+
+↓
+
+**Financial Statements**
+
+Status:
+
+**Requested**
+
+The owner finds them locally.
+
+↓
+
+**Available Locally**
+
+Owner approves sharing.
+
+↓
+
+**Shared with CPA**
+
+↓
+
+Professional receives them.
+
+---
+
+# 36. PROFESSIONAL REVIEW + MARKETPLACE
+
+Marketplace selection creates:
+
+**Professional**
+
+↓
+
+**Stakeholder**
+
+↓
+
+**Assignment**
+
+↓
+
+**Review**
+
+The Marketplace Engine ends its primary responsibility after discovery/selection.
+
+The Professional Review Engine owns the actual review interaction.
+
+---
+
+# 37. REVIEW PACKAGE VERSIONING
+
+A professional may receive:
+
+**Package v1**
+
+Then owner revises assumptions.
+
+The professional receives:
+
+**Package v2**
+
+The system should clearly indicate:
+
+> **Changes since previous version**
+
+This prevents professionals from accidentally reviewing outdated assumptions.
+
+---
+
+# 38. CHANGE SUMMARY
+
+Example:
+
+### Since your last review
+
+Closing target:
+
+$3M–$5M → $2.5M–$5M
+
+Transition:
+
+18 months → 24 months
+
+Seller financing:
+
+Possible → Preferred
+
+The professional can immediately understand what changed.
+
+---
+
+# 39. REVIEW HISTORY
+
+Each review should preserve:
+
+* Original package
+* Professional comments
+* Questions
+* Information requests
+* Responses
+* Requested changes
+* Determinations
+* Revised packages
+* Final status
+
+This becomes the professional interaction history.
+
+---
+
+# 40. OWNER ACKNOWLEDGMENT
+
+When professional feedback arrives:
+
+> **Your attorney submitted feedback.**
+
+The owner should review and acknowledge receipt.
+
+Possible:
+
+**I've reviewed this**
+
+**I have a question**
+
+**I want to change my plan**
+
+**I want another professional's input**
+
+Acknowledgment means:
+
+> **I saw it.**
+
+It does not mean:
+
+> **I agree with it.**
+
+---
+
+# 41. PROFESSIONAL SIGN-OFF
+
+Where appropriate, professionals may provide a formal completion statement.
+
+For example:
+
+> **I have completed the requested review within the scope described above.**
+
+This is optional and profession-specific.
+
+The platform should not create the impression that every professional review is legally a "sign-off."
+
+---
+
+# 42. REVIEW ESCALATION
+
+If the owner believes:
+
+> "This professional isn't addressing my question."
+
+The platform can support:
+
+**Clarify Question**
+
+**Request Follow-Up**
+
+**Add Another Professional**
+
+**Change Professional**
+
+This prevents the process from becoming stuck.
+
+---
+
+# 43. REVIEW DISPUTE
+
+The platform should distinguish:
+
+### Professional disagreement
+
+Two professionals disagree.
+
+from:
+
+### Platform dispute
+
+The user disputes marketplace/provider behavior.
+
+The first belongs in the Professional Review process.
+
+The second may enter Marketplace/Vendor Administration.
+
+---
+
+# 44. REVIEW SLA / RESPONSE EXPECTATION
+
+Where professionals provide an expected timeframe, the platform can track:
+
+**Expected response**
+
+**Actual response**
+
+But should not impose arbitrary service standards unless the marketplace contract/policy specifies them.
+
+---
+
+# 45. PROFESSIONAL WORK PRODUCT
+
+The professional may attach:
+
+* Analysis
+* Memoranda
+* Reports
+* Valuation
+* Financing proposal
+* Other professional materials
+
+These become documents governed by:
+
+**Document Readiness**
+
+and:
+
+**Consent & Access**
+
+The Professional Review Engine records that the work product was received.
+
+---
+
+# 46. CONFIDENTIALITY
+
+Professional communications may contain sensitive information.
+
+The Review Engine should respect stakeholder-specific permissions.
+
+A CPA's comments should not automatically become visible to:
+
+* Employees
+* Management
+* Other professionals
+* Marketplace users
+
+The owner controls sharing subject to applicable professional obligations and platform permissions.
+
+---
+
+# 47. PROFESSIONAL-ONLY NOTES
+
+Where appropriate, professionals may need internal notes that should not be visible to the owner.
+
+This requires careful design.
+
+The system should distinguish:
+
+**Shared Review**
+
+from:
+
+**Professional Internal Notes**
+
+and ensure internal notes are not accidentally exported into an owner package.
+
+---
+
+# 48. OWNER-ONLY NOTES
+
+Likewise, the owner may maintain:
+
+**Private notes**
+
+that are not shared with professionals.
+
+---
+
+# 49. REVIEW PACKAGE FINALIZATION
+
+When a review is complete:
+
+# Professional Review Complete
+
+### Professional
+
+Jane Smith
+
+### Scope
+
+Employee ownership legal structure
+
+### Package reviewed
+
+Destination v3
+Scenario v5
+
+### Result
+
+Professional feedback received
+
+### Outstanding
+
+1 question
+2 requested documents
+
+### Next action
+
+**Update Plan**
+
+**Ask Follow-Up**
+
+**Continue to Next Professional**
+
+---
+
+# 50. PROFESSIONAL DETERMINATION MUST NEVER BECOME PLATFORM TRUTH
+
+This is a critical rule.
+
+If a professional says:
+
+> "I believe Scenario B is the appropriate structure to investigate."
+
+the platform stores:
+
+**Professional Determination: Scenario B should be investigated**
+
+It does not transform the Scenario Engine's state into:
+
+**Scenario B is correct.**
+
+---
+
+# 51. DECISION PROVENANCE
+
+Every significant change should be traceable.
+
+Example:
+
+```text id="8i4i3v"
+Owner Goal
+    ↓
+Platform Scenario A
+    ↓
+Attorney Review
+    ↓
+Attorney Requested Change
+    ↓
+Owner Accepted
+    ↓
+Destination v4
+    ↓
+Scenario B
+```
+
+That gives us a complete decision history.
+
+---
+
+# 52. REVIEW ANALYTICS
+
+The engine can provide operational metrics:
+
+* Average review time
+* Open reviews
+* Waiting-on-owner reviews
+* Waiting-on-professional reviews
+* Information-request volume
+* Review completion
+* Reopened reviews
+* Most common requested changes
+* Common information gaps
+
+These are process metrics, not professional-quality rankings.
+
+---
+
+# 53. PROFESSIONAL QUALITY SIGNALS
+
+The system may eventually identify:
+
+> "This professional consistently completes reviews on time."
+
+or:
+
+> "Many owners report slow communication."
+
+Those signals should remain separate from professional determinations and feed marketplace/vendor governance rather than automatically changing substantive transaction analysis.
+
+---
+
+# 54. ENGINE INPUTS
+
+The Professional Review Engine receives:
+
+**Owner Destination**
+
+**Current State**
+
+**Platform Scenarios**
+
+**Research findings**
+
+**Evidence references**
+
+**Professional Review Packages**
+
+**Selected professionals**
+
+**Document status**
+
+**Professional assignments**
+
+---
+
+# 55. ENGINE OUTPUTS
+
+It produces:
+
+### Invitations
+
+Who has been asked to participate.
+
+### Assignments
+
+What each professional is responsible for.
+
+### Questions
+
+What needs to be answered.
+
+### Information Requests
+
+What additional information is needed.
+
+### Professional Feedback
+
+What the professional says.
+
+### Professional Determinations
+
+What the professional concludes within their role.
+
+### Requested Changes
+
+What they want revised or investigated.
+
+### Review Status
+
+Where the review stands.
+
+### Review History
+
+What has happened.
+
+### Follow-Up Actions
+
+What should happen next.
+
+---
+
+# 56. WHAT THIS ENGINE DOES NOT DO
+
+It does not:
+
+* Provide legal advice
+* Provide tax advice
+* Provide investment advice
+* Perform valuation determinations
+* Approve financing
+* Select the professional for the user
+* Resolve professional disagreements itself
+* Convert professional opinion into platform truth
+* Create legal documents
+* Change the owner's objectives without the owner's action
+
+---
+
+# 57. ENGINE NORTH STAR
+
+The Professional Review Engine should make the professional relationship feel like:
+
+> **"Here is what I told you I want. Here is what I explored. Here are the questions I need you to answer. Here is the information you requested. Here is what you concluded. Here is what changed."**
+
+The professional should never have to reconstruct the entire story from scattered emails and attachments.
+
+The owner should never have to wonder:
+
+> **"Did my CPA review the latest version?"**
+
+or:
+
+> **"Why did my attorney ask for this document?"**
+
+or:
+
+> **"What did the valuation professional actually say?"**
+
+The engine provides the common transaction memory.
+
+---
+
+# 58. ONE-SENTENCE DEFINITION
+
+> **The Professional Review Engine is the collaboration and decision-record system that moves owner-defined objectives and platform-generated scenarios through qualified professional review, captures questions, information requests, feedback, determinations, and requested changes, and returns those inputs to the evolving ownership journey without replacing professional judgment.**
+
+## The important thing this engine gives us
+
+The platform now has a very clean **closed loop**:
+
+**Owner says:**
+*"This is what I want."*
+
+**Platform says:**
+*"Here are some paths worth exploring."*
+
+**Professional says:**
+*"Here's what I think about those paths."*
+
+**Owner says:**
+*"I'll keep/change/explore."*
+
+**Platform updates the journey.**
+
+That is much stronger than simply attaching a PDF to an email and calling it "collaboration."
+
+And there is one architectural boundary I would protect very carefully: **the Professional Review Engine records professional judgment, but never normalizes it into a platform judgment.** That lets two qualified professionals disagree without the software arbitrarily deciding which one is "right." The disagreement itself can become an actionable item for the owner and the professional team.
