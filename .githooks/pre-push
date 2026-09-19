@@ -6,8 +6,10 @@
 # file at a time. Work sessions routinely end with freshly written docs that
 # were never staged, so a bare `git push` would silently ship a stale tree.
 #
-# This hook turns "did I remember to commit everything?" from a habit you have
-# to recall into a property of the system.
+# IMPORTANT LIMITATION — this hook only runs when git actually has something to
+# send. If the tree has no new commits, git prints "Everything up-to-date" and
+# exits 0 *without invoking this hook at all*. Use `git sync`
+# (= scripts/push.sh) to cover that case; see .githooks/README.md.
 #
 # Deliberate bypass:  git push --no-verify
 #
@@ -16,7 +18,8 @@ set -uo pipefail
 PROTECTED_REF="refs/heads/main"
 ZERO="0000000000000000000000000000000000000000"
 
-cd "$(git rev-parse --show-toplevel)" 2>/dev/null || exit 0
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$root" || exit 0
 
 # --- 1. Is this push targeting the protected branch? -------------------------
 # stdin lines are: <local ref> <local oid> <remote ref> <remote oid>
@@ -31,28 +34,11 @@ done
 [ "$targets_main" -eq 1 ] || exit 0
 
 # --- 2. Is the working tree clean? -------------------------------------------
-# --porcelain covers untracked, modified, staged and deleted in one shot.
-# Ignored paths (.workbuddy-ai/, .DS_Store) are excluded by git itself.
-dirty="$(git status --porcelain --untracked-files=all)"
-[ -n "$dirty" ] || exit 0
+if "$root/scripts/check-pending.sh" \
+   "PUSH BLOCKED — pushing now would send a stale tree to GitHub."; then
+  exit 0
+fi
 
-# --- 3. Refuse, and say precisely what to do about it -------------------------
-count="$(printf '%s\n' "$dirty" | grep -c .)"
-
-printf '\n'
-printf '  PUSH BLOCKED — %s uncommitted file(s) in the working tree\n' "$count"
-printf '  Pushing now would send a stale tree to GitHub.\n'
-printf '\n'
-git status --short --untracked-files=all | sed 's/^/      /'
-printf '\n'
-printf '  Commit them one document at a time (repo convention):\n'
-printf '\n'
-printf '      git add "<file>" && git commit -m "Add <Title>"\n'
-printf '\n'
-printf '  Or let the sweep commit the whole backlog for you:\n'
-printf '\n'
-printf '      ./scripts/sync-docs.sh\n'
-printf '\n'
 printf '  To push anyway, bypass this guard deliberately:\n'
 printf '\n'
 printf '      git push --no-verify\n'
