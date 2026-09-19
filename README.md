@@ -31,7 +31,7 @@ These recur across nearly every document and should be treated as constraints on
 
 ## The Documents
 
-**→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 53 design documents, each with a description of what it covers.
+**→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 54 design documents, each with a description of what it covers.
 
 They are organized into eleven groups, each a layer of the platform or a phase of the design work:
 
@@ -42,13 +42,13 @@ They are organized into eleven groups, each a layer of the platform or a phase o
 | Journey Design | 7 | How a journey is defined, built, and walked — through the Employee Ownership journey. |
 | Professional Network & Marketplace | 5 | Curated discovery, role fit, and the vendor governance behind it. |
 | Evidence, Confidence & Documents | 5 | Turning reality and documents into verifiable fact, confidence, and readiness. |
-| Exploration & Modeling | 3 | The decision-layer engines that build representations rather than act — the quantitative laboratory and the path explorer. |
+| Exploration & Modeling | 4 | The decision-layer engines that build representations rather than act — what it might be worth, what the numbers look like, and which paths exist. |
 | Architecture Principles & Platform Overview | 5 | The architectural rules, the full engine roster, and the build roadmap. |
 | Transaction & Execution Engines | 9 | The engines that move a transaction from intent to closed — and beyond. |
 | Platform Infrastructure & Governance | 9 | The private, secure, auditable foundation every engine depends on. |
 | Publishing & External Surfaces | 2 | Public content, and the external sites that carry it. |
 | Strategic Expansion | 1 | Adjacent business lines beyond the core platform. |
-| **Total** | **53** | |
+| **Total** | **54** | |
 
 ---
 
@@ -94,7 +94,7 @@ TRANSACTION EXECUTION
 
 Independently operating engines, communicating through versioned contracts, organized into three layers:
 
-**Decision engines** — Journey · Destination · Business Reality · Document Intelligence / Extraction · Fact Verification & Conflict · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling · Marketplace
+**Decision engines** — Journey · Destination · Business Reality · Document Intelligence / Extraction · Fact Verification & Conflict · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling · Valuation · Marketplace
 
 **Transaction engines** — Capital · Seller Note Liquidity · Professional Review · Document Readiness · Review Package · Transaction · Stakeholder · Workflow · Communication · Closing · Ownership Lifecycle
 

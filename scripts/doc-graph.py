@@ -118,6 +118,7 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Confidence",             "Goal-to-Reality Confidence Research Engine.md"),
     ("Scenario",               "Scenario Engine.md"),
     ("Financial Modeling",     "Financial Modeling Engine.md"),
+    ("Valuation",             "Valuation Engine.md"),
     ("Marketplace",            "Marketplace Engine v1.0.md"),
     # --- transaction engines ---
     ("Capital",                "Capital - Financing Engine v1.0.md"),
@@ -153,7 +154,7 @@ LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
     ("Decision", [
         "Journey", "Destination", "Business Reality", "Document Intelligence",
         "Fact Verification", "Research", "Evidence Ledger", "Confidence",
-        "Scenario", "Financial Modeling", "Marketplace",
+        "Scenario", "Financial Modeling", "Valuation", "Marketplace",
     ]),
     ("Transaction", [
         "Capital", "Seller Note Liquidity", "Professional Review",
@@ -194,6 +195,7 @@ ALIASES = {
     "scenario": "Scenario",
     "financial modeling": "Financial Modeling",
     "financial modelling": "Financial Modeling",
+    "valuation": "Valuation",
     "marketplace": "Marketplace",
     "professional marketplace": "Marketplace",
     "capital": "Capital",
