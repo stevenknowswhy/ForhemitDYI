@@ -1,17 +1,18 @@
 # Document Index
 
-The complete annotated roster of the design documents — **51 documents in ten groups**. Each entry links to the document and describes what it covers.
+The complete annotated roster of the design documents — **53 documents in eleven groups**. Each entry links to the document and describes what it covers.
 
 This file is the reference. For the project overview — the thesis, the load-bearing principles, and the architecture at a glance — see the [README](README.md).
 
 ### How this is organized
 
-The ten groups use two different axes, deliberately:
+The eleven groups use two different axes, deliberately:
 
 * **Groups 1–5 organize documents by design phase** — foundations, principles, journey design, the professional network, evidence and documents. A document sits where its *content* belongs, which is not always the layer its engine occupies. Document Readiness, for example, is a transaction-layer engine but its document belongs with the evidence and document architecture.
-* **Groups 6–10 organize documents by architectural layer** — principles and overview, transaction and execution engines, platform infrastructure, publishing surfaces, and strategic expansion.
+* **Group 6 collects the exploration and modeling engines** — the decision-layer engines that build representations rather than act. These are grouped by function, so that decision-layer engines have a home that is neither a design phase nor a transaction layer.
+* **Groups 7–11 organize documents by architectural layer** — principles and overview, transaction and execution engines, platform infrastructure, publishing surfaces, and strategic expansion.
 
-For engine placement, the authoritative sources are the three-layer list in the [README](README.md#architecture-at-a-glance) and the flow-and-ring diagram in [Complete Architecture](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md). Where a document in groups 6–10 is an engine, its group matches its layer.
+For engine placement, the authoritative sources are the three-layer list in the [README](README.md#architecture-at-a-glance) and the flow-and-ring diagram in [Complete Architecture](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md). Where a document in groups 6, 8 or 9 is an engine, its group matches its layer.
 
 ---
 
@@ -72,7 +73,7 @@ Curated discovery, role fit, and the vendor governance behind it.
 
 ## 5. Evidence, Confidence & Documents
 
-Turning reality and documents into verifiable fact, confidence, readiness, and modeled outcomes.
+Turning reality and documents into verifiable fact, confidence, and readiness.
 
 | Document | What it covers |
 | --- | --- |
@@ -81,11 +82,22 @@ Turning reality and documents into verifiable fact, confidence, readiness, and m
 | [Goal-to-Reality Confidence Research Engine](Goal-to-Reality%20Confidence%20Research%20Engine.md) | The research agent, privacy-first research inputs, the evidence ledger, multi-dimensional confidence, non-monotonic confidence, and no false precision. |
 | [Stakeholder Document & Visibility Architecture](Stakeholder%20Document%20&%20Visibility%20Architecture.md) | "One source, many views": the three visibility levels as data-permission policies, per-stakeholder packages, and the document visibility matrix. |
 | [Document Readiness & Checklist Engine v1.0](Document%20Readiness%20&%20Checklist%20Engine%20v1.0.md) | The dynamic checklist: document categories and statuses, local-first availability, professional-specific requirements, duplication control, and package readiness. |
-| [Financial Modeling Engine](Financial%20Modeling%20Engine.md) | The platform's quantitative laboratory — *"the engine calculates, it does not decide."* Covers the hard boundary that it tells us what the numbers are under stated assumptions and never what they mean for the decision; assumptions as first-class objects (ID, name, value, unit, currency, period, source, source version, date, confidence/status, owner-entered and professional-reviewed flags, scenario, model version, notes); the six assumption classes (historical fact / current fact / forecast assumption / platform scenario assumption / professional input / owner assumption) and why a modeled assumption is not a verified business fact; the nine model families (transaction, cash-flow, capital-stack, seller proceeds, seller-note, ownership, scenario, sensitivity, what-if); source provenance and formula provenance, and the rule that no number may be unexplainable; currency and the explicit recording of any conversion; explicit periods and date logic; sources and uses, the capital gap calculation, debt modeling and debt service, seller-note structures, seller proceeds, ownership allocation and modeled dilution; cash-flow modeling and forecasting; sensitivity, multi-variable sensitivity, what-if exploration and what-if branching, break-even, and coverage ratios with their formula definitions; assumption sensitivity; model status; model versioning, calculation reproducibility and formula versioning; model dependencies, stale inputs and conflict inputs; the scenario, professional-input, professional-determination, owner-decision, capital, seller-note and ownership-lifecycle boundaries; local-first, cloud and hybrid model execution; output sharing and calculation output provenance; rounding and stored-vs-display precision; negative values and edge cases; model validation; circular dependencies; base / conservative / upside / stress cases; stress testing; model comparison; the "why did this number change?" and "what is driving this model?" surfaces; the engine contract and events; the worked examples (seller wants $5M at closing, employee ownership, financing stress test); the relationships to Confidence, Research, Decision Records and Audit; the never-do list; the 31-item architectural lock; and the architectural boundary summary. |
 
 ---
 
-## 6. Architecture Principles & Platform Overview
+## 6. Exploration & Modeling
+
+The decision-layer engines that build representations rather than act — the quantitative laboratory and the path explorer.
+
+| Document | What it covers |
+| --- | --- |
+| [Financial Modeling Engine](Financial%20Modeling%20Engine.md) | The platform's quantitative laboratory — *"the engine calculates, it does not decide."* Covers the hard boundary that it tells us what the numbers are under stated assumptions and never what they mean for the decision; assumptions as first-class objects (ID, name, value, unit, currency, period, source, source version, date, confidence/status, owner-entered and professional-reviewed flags, scenario, model version, notes); the six assumption classes (historical fact / current fact / forecast assumption / platform scenario assumption / professional input / owner assumption) and why a modeled assumption is not a verified business fact; the nine model families (transaction, cash-flow, capital-stack, seller proceeds, seller-note, ownership, scenario, sensitivity, what-if); source provenance and formula provenance, and the rule that no number may be unexplainable; currency and the explicit recording of any conversion; explicit periods and date logic; sources and uses, the capital gap calculation, debt modeling and debt service, seller-note structures, seller proceeds, ownership allocation and modeled dilution; cash-flow modeling and forecasting; sensitivity, multi-variable sensitivity, what-if exploration and what-if branching, break-even, and coverage ratios with their formula definitions; assumption sensitivity; model status; model versioning, calculation reproducibility and formula versioning; model dependencies, stale inputs and conflict inputs; the scenario, professional-input, professional-determination, owner-decision, capital, seller-note and ownership-lifecycle boundaries; local-first, cloud and hybrid model execution; output sharing and calculation output provenance; rounding and stored-vs-display precision; negative values and edge cases; model validation; circular dependencies; base / conservative / upside / stress cases; stress testing; model comparison; the "why did this number change?" and "what is driving this model?" surfaces; the engine contract and events; the worked examples (seller wants $5M at closing, employee ownership, financing stress test); the relationships to Confidence, Research, Decision Records and Audit; the never-do list; the 31-item architectural lock; and the architectural boundary summary. |
+| [Scenario Engine](Scenario%20Engine.md) | The structured bridge between where an owner is, where the owner wants to go, and the possible paths between those points — *possible paths, not recommendations*. Covers the sole responsibility (represent and explore possible paths using explicit assumptions, evidence, constraints, models and dependencies while preserving uncertainty); the architectural boundary; the three decision layers — **Owner Objective / Platform Scenario / Professional Determination** — and the rule that they never collapse into each other; integrations with Destination, Journey, Business Reality, Fact Verification, Research, Evidence Ledger, Financial Modeling, Capital, Seller-Note, Professional Review, Review Package, Confidence, Decision Record and Transaction; the twenty core domain objects; the Scenario, Scenario Family, Scenario Version and Scenario Snapshot objects, and why versioning is mandatory; the extensible scenario-type taxonomy; assumptions as first-class typed objects with provenance and verification status; the constraint model (hard constraint, strong preference, preference, unknown, professional requirement, external constraint); nonnegotiables and avoidance constraints; unknowns and missing-information prioritization; the six conflict types; professional disagreement and the ban on averaging, voting or scoring it; Scenario Readiness (not deal feasibility) and the full lifecycle; comparison, comparison dimensions, objective alignment and the prohibition on a universal scenario score; what-if exploration, branching, sensitivity, stress testing, the dependency graph, impact analysis, refresh and freshness; scenario explanation and explainability; interaction design, interaction types and progressive disclosure; local-first architecture and research privacy; security, permissions and auditability; the event model and the command-versus-query contract; scenario selection, archiving, Destination and Business Reality change handling, professional feedback and the transaction handoff; error handling, graceful degradation and robustness; the twelve architectural anti-patterns; transparency rules; the readiness, comparison and detail UX; the "Help Me Decide" boundary; goal alignment without recommendation; reproducibility and data integrity; the eight architectural test cases; observability, performance and extensibility; and the final architectural lock. |
+| [Scenario Engine Data Model / Schema Specification](Scenario%20Engine%20Data%20Model%20-%20Schema%20Specification.md) | The schema-level companion to the Scenario Engine — *more rigorous than the architectural prose*, so that future engines cannot accidentally collapse facts, assumptions, models, professional determinations and owner decisions into the same data. Covers the eight schema design principles and the central `FACT ≠ ASSUMPTION ≠ MODEL RESULT ≠ PROFESSIONAL DETERMINATION ≠ OWNER DECISION` distinction; the high-level entity model; `ScenarioFamily`, `ScenarioVersion` and `ScenarioSnapshot` with their fields and worked examples; why versioning is mandatory; `ScenarioAssumption` and the typed value model (number, currency, percentage, date, date range, duration, boolean, text, enum, range, reference); assumption provenance and verification status as separate axes; assumption categories; `ScenarioConstraint`, explicit `ScenarioNonnegotiable` modelling and why a structured `NonnegotiableConflict` beats a `warning = true` flag; `ScenarioUnknown` with importance and resolution status; `ScenarioConflict`, its types and its severity scale; `ScenarioDependency` and dependency types; the evidence, research, assumption-to-evidence, financial-model, model-output, financing, seller-note, professional-review and professional-feedback reference objects; the professional determination boundary; `ScenarioBranch` and branch lineage; comparison as a durable object with dimensions and results; `ScenarioImpact`; status history; the selection record; the transaction handoff and its status; the readiness and lifecycle enumerations kept deliberately separate; the recommended core enumerations; the recommended database relationship; the external authority map as a hard schema boundary; immutability and mutable-object rules; draft versus version; version-creation triggers; scenario identity rules; the ten data integrity rules; a minimal scenario JSON representation; and the most important structural decision — that a Scenario Version is a coherent snapshot of assumptions and references, not merely a mutable container of links. |
+
+---
+
+## 7. Architecture Principles & Platform Overview
 
 The architectural rules, the full engine roster, and the build roadmap.
 
@@ -99,7 +111,7 @@ The architectural rules, the full engine roster, and the build roadmap.
 
 ---
 
-## 7. Transaction & Execution Engines
+## 8. Transaction & Execution Engines
 
 The engines that move a transaction from intent to closed — and beyond.
 
@@ -117,7 +129,7 @@ The engines that move a transaction from intent to closed — and beyond.
 
 ---
 
-## 8. Platform Infrastructure & Governance
+## 9. Platform Infrastructure & Governance
 
 The private, secure, auditable foundation every engine depends on.
 
@@ -135,7 +147,7 @@ The private, secure, auditable foundation every engine depends on.
 
 ---
 
-## 9. Publishing & External Surfaces
+## 10. Publishing & External Surfaces
 
 Public content, and the external sites that carry it.
 
@@ -146,7 +158,7 @@ Public content, and the external sites that carry it.
 
 ---
 
-## 10. Strategic Expansion
+## 11. Strategic Expansion
 
 Adjacent business lines beyond the core platform.
 

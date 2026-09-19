@@ -31,9 +31,9 @@ These recur across nearly every document and should be treated as constraints on
 
 ## The Documents
 
-**→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 51 design documents, each with a description of what it covers.
+**→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 53 design documents, each with a description of what it covers.
 
-They are organized into ten groups, each a layer of the platform or a phase of the design work:
+They are organized into eleven groups, each a layer of the platform or a phase of the design work:
 
 | Group | Docs | What it covers |
 | --- | --- | --- |
@@ -41,13 +41,14 @@ They are organized into ten groups, each a layer of the platform or a phase of t
 | Core Product Principles | 4 | The UX and decision-layer principles that constrain every screen. |
 | Journey Design | 7 | How a journey is defined, built, and walked — through the Employee Ownership journey. |
 | Professional Network & Marketplace | 5 | Curated discovery, role fit, and the vendor governance behind it. |
-| Evidence, Confidence & Documents | 6 | Turning reality and documents into verifiable fact, confidence, readiness, and modeled outcomes. |
+| Evidence, Confidence & Documents | 5 | Turning reality and documents into verifiable fact, confidence, and readiness. |
+| Exploration & Modeling | 3 | The decision-layer engines that build representations rather than act — the quantitative laboratory and the path explorer. |
 | Architecture Principles & Platform Overview | 5 | The architectural rules, the full engine roster, and the build roadmap. |
 | Transaction & Execution Engines | 9 | The engines that move a transaction from intent to closed — and beyond. |
 | Platform Infrastructure & Governance | 9 | The private, secure, auditable foundation every engine depends on. |
 | Publishing & External Surfaces | 2 | Public content, and the external sites that carry it. |
 | Strategic Expansion | 1 | Adjacent business lines beyond the core platform. |
-| **Total** | **51** | |
+| **Total** | **53** | |
 
 ---
 

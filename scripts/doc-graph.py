@@ -20,7 +20,7 @@ Checks it runs:
 
   no-dangling          an engine named in the architecture with no backing doc
   no-orphans           a document no other document declares a boundary with
-  no-layer-violation   a group 6-10 doc whose group contradicts its layer
+  no-layer-violation   a layer-organized group's doc contradicting that layer
   coverage             roster counts vs README table vs actual files
   naming-drift         one engine referred to by several different names
 
@@ -116,7 +116,7 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Research",               "Goal-to-Reality Confidence Research Engine.md"),
     ("Evidence Ledger",        "Goal-to-Reality Confidence Research Engine.md"),
     ("Confidence",             "Goal-to-Reality Confidence Research Engine.md"),
-    ("Scenario",               None),
+    ("Scenario",               "Scenario Engine.md"),
     ("Financial Modeling",     "Financial Modeling Engine.md"),
     ("Marketplace",            "Marketplace Engine v1.0.md"),
     # --- transaction engines ---
@@ -168,11 +168,14 @@ LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
 ])
 
 # Which DOCUMENT-INDEX groups map onto which architectural layer.
-# Groups 1-5 are organized by design phase, so they are exempt from the
-# layer check (DOCUMENT-INDEX "How this is organized" says so explicitly).
+# Groups 1-5 are organized by design phase, and groups 7, 10 and 11 hold
+# principle/overview documents rather than engines, so all of those are
+# exempt from the layer check (DOCUMENT-INDEX "How this is organized" says
+# so explicitly). Groups 6, 8 and 9 are layer-organized and are checked.
 GROUP_LAYER = {
-    "7": "Transaction",
-    "8": "Infrastructure",
+    "6": "Decision",
+    "8": "Transaction",
+    "9": "Infrastructure",
 }
 
 # Free-text variants -> canonical key. Everything the corpus actually says.
@@ -824,7 +827,7 @@ def render_report(findings, stats, boundary, flow, ring):
             "None — every document is referenced by at least one other.")
 
     section("9", "Layer violations", "no-layer-violation",
-            "None — group 6–10 docs agree with their declared layer.")
+            "None — every layer-organized group agrees with its declared layer.")
 
     section("10", "Coverage and count mismatches", "coverage",
             "None — roster, README table, and disk all agree.")
