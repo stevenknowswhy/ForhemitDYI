@@ -81,6 +81,7 @@ These recur across nearly every document and should be treated as constraints on
 | --- | --- |
 | [Core Architecture Principle — No Engine Owns the Entire Transaction](Core%20Architecture%20Principle%20-%20No%20Engine%20Owns%20the%20Entire%20Transaction.md) | The locked rule that no engine owns the whole transaction: one clearly defined responsibility each, structured contracts between engines, and replaceability without rewriting the platform. |
 | [Standalone Engine Architecture — Ownership Transition Engine Platform](Standalone%20Engine%20Architecture%20-%20Ownership%20Transition%20Engine%20Platform.md) | The hard architectural principle: independent engines cooperating through versioned data contracts, "no engine may impersonate another," and explainable outputs. |
+| [Complete Architecture — Decision Engines, Transaction Engines, Platform Infrastructure](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md) | The full end-to-end roster: the 10 missing engines (Business Reality, Financial Modeling, Capital, Seller Note Liquidity, Professional Review, Transaction, Stakeholder, Consent & Access, Local Vault, Workflow, Communication, Notification, Policy, Audit, Integration, Ownership Lifecycle, Vendor Administration, Identity & Access, Billing), the Decision Record Engine, the 14-stage lifecycle, and the MVP boundary. |
 | [Hybrid Local-First Architecture](HYBRID%20LOCAL-FIRST%20ARCHITECTURE.md) | The local/online split: encrypted local document vault, explicit document sharing, three portals, the transaction knowledge engine, and offline capability. |
 
 ### 7. Strategic Expansion
@@ -117,11 +118,13 @@ REFINED DESTINATION
 TRANSACTION EXECUTION
 ```
 
-Independently operating engines, communicating through versioned contracts:
+Independently operating engines, communicating through versioned contracts, organized into three layers:
 
-**Journey Engine** · **Destination Engine** · **Research Engine** · **Evidence Engine** · **Confidence Engine** · **Scenario Engine** · **Marketplace Engine** · **Document Readiness Engine** · **Professional Review Package Engine** · **Professional Determination Layer**
+**Decision engines** — Journey · Destination · Business Reality · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling
 
-Supporting systems: **Local Workspace** · **Professional Marketplace** · **Capital Marketplace** · **Vendor Administration** · **Identity & Permissions**
+**Transaction engines** — Capital · Seller Note Liquidity · Professional Review · Document Readiness · Review Package · Transaction · Stakeholder · Workflow · Communication · Ownership Lifecycle
+
+**Platform infrastructure** — Local Vault · Identity & Access · Consent & Access · Policy · Audit · Decision Record · Notification · Integration · Vendor Administration · Billing · Security
 
 ---
 
