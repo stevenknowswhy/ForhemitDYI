@@ -1,5 +1,10 @@
 # Local agent workspace — not project content
 .workbuddy-ai/
 
+# Generated gap-analysis artifacts — regenerate with scripts/doc-graph.py
+# The report itself (analysis/GAP-ANALYSIS.md) is versioned as a design record.
+analysis/graph.json
+analysis/engine-graph.mmd
+
 # macOS
 .DS_Store
