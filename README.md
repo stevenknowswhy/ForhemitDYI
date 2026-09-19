@@ -67,6 +67,7 @@ These recur across nearly every document and should be treated as constraints on
 | [Professional Choice — Bring Your Own or Use Our Curated Network](PROFESSIONAL%20CHOICE%20-%20BRING%20YOUR%20OWN%20OR%20USE%20OUR%20CURATED%20NETWORK.md) | The BYO-vs-curated pattern for every professional category, capital providers, the seller-note buyer directory, and the match-vs-offer distinction. |
 | [Professional Role-Fit and Team Optimization](PROFESSIONAL%20ROLE-FIT%20AND%20TEAM%20OPTIMIZATION.md) | The Role-Fit Check for the owner's existing professionals, the "right person, right job" framework, the responsibility matrix, and gap/overlap detection. |
 | [Professional Marketplace Engine v1.0](Professional%20Marketplace%20Engine%20v1.0.md) | Curated-not-open marketplace: no pay-to-play, organization-first model, vetting and re-verification, review moderation, contextual matching, and visibility controls. |
+| [Marketplace Engine v1.0](Marketplace%20Engine%20v1.0.md) | The curated discovery-and-matching system, separated from vendor governance: the seven marketplace principles (curated not open, no pay-to-play, user chooses, relevance over volume, organizations ≠ people, structured profiles, ratings inform), the `Organization` / `Professional` / Specialty / Service objects, the hierarchical specialty taxonomy, the structured experience and credential models, `MarketplaceListing`, the curation layer (curation is not ranking), contextual matching with `MarketplaceMatch` and `MatchExplanation`, the standalone visibility engine and rule-driven eligibility, ratings / comments / verified platform experience and moderation, vendor-vs-platform authority, comparison without a winner, the selection handoff to the Stakeholder Engine, analytics and demand-gap analysis, profile completeness and freshness, `CurationRecord`, marketplace versioning, and the explicit "what the Marketplace Engine does not do" list. |
 
 ### 5. Evidence, Confidence & Documents
 
@@ -125,7 +126,7 @@ TRANSACTION EXECUTION
 
 Independently operating engines, communicating through versioned contracts, organized into three layers:
 
-**Decision engines** — Journey · Destination · Business Reality · Document Intelligence / Extraction · Fact Verification & Conflict · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling
+**Decision engines** — Journey · Destination · Business Reality · Document Intelligence / Extraction · Fact Verification & Conflict · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling · Marketplace
 
 **Transaction engines** — Capital · Seller Note Liquidity · Professional Review · Document Readiness · Review Package · Transaction · Stakeholder · Workflow · Communication · Ownership Lifecycle
 
