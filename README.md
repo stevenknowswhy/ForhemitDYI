@@ -58,6 +58,7 @@ These recur across nearly every document and should be treated as constraints on
 | [Employee Ownership Journey v0.2 — Optimized Guided Journey](Employee%20Ownership%20Journey%20v0.2%20-%20Optimized%20Guided%20Journey.md) | The optimized journey: negative constraints ("what to avoid"), "ask only when relevant" rules, information value, question exit, and the one-page executive summary. |
 | [Employee Ownership Journey — Start With the Desired End State](EMPLOYEE%20OWNERSHIP%20JOURNEY%20-%20Start%20With%20the%20Desired%20End%20State.md) | The destination-first journey: "Picture Your Success", the Destination Card, the owner's success-story narrative, and the `DesiredOutcome` object. |
 | [Destination Builder v1.0](Employee%20Ownership%20Journey%20-%20Destination%20Builder%20v1.0.md) | The full 13-screen Destination Builder spec, the `DesiredOutcome` object tree, destination versioning, and the completeness indicator. |
+| [Destination Engine v1.0](Destination%20Engine%20v1.0.md) | The standalone engine that owns the owner's intent: destination vs. objective / priority / nonnegotiable / preference, the full `DesiredOutcome` data model, statuses, the financial / ownership / personal / timing / preservation / avoidance components, priority and constraint maps, narrative generation, versioning and change events, error prevention, the reusable Journey-Builder mapping, the "My Destination" review card, and the 10 final architectural rules. |
 
 ### 4. Professional Network & Marketplace
 
