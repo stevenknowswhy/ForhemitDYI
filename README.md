@@ -72,6 +72,7 @@ These recur across nearly every document and should be treated as constraints on
 | Document | What it covers |
 | --- | --- |
 | [Business Reality Engine v1.0 — Current State / Business Assessment](Business%20Reality%20Engine%20v1.0%20-%20Current%20State%20Business%20Assessment.md) | The factual counterpart to the Destination Engine: the `BusinessCurrentState` object, field-level provenance, the three information levels (stated / supported / verified), financial trends, owner-dependency and concentration flags, versioning, and the two-snapshot view ("Where You Want to Go" vs. "Where You Are Today"). |
+| [Expanded Reality Architecture — Document Intelligence and Fact Verification](Expanded%20Reality%20Architecture%20-%20Document%20Intelligence%20and%20Fact%20Verification.md) | The expanded reality pipeline, split across three cooperating engines: **Document Intelligence / Extraction** (reads PDFs, spreadsheets, documents, scans and extracts candidate facts), **Business Reality** (builds the current-state model), and **Fact Verification & Conflict** (compares sources, manages conflicts, records owner verification). Adds full fact provenance, verification states, definition/period preservation, first-class Fact Conflict objects, the fact graph, and the rule that *owner verified ≠ professionally verified*. |
 | [Goal-to-Reality Confidence Research Engine](Goal-to-Reality%20Confidence%20Research%20Engine.md) | The research agent, privacy-first research inputs, the evidence ledger, multi-dimensional confidence, non-monotonic confidence, and no false precision. |
 | [Stakeholder Document & Visibility Architecture](Stakeholder%20Document%20&%20Visibility%20Architecture.md) | "One source, many views": the three visibility levels as data-permission policies, per-stakeholder packages, and the document visibility matrix. |
 | [Document Readiness & Checklist Engine v1.0](Document%20Readiness%20&%20Checklist%20Engine%20v1.0.md) | The dynamic checklist: document categories and statuses, local-first availability, professional-specific requirements, duplication control, and package readiness. |
@@ -121,7 +122,7 @@ TRANSACTION EXECUTION
 
 Independently operating engines, communicating through versioned contracts, organized into three layers:
 
-**Decision engines** — Journey · Destination · Business Reality · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling
+**Decision engines** — Journey · Destination · Business Reality · Document Intelligence / Extraction · Fact Verification & Conflict · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling
 
 **Transaction engines** — Capital · Seller Note Liquidity · Professional Review · Document Readiness · Review Package · Transaction · Stakeholder · Workflow · Communication · Ownership Lifecycle
 
