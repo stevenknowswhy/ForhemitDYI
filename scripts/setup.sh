@@ -17,7 +17,7 @@ cd "$root" || exit 1
 
 git config --local core.hooksPath .githooks
 git config --local alias.sync '!./scripts/push.sh'
-chmod +x .githooks/pre-push scripts/*.sh
+chmod +x .githooks/pre-commit .githooks/pre-push scripts/*.sh
 
 printf '\n  Guardrails armed:\n\n'
 printf '      core.hooksPath = %s\n' "$(git config --get core.hooksPath)"

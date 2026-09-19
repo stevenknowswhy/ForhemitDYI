@@ -7,10 +7,13 @@ Keeps the design bible fully committed before anything reaches GitHub.
 | File | Purpose |
 |---|---|
 | `.githooks/pre-push` | Automatic guard. Blocks a push to `main` while files are uncommitted. |
-| `scripts/check-pending.sh` | The check itself. Shared by the hook and the push wrapper. |
+| `.githooks/pre-commit` | Automatic guard. Regenerates the versioned gap analysis before committing. |
+| `scripts/check-pending.sh` | The uncommitted-content check. Shared by the hook and the push wrapper. |
+| `scripts/refresh-analysis.sh` | The analysis refresh. Called by the pre-commit hook; runnable by hand. |
+| `scripts/doc-graph.py` | The analyzer behind the gap analysis report. |
 | `scripts/push.sh` | Explicit guard. Checks **always**, then pushes. Wired up as `git sync`. |
 | `scripts/sync-docs.sh` | Clears the backlog — commits every pending doc, one per commit. |
-| `scripts/setup.sh` | Arms the hook and the `git sync` alias. Run once per clone. |
+| `scripts/setup.sh` | Arms both hooks and the `git sync` alias. Run once per clone. |
 
 ## Why this exists
 
@@ -96,10 +99,52 @@ Typical session end:
 ./scripts/sync-docs.sh && git sync
 ```
 
+## The versioned gap analysis
+
+`analysis/GAP-ANALYSIS.md` is a committed design record: a dependency graph of
+the whole corpus, built by `scripts/doc-graph.py` from the boundary tables, the
+section-20 flow diagram, and the layer roster.
+
+Committing a generated file buys a readable record at the cost of **drift**.
+Edit any document and the committed report quietly describes the old corpus.
+Nothing in git notices.
+
+`.githooks/pre-commit` closes that. Before each commit it regenerates the
+report and stages the result:
+
+```
+$ git commit -m "Add Scenario Engine"
+  Gap analysis refreshed — the report no longer matched the corpus:
+      analysis/archive/GAP-ANALYSIS-2026-09-19-1605.md
+      analysis/GAP-ANALYSIS.md
+  Staged. The report now describes the tree you are committing.
+```
+
+The outgoing version is **archived, not discarded** — moved to
+`analysis/archive/` under the timestamp it carried, so you can read the gaps as
+they stood on any given date. The current report always lives at the stable
+path `analysis/GAP-ANALYSIS.md`.
+
+**When the report is already accurate, nothing happens.** No rewrite, no
+archive, no staging — an unrelated commit passes straight through. That is what
+makes it safe to run on every commit.
+
+To refresh by hand, without committing:
+
+```sh
+./scripts/refresh-analysis.sh
+```
+
+If `python3` is missing the hook prints a note and lets the commit through,
+rather than blocking all work on a machine without an interpreter. If `python3`
+is present but the analyzer fails, the commit is blocked.
+
 ## Deliberate bypass
 
 ```sh
-git push --no-verify
+git commit --no-verify     # skip the analysis refresh
+git push   --no-verify     # skip the uncommitted-content guard
 ```
 
-`--no-verify` skips all hooks, so it bypasses the guard. It should be a conscious choice, not an accident.
+`--no-verify` skips all hooks, so it bypasses the guards. Both should be a
+conscious choice, not an accident.

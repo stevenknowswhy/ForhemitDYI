@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+# pre-commit guard — regenerates the versioned gap analysis before committing.
+#
+# analysis/GAP-ANALYSIS.md is committed, so it can drift from the corpus it
+# describes. This hook regenerates it and stages any change, so a committed
+# report is always true of the tree it was committed with. The superseded
+# version is archived to analysis/archive/ under the timestamp it carried.
+#
+# If the report is already accurate nothing is rewritten and nothing is
+# staged, so an unrelated commit passes through untouched.
+#
+# The work lives in scripts/refresh-analysis.sh, so the same logic can be run
+# by hand without going through a commit.
+#
+# Deliberate bypass:  git commit --no-verify
+#
+set -uo pipefail
+
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$root" || exit 0
+
+exec "$root/scripts/refresh-analysis.sh"
