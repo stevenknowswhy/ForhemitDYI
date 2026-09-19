@@ -43,8 +43,8 @@ They are organized into ten groups, each a layer of the platform or a phase of t
 | Professional Network & Marketplace | 5 | Curated discovery, role fit, and the vendor governance behind it. |
 | Evidence, Confidence & Documents | 5 | Turning reality and documents into verifiable fact, confidence, and readiness. |
 | Architecture Principles & Platform Overview | 5 | The architectural rules, the full engine roster, and the build roadmap. |
-| Transaction & Execution Engines | 10 | The engines that move a transaction from intent to closed — and beyond. |
-| Platform Infrastructure & Governance | 8 | The private, secure, auditable foundation every engine depends on. |
+| Transaction & Execution Engines | 9 | The engines that move a transaction from intent to closed — and beyond. |
+| Platform Infrastructure & Governance | 9 | The private, secure, auditable foundation every engine depends on. |
 | Publishing & External Surfaces | 2 | Public content, and the external sites that carry it. |
 | Strategic Expansion | 1 | Adjacent business lines beyond the core platform. |
 | **Total** | **50** | |
