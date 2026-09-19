@@ -1,0 +1,5 @@
+# Local agent workspace — not project content
+.workbuddy-ai/
+
+# macOS
+.DS_Store
