@@ -8,8 +8,10 @@
 # outgoing version is archived to analysis/archive/ under the timestamp it
 # carried, so no version is ever lost.
 #
-# If the report is already accurate this does nothing at all — no rewrite, no
-# archive, no staging. That is what makes it safe to run on every commit.
+# If the report is already accurate AND already staged this does nothing at all
+# — no rewrite, no archive, no staging. That is what makes it safe to run on
+# every commit. If the report is accurate on disk but stale in the index it is
+# staged, because a commit ships the index, not the working tree.
 #
 #   exit 0  report is current (regenerated and staged, or already up to date)
 #   exit 1  regeneration failed — the commit is blocked
@@ -37,8 +39,9 @@ if ! command -v "$python_bin" >/dev/null 2>&1; then
   exit 0
 fi
 
-# --staged-files prints the paths that changed, and nothing when the report is
-# already accurate. It regenerates the report as a side effect.
+# --staged-files prints the paths whose CONTENT the regeneration changed, and
+# nothing when the report on disk is already accurate. It regenerates as a
+# side effect.
 staged="$("$python_bin" scripts/doc-graph.py --staged-files)" || {
   printf '\n'
   printf '  COMMIT BLOCKED — scripts/doc-graph.py failed.\n'
@@ -50,10 +53,23 @@ staged="$("$python_bin" scripts/doc-graph.py --staged-files)" || {
   exit 1
 }
 
+# Regeneration compares the report against the working tree, but a commit ships
+# the INDEX, and those two can disagree. Run ./scripts/refresh-analysis.sh by
+# hand, then commit without staging the result, and regeneration changes
+# nothing while the commit still carries the previous report — exactly the
+# drift this guard exists to prevent. So stage the report whenever the index
+# has fallen behind it.
+report="analysis/GAP-ANALYSIS.md"
+if ! git diff --quiet -- "$report"; then
+  staged="$(printf '%s\n%s' "$staged" "$report")"
+fi
+
+staged="$(printf '%s\n' "$staged" | sed '/^[[:space:]]*$/d' | sort -u)"
+
 [ -n "$staged" ] || exit 0
 
 printf '\n'
-printf '  Gap analysis refreshed — the report no longer matched the corpus:\n'
+printf '  Gap analysis refreshed — the committed report no longer matched the corpus:\n'
 printf '\n'
 printf '%s\n' "$staged" | sed 's/^/      /'
 printf '\n'
