@@ -25,6 +25,7 @@ These recur across nearly every document and should be treated as constraints on
 5. **The platform is a navigator, not an advisor.** It prepares, organizes, models, and translates. It does not give legal, tax, valuation, investment, or financing advice.
 6. **Local-first by default.** Sensitive business information stays on the owner's machine; sharing is explicit, authorized, and revocable.
 7. **No pay-to-play.** Professionals do not pay for inclusion, placement, ranking, or favorable treatment.
+8. **No engine owns the entire transaction.** Specialized engines cooperate through structured contracts, each independently replaceable without rewriting the platform.
 
 ---
 
@@ -78,6 +79,7 @@ These recur across nearly every document and should be treated as constraints on
 
 | Document | What it covers |
 | --- | --- |
+| [Core Architecture Principle — No Engine Owns the Entire Transaction](Core%20Architecture%20Principle%20-%20No%20Engine%20Owns%20the%20Entire%20Transaction.md) | The locked rule that no engine owns the whole transaction: one clearly defined responsibility each, structured contracts between engines, and replaceability without rewriting the platform. |
 | [Standalone Engine Architecture — Ownership Transition Engine Platform](Standalone%20Engine%20Architecture%20-%20Ownership%20Transition%20Engine%20Platform.md) | The hard architectural principle: independent engines cooperating through versioned data contracts, "no engine may impersonate another," and explainable outputs. |
 | [Hybrid Local-First Architecture](HYBRID%20LOCAL-FIRST%20ARCHITECTURE.md) | The local/online split: encrypted local document vault, explicit document sharing, three portals, the transaction knowledge engine, and offline capability. |
 
