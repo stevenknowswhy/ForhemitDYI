@@ -117,7 +117,7 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Evidence Ledger",        "Goal-to-Reality Confidence Research Engine.md"),
     ("Confidence",             "Goal-to-Reality Confidence Research Engine.md"),
     ("Scenario",               None),
-    ("Financial Modeling",     None),
+    ("Financial Modeling",     "Financial Modeling Engine.md"),
     ("Marketplace",            "Marketplace Engine v1.0.md"),
     # --- transaction engines ---
     ("Capital",                "Capital - Financing Engine v1.0.md"),
@@ -323,9 +323,15 @@ def parse_boundary_tables(docs):
     The header must be exactly those three cells. Matching loosely (any row
     containing both phrases) produces false positives, because DOCUMENT-INDEX
     describes boundary tables in prose inside its own tables.
-    Returns {(src_doc, canonical_engine): raw_cell}.
+
+    Returns (edges, unresolved):
+      edges      {(src_doc, canonical_engine): raw_cell}
+      unresolved {(src_doc, raw_cell)} for rows naming something that is not a
+                 declared engine -- a boundary with an engine that has no home
+                 in the architecture, which is a finding rather than noise.
     """
     edges = {}
+    unresolved = set()
     for name, text in docs.items():
         lines = text.splitlines()
         for i, line in enumerate(lines):
@@ -340,10 +346,13 @@ def parse_boundary_tables(docs):
                 cells = [c.strip() for c in row.strip().strip("|").split("|")]
                 if not cells or set(cells[0]) <= set("-: "):
                     continue
+                raw = cells[0].replace("**", "").strip()
                 eng = canon(cells[0])
                 if eng:
                     edges[(name, eng)] = cells[0]
-    return edges
+                elif raw:
+                    unresolved.add((name, raw))
+    return edges, unresolved
 
 
 BOUNDARY_HEAD_RE = re.compile(
@@ -418,7 +427,7 @@ def run_checks(docs):
     findings = defaultdict(list)
     index_groups = parse_index_groups(docs)
     readme_groups = parse_readme_groups(docs)
-    boundary = parse_boundary_tables(docs)
+    boundary, unresolved = parse_boundary_tables(docs)
     flow, ring = parse_arch_section20(docs)
     links = parse_links(docs)
 
@@ -495,6 +504,13 @@ def run_checks(docs):
         "Journey maps to 'Journey Builder Architecture & Employee Ownership "
         "Journey.md' out of three candidate journey documents")
     findings["structural-ambiguity"] = collapsed
+
+    # a boundary table naming something that is not a declared engine: the
+    # document claims a relationship with an engine that has no home in the
+    # architecture. Silent until now, because unresolvable rows were dropped.
+    findings["undeclared-reference"] = sorted(
+        f"{src} declares a boundary with “{raw}”, which is not a declared engine"
+        for src, raw in unresolved)
 
     # ---- check 3: no-layer-violation -----------------------------------
     violations = []
@@ -740,6 +756,7 @@ def render_report(findings, stats, boundary, flow, ring):
         "no-dangling": "High",
         "boundary-tier-none": "High",
         "structural-ambiguity": "Medium",
+        "undeclared-reference": "Medium",
         "boundary-tier-prose": "Medium",
         "never-named": "Medium",
         "naming-drift": "Low",
@@ -751,12 +768,13 @@ def render_report(findings, stats, boundary, flow, ring):
         ("1", "no-dangling", "Dangling engines — declared, no document"),
         ("2", "boundary-tier-none", "Engine docs with no boundary section"),
         ("3", "structural-ambiguity", "Structural ambiguity"),
-        ("4", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
-        ("5", "never-named", "Engines no boundary table mentions"),
-        ("6", "naming-drift", "Naming drift"),
-        ("7", "no-orphans", "Orphan documents"),
-        ("8", "no-layer-violation", "Layer violations"),
-        ("9", "coverage", "Coverage and count mismatches"),
+        ("4", "undeclared-reference", "Boundaries with undeclared engines"),
+        ("5", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
+        ("6", "never-named", "Engines no boundary table mentions"),
+        ("7", "naming-drift", "Naming drift"),
+        ("8", "no-orphans", "Orphan documents"),
+        ("9", "no-layer-violation", "Layer violations"),
+        ("10", "coverage", "Coverage and count mismatches"),
     ]
     for num, key, label in order:
         n = len(findings.get(key, []))
@@ -786,32 +804,36 @@ def render_report(findings, stats, boundary, flow, ring):
             "structural-ambiguity",
             "None.")
 
-    section("4", "Boundary declared in prose only (not machine-readable)",
+    section("4", "Boundaries with engines that are not declared anywhere",
+            "undeclared-reference",
+            "None — every boundary names a declared engine.")
+
+    section("5", "Boundary declared in prose only (not machine-readable)",
             "boundary-tier-prose",
             "None — every boundary is expressed as a table.")
 
-    section("5", "Engines that no boundary table anywhere mentions",
+    section("6", "Engines that no boundary table anywhere mentions",
             "never-named",
             "None — every engine is named by at least one boundary table.")
 
-    section("6", "Naming drift — one engine, several names",
+    section("7", "Naming drift — one engine, several names",
             "naming-drift",
             "None — engine names are used consistently.")
 
-    section("7", "Orphan documents", "no-orphans",
+    section("8", "Orphan documents", "no-orphans",
             "None — every document is referenced by at least one other.")
 
-    section("8", "Layer violations", "no-layer-violation",
+    section("9", "Layer violations", "no-layer-violation",
             "None — group 6–10 docs agree with their declared layer.")
 
-    section("9", "Coverage and count mismatches", "coverage",
+    section("10", "Coverage and count mismatches", "coverage",
             "None — roster, README table, and disk all agree.")
 
-    A("## 10. Declared pipeline topology")
+    A("## 11. Declared pipeline topology")
     A("")
     A(mermaid_topology())
     A("")
-    A("## 11. Declared boundary graph")
+    A("## 12. Declared boundary graph")
     A("")
     A(mermaid_boundaries(boundary))
     A("")
@@ -885,8 +907,8 @@ def main():
     print(f"boundary edges: {stats['boundary_edges']}")
     print(f"link edges:     {stats['link_edges']}")
     for key in ("no-dangling", "boundary-tier-none", "structural-ambiguity",
-                "boundary-tier-prose", "never-named", "naming-drift",
-                "no-orphans", "no-layer-violation", "coverage"):
+                "undeclared-reference", "boundary-tier-prose", "never-named",
+                "naming-drift", "no-orphans", "no-layer-violation", "coverage"):
         print(f"{key:22s} {len(findings.get(key, []))}")
     if changed:
         for p in changed:
