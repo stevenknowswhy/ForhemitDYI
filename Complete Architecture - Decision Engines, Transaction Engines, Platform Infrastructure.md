@@ -691,6 +691,30 @@ Billing
 Security
 ```
 
+> **A note on this ring: these are properties of the platform, not necessarily engines.** Eight of the nine entries name an engine with its own document. Two of them need care.
+>
+> * **Administration** here means *platform and organization administration* — the organization-scoped administrative authority defined in the Identity & Access Engine (section 57), together with the platform administration team. It is **not** the Vendor Administration engine, which vets external professionals and vendors.
+> * **Security** is deliberately **not an engine**. It is a cross-cutting property that every engine must have, and it already has an owner everywhere it appears. See below.
+
+## Where "Security" actually lives
+
+Every concrete security responsibility already belongs to an engine. Security is enforced by distribution, not by a component:
+
+| Responsibility | Owner |
+| --- | --- |
+| Authentication, MFA, sessions, device management, reauthentication, high-risk changes, emergency suspension, service and AI identities, API credentials, separation of duties, tenant isolation | Identity & Access Engine |
+| Rules, gates, restrictions, credential requirements and expiry, fail-safe behaviour, emergency override | Policy / Compliance Engine |
+| Least privilege, purpose and time limitation, revocation, the three-zone model | Consent & Access Engine |
+| Encryption at rest, the layered encryption model, integrity checks, privacy modes | Local Vault / Workspace Engine |
+| Secrets management — credentials, tokens, certificates | Integration Engine (section 73) |
+| Security events, forensics, tamper-evident history | Audit / Provenance Engine |
+
+**Why not a Security Engine.** The Identity & Access Engine (section 72) defines the authorization decision as a closed three-stage chain — *who are you* → Identity & Access → *what platform role do you have* → Policy / Compliance → *may this type of action occur* → Consent & Access → *may you see this specific resource* — and calls that separation "one of the strongest architectural decisions in the entire platform." A Security Engine would be a fourth authority able to answer the same question differently, and it would own a little of everything, which is the inverse of the locked principle that each engine owns one thing. Section 73 already forbids the adjacent engines from replacing one another; a security engine would be bound by the same rule and would therefore have almost nothing left to own.
+
+**What is genuinely missing is operational, not architectural.** Nothing in this bible specifies vulnerability management, penetration testing, incident response, breach notification, security monitoring, infrastructure hardening, threat modelling, or SOC 2 / ISO 27001 readiness. That is deliberate: those are *operations* — how the platform is run — rather than *decisions* — what the platform owns. They belong to platform infrastructure, outside the engine model, alongside deployment and capacity planning.
+
+**One caution on the word "security."** In the Capital, Seller-Note Liquidity, Professional Review Package, Professional Marketplace and Stakeholder documents, "security" usually means **loan security** — collateral pledged against a loan — not platform security. Capital carries both senses: its section 38 is about the platform's security and privacy, while its loan terms list "Security" as collateral. Read the context before assuming which one is meant, and never let the two collide in a boundary table.
+
 ---
 
 # 21. There Is One More Concept I Would Add

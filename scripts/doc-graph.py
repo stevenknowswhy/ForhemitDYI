@@ -24,6 +24,11 @@ Checks it runs:
   coverage             roster counts vs README table vs actual files
   naming-drift         one engine referred to by several different names
 
+Not everything in the architecture is an engine. The section-20 ring names
+"Security", which is a cross-cutting property rather than a component: see
+CROSS_CUTTING below, which records the decision and keeps it out of the
+dangling check on purpose.
+
 The report is versioned, so it can drift from the corpus it describes. Each
 run compares the new report against the committed one: if the content changed
 the outgoing version is archived to analysis/archive/ under the timestamp it
@@ -143,11 +148,64 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Integration",            "Integration Engine.md"),
     ("Vendor Administration",  "Vendor Administration - Vetting Engine v1.0.md"),
     ("Billing",                "Billing - Commercial Engine.md"),
-    ("Security",               None),
+    # "Security" is deliberately absent from this table. It is a cross-cutting
+    # property, not an engine -- see CROSS_CUTTING below for the reasoning and
+    # for where each security responsibility actually lives.
     # --- publishing surfaces (declared in README, outside the three layers) ---
     ("Blog",                   "Blog - Publishing Engine.md"),
     ("WordPress",              "WordPress Management Engine.md"),
 ])
+
+
+# --------------------------------------------------------------------------
+# 1b. Cross-cutting properties (deliberately NOT engines)
+# --------------------------------------------------------------------------
+# The section-20 "around all of it" ring lists nine entries. Eight name an
+# engine that has its own document. The ninth, "Security", does not -- and the
+# 2026-09-19 review concluded it should not.
+#
+# The reasoning: every concrete security responsibility already has an owner,
+# and Identity & Access section 72 defines a CLOSED three-stage authorization
+# chain (Identity & Access -> Policy / Compliance -> Consent & Access) that the
+# corpus calls "one of the strongest architectural decisions in the entire
+# platform". A Security Engine would be a fourth authority able to answer the
+# same question differently, and would own "everything, partially" -- the
+# inverse of the locked principle that each engine owns one thing.
+#
+# Recording it here keeps the decision explicit. Keeping it OUT of ENGINE_HOME
+# is the decision, not an oversight, so it correctly produces no dangling
+# finding. If a boundary table ever names one of these as an engine, canon()
+# returns None and undeclared-reference raises it for a human decision.
+#
+# name -> (nature, where the responsibility actually lives, what is out of scope)
+
+CROSS_CUTTING: "OrderedDict[str, tuple[str, str, str]]" = OrderedDict([
+    ("Security", (
+        "a property every engine must have, not a component with a boundary",
+        "authentication, MFA, sessions, devices, reauthentication, high-risk "
+        "changes, emergency suspension, service and AI identities, API "
+        "credentials, separation of duties, tenant isolation -> Identity & "
+        "Access; rules, gates, restrictions, credential expiry, fail-safe, "
+        "emergency override -> Policy / Compliance; least privilege, purpose "
+        "and time limitation, revocation, three-zone model -> Consent & "
+        "Access; encryption at rest, integrity checks, privacy modes -> Local "
+        "Vault; secrets management -> Integration section 73; forensics -> "
+        "Audit / Provenance",
+        "operational security -- vulnerability management, penetration "
+        "testing, incident response, breach notification, security monitoring "
+        "(SIEM), infrastructure hardening, threat modelling, SOC 2 / ISO "
+        "27001 -- is deliberately outside the engine model. It is platform "
+        "infrastructure, not a decision layer.",
+    )),
+])
+
+# A note on a homonym, so nobody "fixes" it later: in Capital, Seller-Note
+# Liquidity, Professional Review Package, Professional Marketplace, Stakeholder
+# and the Brainstorming Brief, the word "security" usually means LOAN SECURITY
+# (collateral pledged against a loan) -- not platform security. Capital carries
+# both senses: its section 38 is platform security, its loan terms list
+# "Security" as collateral. The two must not be conflated when reading a
+# boundary row.
 
 # The three layers, as declared in README "Architecture at a Glance".
 LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
@@ -247,14 +305,21 @@ ALIASES = {
     "billing": "Billing",
     "billing / commercial": "Billing",
     "commercial": "Billing",
-    "security": "Security",
+    # No "security" alias. Security is not an engine (see CROSS_CUTTING), so a
+    # boundary row naming it must surface as an undeclared reference rather
+    # than resolve to a phantom key.
     "blog": "Blog",
     "blog / publishing": "Blog",
     "blog engine": "Blog",
     "publishing": "Blog",
     "wordpress": "WordPress",
     "wordpress management": "WordPress",
-    "administration": "Vendor Administration",
+    # No "administration" alias either. It previously mapped to Vendor
+    # Administration, which is wrong: the section-20 ring's "Administration"
+    # means platform and organization administration, owned by Identity &
+    # Access section 57. Vendor Administration vets external professionals and
+    # vendors, a different job. Mapping it here would have silently attributed
+    # platform administration to vendor vetting.
 }
 
 
@@ -268,8 +333,19 @@ def canon(raw: str) -> "str | None":
     s = re.sub(r"\s+", " ", s).strip()
     low = s.lower()
     if low in ALIASES:
-        return ALIASES[low]
-    # try dropping a trailing qualifier, e.g. "Marketplace Engine v1.0"
+        key = ALIASES[low]
+        # Guard: an alias must resolve to a real engine key. Without this, an
+        # alias left pointing at a retired key still returns truthy from
+        # canon(), so the row lands in `edges` -- where ENGINE_HOME.get()
+        # returns None and the row is dropped silently. That is precisely the
+        # bug undeclared-reference exists to catch, so fail closed here.
+        return key if key in ENGINE_HOME else None
+    # Fall back to an exact case-insensitive match on a canonical key. The
+    # "Engine"/"Engines" suffix is already gone by this point (stripped above),
+    # so bare names like "Valuation" resolve here. Versioned forms such as
+    # "Marketplace Engine v1.0" deliberately do not: boundary tables name
+    # engines bare, so a versioned reference is a signal worth surfacing
+    # rather than smoothing over.
     for key in ENGINE_HOME:
         if low == key.lower():
             return key
@@ -746,6 +822,8 @@ def render_report(findings, stats, boundary, flow, ring):
     A(f"* README group-table total: **{stats['readme_total']}**")
     A(f"* engine keys in the declared architecture: **{stats['engine_keys']}**")
     A(f"* engine keys with a backing document: **{stats['engines_with_home']}**")
+    A(f"* cross-cutting properties, not engines: **{len(CROSS_CUTTING)}**"
+      + (f" — {', '.join(CROSS_CUTTING)}" if CROSS_CUTTING else ""))
     A(f"* docs carrying a boundary table: **{stats['boundary_tables']}**")
     A(f"* boundary edges extracted: **{stats['boundary_edges']}**")
     A(f"* explicit markdown links between docs: **{stats['link_edges']}**")
@@ -834,11 +912,27 @@ def render_report(findings, stats, boundary, flow, ring):
     section("10", "Coverage and count mismatches", "coverage",
             "None — roster, README table, and disk all agree.")
 
-    A("## 11. Declared pipeline topology")
+    A("## 11. Cross-cutting properties — deliberately not engines")
+    A("")
+    A("These names appear in the architecture but are properties every engine")
+    A("must have, rather than components with their own boundary. They are")
+    A("excluded from check 1 on purpose: the finding \"this has no document\"")
+    A("was correct, and the answer was \"it should not have one\".")
+    A("")
+    if not CROSS_CUTTING:
+        A("None.")
+    else:
+        for name, (nature, lives, out_of_scope) in CROSS_CUTTING.items():
+            A(f"* **{name}** — {nature}.")
+            A(f"  * Where the responsibility actually lives: {lives}.")
+            A(f"  * Out of scope: {out_of_scope}")
+    A("")
+
+    A("## 12. Declared pipeline topology")
     A("")
     A(mermaid_topology())
     A("")
-    A("## 12. Declared boundary graph")
+    A("## 13. Declared boundary graph")
     A("")
     A(mermaid_boundaries(boundary))
     A("")
