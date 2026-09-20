@@ -22,12 +22,12 @@ track that has not been worked.
 
 ## Progress snapshot
 
-| Metric | 2026-09-19 18:06 | Target |
+| Metric | 2026-09-19 18:12 | Target |
 | --- | --- | --- |
-| `boundary-tier-none` — docs with no boundary section | 10 | 0 |
+| `boundary-tier-none` — docs with no boundary section | 6 | 0 |
 | `boundary-tier-prose` — boundary in prose only | 8 | 0 |
-| boundary tables | 15 | 33 |
-| `never-named` — engine named by no boundary table | 2 | 0 |
+| boundary tables | 19 | 33 |
+| `never-named` — engine named by no boundary table | 1 | 0 |
 | `naming-drift` — one engine, several raw names | 2 | 0 |
 | `structural-ambiguity` | 5 | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
@@ -39,15 +39,11 @@ the total number of engine documents. That is where the target of 33 comes from.
 
 ## Track A — Boundary coverage (mechanical; no decisions needed)
 
-### A1. Add a boundary table to the 10 docs that have none
+### A1. Add a boundary table to the 6 docs that have none
 
-Order matters. Do the transaction-layer four first — they are the next edges in the
-financing flow (Capital → Underwriting → …).
+The four transaction-layer docs were done first (they are the next edges in the financing
+flow, Capital → Underwriting → …). What remains:
 
-- [ ] `Professional Review Engine v1.0.md`
-- [ ] `Professional Review Package Engine v1.0.md`
-- [ ] `Seller-Note Liquidity Engine v1.0.md`
-- [ ] `Document Readiness & Checklist Engine v1.0.md`
 - [ ] `Business Reality Engine v1.0 - Current State Business Assessment.md`
 - [ ] `Destination Engine v1.0.md`
 - [ ] `Marketplace Engine v1.0.md`
@@ -80,13 +76,14 @@ Pick **one** raw form per engine and use it everywhere.
 - [ ] Blog — currently `**Blog / Publishing**` and `**Blog Engine**`
 - [ ] Vendor Administration — currently `**Vendor Administration / Vetting**` and `**Vendor Vetting**`
 
-### B2. Clear the 2 engines that no boundary table names
+### B2. Clear the 1 engine that no boundary table names
 
 A self-row does **not** count — self-references are excluded from inbound edges by
-design. Each of these needs a row in a *related* document's table.
+design. This needs a row in a *related* document's table.
 
 - [ ] `Billing` — easiest via `Identity & Access Engine.md` (entitlements relate to identity), which already has a table
-- [ ] `Journey` — needs a related doc that has a table; `Destination` or `Business Reality` once A1 lands
+
+`Journey` was cleared on 2026-09-19: the new **Professional Review** boundary table names it.
 
 ---
 
@@ -136,6 +133,7 @@ One current document per concept.
 - [x] `Goal-to-Reality Confidence Research Engine.md` boundary summary (18 rows, 3 engines) — `0203cea`
 - [x] `Expanded Reality Architecture - Document Intelligence and Fact Verification.md` boundary summary (15 rows, 2 engines) — `62e1cf6`
 - [x] `declaration-consistency` check + `LAYERLESS`; self-referencing boundary rows no longer count as inbound; `Security` removed from the README roster and from `LAYERS`
+- [x] **A1 — the four transaction-layer boundary summaries** (2026-09-19): `Professional Review Engine v1.0` (19 rows, and it also cleared `Journey` from `never-named`), `Professional Review Package Engine v1.0` (19 rows), `Seller-Note Liquidity Engine v1.0` (17 rows), `Document Readiness & Checklist Engine v1.0` (19 rows). Tables 15 → 19, edges 198 → 272, `boundary-tier-none` 10 → 6, `never-named` 2 → 1.
 
 ---
 
