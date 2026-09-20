@@ -1634,7 +1634,35 @@ These should now be treated as requirements:
 
 ---
 
-# 64. The Deeper Role of Communication
+# 64. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Communication** | Conversations, messages, threads, questions, requests, comments, participants, read state, message relationships, and communication history | The work being discussed — documents, tasks, determinations, facts, or decisions |
+| **Notification** | Delivery of attention, including follow-up alerts | The conversation record itself |
+| **Local Vault** | Attachment storage, encryption, and versioning | Who may take part in a conversation |
+| **Consent & Access** | Who may see which conversation, and for how long | Conversation content or membership |
+| **Workflow** | Tasks, dependencies, and execution mechanics | The conversation that produced a request |
+| **Transaction / Orchestration** | Transaction stages and current execution state | Conversation and message history |
+| **Professional Review** | Professional determinations and their attribution | The conversation in which a determination was discussed |
+| **Decision Record** | The owner's recorded reasoning and rationale | The discussion that preceded it |
+| **Document Readiness** | Document status, completeness, and outstanding requests | The request message that produced a requirement |
+| **Business Reality** | Current business facts and financial statements | What was said about them |
+| **Scenario** | Potential transaction paths and their assumptions | Conversation about which path to take |
+| **Marketplace** | Professional profiles, discovery, and curation | Conversation with a professional |
+| **Identity & Access** | Who a party is and what they may do on the platform | Conversation participation and visibility |
+| **Stakeholder / Relationship** | Who participates in the transaction and what they may see | The conversations they take part in |
+| **Audit / Provenance** | The historical record of what happened | The conversation content itself |
+
+## Hard Boundary
+
+The Communication Engine owns the conversation: what was said, who said it, who could see it, and what it referred to. It does not own the work being discussed. A question can become a structured review item, and a request can become a workflow task or a document requirement — but **the conversation never silently becomes structured truth**.
+
+**Communication records conversation. It does not own the documents, tasks, determinations, facts, or decisions it references.** Attachments remain with Local Vault, notifications with the Notification Engine, tasks with Workflow and Transaction / Orchestration, determinations with Professional Review, and owner decisions with Decision Record. Communication preserves what people actually said.
+
+---
+
+# 65. The Deeper Role of Communication
 
 This engine gives us something we were missing from the architecture.
 
