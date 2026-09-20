@@ -44,11 +44,11 @@ They are organized into eleven groups, each a layer of the platform or a phase o
 | Evidence, Confidence & Documents | 5 | Turning reality and documents into verifiable fact, confidence, and readiness. |
 | Exploration & Modeling | 4 | The decision-layer engines that build representations rather than act — what it might be worth, what the numbers look like, and which paths exist. |
 | Architecture Principles & Platform Overview | 5 | The architectural rules, the full engine roster, and the build roadmap. |
-| Transaction & Execution Engines | 9 | The engines that move a transaction from intent to closed — and beyond. |
+| Transaction & Execution Engines | 10 | The engines that move a transaction from intent to closed — and beyond. |
 | Platform Infrastructure & Governance | 9 | The private, secure, auditable foundation every engine depends on. |
 | Publishing & External Surfaces | 2 | Public content, and the external sites that carry it. |
 | Strategic Expansion | 1 | Adjacent business lines beyond the core platform. |
-| **Total** | **54** | |
+| **Total** | **55** | |
 
 ---
 
@@ -96,9 +96,11 @@ Independently operating engines, communicating through versioned contracts, orga
 
 **Decision engines** — Journey · Destination · Business Reality · Document Intelligence / Extraction · Fact Verification & Conflict · Research · Evidence Ledger · Confidence · Scenario · Financial Modeling · Valuation · Marketplace
 
-**Transaction engines** — Capital · Seller Note Liquidity · Professional Review · Document Readiness · Review Package · Transaction · Stakeholder · Workflow · Communication · Closing · Ownership Lifecycle
+**Transaction engines** — Capital · Underwriting · Seller Note Liquidity · Professional Review · Document Readiness · Review Package · Transaction · Stakeholder · Workflow · Communication · Closing · Ownership Lifecycle
 
-**Platform infrastructure** — Local Vault · Identity & Access · Consent & Access · Policy · Audit · Decision Record · Notification · Integration · Vendor Administration · Billing · Security
+**Platform infrastructure** — Local Vault · Identity & Access · Consent & Access · Policy · Audit · Decision Record · Notification · Integration · Vendor Administration · Billing
+
+**Cross-cutting, not an engine** — Security. It is a property every engine must have rather than a component with its own boundary, so it has no document of its own; the responsibility is distributed across Identity & Access, Policy / Compliance, Consent & Access, Local Vault, Integration, and Audit / Provenance. See [Complete Architecture](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md) §20 for where each part lives.
 
 ---
 
