@@ -1,18 +1,20 @@
 # Document Index
 
-The complete annotated roster of the design documents — **54 documents in eleven groups**. Each entry links to the document and describes what it covers.
+The complete annotated roster of the design documents — **61 documents in thirteen groups**. Each entry links to the document and describes what it covers.
 
 This file is the reference. For the project overview — the thesis, the load-bearing principles, and the architecture at a glance — see the [README](README.md).
 
 ### How this is organized
 
-The eleven groups use two different axes, deliberately:
+The thirteen groups use two different axes, deliberately:
 
 * **Groups 1–5 organize documents by design phase** — foundations, principles, journey design, the professional network, evidence and documents. A document sits where its *content* belongs, which is not always the layer its engine occupies. Document Readiness, for example, is a transaction-layer engine but its document belongs with the evidence and document architecture.
 * **Group 6 collects the exploration and modeling engines** — the decision-layer engines that build representations rather than act. These are grouped by function, so that decision-layer engines have a home that is neither a design phase nor a transaction layer.
 * **Groups 7–11 organize documents by architectural layer** — principles and overview, transaction and execution engines, platform infrastructure, publishing surfaces, and strategic expansion.
+* **Group 12 defines the cross-cutting Jev decision layer** — safe typed-decision use, executable starting contracts, and the repository migration plan.
+* **Group 13 preserves superseded documents** for provenance.
 
-For engine placement, the authoritative sources are the three-layer list in the [README](README.md#architecture-at-a-glance) and the flow-and-ring diagram in [Complete Architecture](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md). Where a document in groups 6, 8 or 9 is an engine, its group matches its layer.
+For engine placement, the authoritative sources are the three-layer list in the [README](README.md#architecture-at-a-glance) and the flow-and-ring diagram in [Complete Architecture](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md). Where a document in groups 6, 8 or 9 is an engine, its group matches its layer. Jev is deliberately not placed as an engine: it is a typed decision capability used by an owning engine under explicit authority and consent boundaries.
 
 ---
 
@@ -168,7 +170,21 @@ Adjacent business lines beyond the core platform.
 
 ---
 
-## 12. Superseded
+## 12. Jev Decision Layer
+
+The cross-cutting typed-decision capability, its safety boundary, and the repository work required to make it testable.
+
+| Document | What it covers |
+| --- | --- |
+| [Jev Decision Layer Architecture](Jev%20Decision%20Layer%20Architecture.md) | Defines Jev as a typed probabilistic primitive inside existing engines rather than a new engine: supported question types; relationship to the three decision layers; authority levels; prohibited uses; Local Vault, consent and minimization requirements; versioned question contracts; evaluation records; confidence, abstention and fallback; the first four pilots; and the architectural lock. |
+| [California ESOP Exploration Vertical Slice](California%20ESOP%20Exploration%20Vertical%20Slice.md) | Locks the first buildable product slice: a controlling California owner of a privately held operating business, a 1–3 year transition horizon, ESOP exploration through bring-your-own Professional Review, explicit non-goals, and stage-level contracts for outcomes, persisted objects, deterministic gates, Jev authority, human authority, audit, invalidation, acceptance tests, and telemetry. |
+| [California ESOP Vertical Slice Implementation Architecture](California%20ESOP%20Vertical%20Slice%20Implementation%20Architecture.md) | Turns the locked slice into a buildable modular-monolith shape: module and trust boundaries, private-workspace and professional-collaboration persistence, transaction/outbox/idempotency rules, command flows, deterministic gate precedence, the replaceable Jev adapter, initial call sites, code layout, testing, operational minimum, and service-split criteria. |
+| [Jev Repository Migration Checklist](Jev%20Repository%20Migration%20Checklist.md) | Converts the repository review into prioritized P0/P1/P2 work: repository governance, one Employee Ownership vertical slice, Jev safety controls, executable question and domain contracts, evaluation, security, CI, rollout, and a concrete definition of Jev-ready. |
+| [Forhemit Jev Second-Pass Review](Forhemit%20Jev%20Second-Pass%20Review.md) | Records the adversarial review that moved the contracts beyond structural JSON Schema: cross-object, temporal, consent, disclosure, minimization, probability, answer-membership, and authority invariants; rejected boundary cases; and the remaining implementation, evaluation, and security work. |
+
+---
+
+## 13. Superseded
 
 Documents replaced by a newer document covering the same concept. Kept for provenance — read the replacement, not these.
 

@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forhemit:schema:jev-evaluation-record:1.1.0",
+  "title": "JevEvaluationRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evaluation_id",
+    "created_at",
+    "owning_engine",
+    "question_id",
+    "question_version",
+    "threshold_policy_id",
+    "threshold_policy_version",
+    "requested_model_alias",
+    "returned_model_version",
+    "state_hash",
+    "source_references",
+    "consent_reference",
+    "answer",
+    "selected_action",
+    "authority_effect",
+    "fallback_reason",
+    "human_override",
+    "correlation_id",
+    "causation_id",
+    "actor_type",
+    "actor_reference",
+    "request_hash",
+    "criteria_hash",
+    "minimization_policy_id",
+    "minimization_policy_version",
+    "consent_purpose",
+    "input_fields",
+    "criteria_snapshot",
+    "external_ai_disclosure_reference"
+  ],
+  "properties": {
+    "evaluation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "invalidated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "workspace_id": {
+      "type": "string"
+    },
+    "actor_reference": {
+      "const": "typesafe-jev"
+    },
+    "owning_engine": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_reference": {
+      "type": "string"
+    },
+    "question_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+$"
+    },
+    "question_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "threshold_policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "threshold_policy_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "requested_model_alias": {
+      "type": "string",
+      "minLength": 1
+    },
+    "returned_model_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-fA-F0-9]{64}$"
+    },
+    "source_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "object_type",
+          "object_id",
+          "version"
+        ],
+        "properties": {
+          "object_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "object_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "consent_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type",
+        "object_id",
+        "version"
+      ],
+      "properties": {
+        "object_type": {
+          "const": "ConsentRecord"
+        },
+        "object_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "answer": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "noul"
+          ],
+          "properties": {
+            "type": {
+              "const": "noul"
+            },
+            "noul": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "choice",
+            "probabilities",
+            "confidence"
+          ],
+          "properties": {
+            "type": {
+              "const": "choice"
+            },
+            "choice": {
+              "type": "string"
+            },
+            "probabilities": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minProperties": 2
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "score",
+            "legend",
+            "probabilities",
+            "confidence"
+          ],
+          "properties": {
+            "type": {
+              "const": "score"
+            },
+            "score": {
+              "type": "number"
+            },
+            "legend": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "minProperties": 2
+            },
+            "probabilities": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minProperties": 2
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      ]
+    },
+    "selected_action": {
+      "enum": [
+        "display_signal",
+        "request_human_confirmation",
+        "reversible_route",
+        "professional_review",
+        "abstain",
+        "no_action"
+      ]
+    },
+    "authority_effect": {
+      "enum": [
+        "displayed",
+        "human_confirmed",
+        "reversible_route",
+        "professional_only",
+        "no_effect"
+      ]
+    },
+    "fallback_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "human_override": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "actor_reference",
+        "action",
+        "recorded_at"
+      ],
+      "properties": {
+        "actor_reference": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "causation_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "actor_type": {
+      "const": "jev"
+    },
+    "request_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-fA-F0-9]{64}$"
+    },
+    "criteria_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-fA-F0-9]{64}$"
+    },
+    "minimization_policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "minimization_policy_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "consent_purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_fields": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "criteria_snapshot": {
+      "oneOf": [
+        {
+          "type": "object",
+          "minProperties": 2,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
+    "external_ai_disclosure_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type",
+        "object_id",
+        "version"
+      ],
+      "properties": {
+        "object_type": {
+          "const": "ExternalAIDisclosureRecord"
+        },
+        "object_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

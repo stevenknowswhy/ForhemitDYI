@@ -1,0 +1,2136 @@
+{
+  "stats": {
+    "docs_total": 63,
+    "docs_content": 61,
+    "index_groups": 61,
+    "readme_total": 61,
+    "boundary_tables": 34,
+    "boundary_edges": 495,
+    "link_edges": 101,
+    "engine_keys": 37,
+    "engines_with_home": 37,
+    "flow_nodes": [
+      "Journey",
+      "Destination",
+      "Business Reality",
+      "Research",
+      "Evidence Ledger",
+      "Confidence",
+      "Scenario",
+      "Marketplace",
+      "Capital",
+      "Professional Review",
+      "Professional Determination",
+      "Document Readiness",
+      "Review Package",
+      "Transaction",
+      "Workflow",
+      "Communication",
+      "Ownership Lifecycle",
+      "__ProfessionalDetermination__"
+    ],
+    "ring": [
+      "Identity & Access",
+      "Consent & Permissions",
+      "Policy / Compliance",
+      "Audit / Provenance",
+      "Notifications",
+      "Integrations",
+      "Administration",
+      "Billing",
+      "Security"
+    ],
+    "group_counts": {
+      "1": 3,
+      "2": 4,
+      "3": 5,
+      "4": 4,
+      "5": 5,
+      "6": 4,
+      "7": 5,
+      "8": 11,
+      "9": 9,
+      "10": 2,
+      "11": 1,
+      "12": 5,
+      "13": 3
+    },
+    "group_titles": {
+      "1": "Foundations & Thesis",
+      "2": "Core Product Principles",
+      "3": "Journey Design",
+      "4": "Professional Network & Marketplace",
+      "5": "Evidence, Confidence & Documents",
+      "6": "Exploration & Modeling",
+      "7": "Architecture Principles & Platform Overview",
+      "8": "Transaction & Execution Engines",
+      "9": "Platform Infrastructure & Governance",
+      "10": "Publishing & External Surfaces",
+      "11": "Strategic Expansion",
+      "12": "Jev Decision Layer",
+      "13": "Superseded"
+    },
+    "readme_groups": {
+      "Foundations & Thesis": 3,
+      "Core Product Principles": 4,
+      "Journey Design": 5,
+      "Professional Network & Marketplace": 4,
+      "Evidence, Confidence & Documents": 5,
+      "Exploration & Modeling": 4,
+      "Architecture Principles & Platform Overview": 5,
+      "Transaction & Execution Engines": 11,
+      "Platform Infrastructure & Governance": 9,
+      "Publishing & External Surfaces": 2,
+      "Strategic Expansion": 1,
+      "Jev Decision Layer": 5,
+      "Superseded": 3
+    },
+    "roster_claims": {
+      "README": {
+        "documents": 61,
+        "groups": 13
+      },
+      "DOCUMENT-INDEX": {
+        "documents": 61,
+        "groups": 13
+      }
+    }
+  },
+  "findings": {
+    "no-dangling": [],
+    "no-orphans": [],
+    "boundary-tier-table": [
+      "Audit - Provenance Engine.md",
+      "Billing - Commercial Engine.md",
+      "Blog - Publishing Engine.md",
+      "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "Capital - Financing Engine v1.0.md",
+      "Closing Engine v1.0.md",
+      "Communication Engine.md",
+      "Consent & Access Engine.md",
+      "Decision Record Engine.md",
+      "Destination Engine v1.0.md",
+      "Document Readiness & Checklist Engine v1.0.md",
+      "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "Financial Modeling Engine.md",
+      "Goal-to-Reality Confidence Research Engine.md",
+      "Identity & Access Engine.md",
+      "Integration Engine.md",
+      "Journey Builder Architecture & Employee Ownership Journey.md",
+      "Local Vault - Workspace Engine.md",
+      "Marketplace Engine v1.0.md",
+      "Notification Engine.md",
+      "Ownership Lifecycle Engine v1.0.md",
+      "Policy - Compliance Engine.md",
+      "Professional Determination Engine v1.0.md",
+      "Professional Review Engine v1.0.md",
+      "Professional Review Package Engine v1.0.md",
+      "Scenario Engine.md",
+      "Seller-Note Liquidity Engine v1.0.md",
+      "Stakeholder Document & Visibility Architecture.md",
+      "Transaction - Orchestration Engine.md",
+      "Underwriting Engine.md",
+      "Valuation Engine.md",
+      "Vendor Administration - Vetting Engine v1.0.md",
+      "WordPress Management Engine.md",
+      "Workflow Engine.md"
+    ],
+    "boundary-tier-prose": [],
+    "boundary-tier-none": [],
+    "never-named": [],
+    "structural-ambiguity": [],
+    "accepted-multi-engine": [
+      "Expanded Reality Architecture - Document Intelligence and Fact Verification.md \u2014 Document Intelligence, Fact Verification: one pipeline in two halves: Document Intelligence extracts the facts, Fact Verification checks them against each other and against the stated reality. Split only if either engine ever gains a home document of its own.",
+      "Goal-to-Reality Confidence Research Engine.md \u2014 Confidence, Evidence Ledger, Research: one specification in three parts: Research gathers, Evidence Ledger records provenance (section 12), Confidence scores. Split only if any of the three ever gains a home document of its own."
+    ],
+    "undeclared-reference": [],
+    "stale-absence": [],
+    "declaration-consistency": [],
+    "readme-roster": [],
+    "no-layer-violation": [],
+    "coverage": [],
+    "naming-drift": []
+  },
+  "boundary_edges": [
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Audit - Provenance Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Billing"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Vendor Administration"
+    },
+    {
+      "from": "Billing - Commercial Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Blog"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Research"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "WordPress"
+    },
+    {
+      "from": "Blog - Publishing Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Journey"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Research"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Business Reality Engine v1.0 - Current State Business Assessment.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Seller Note Liquidity"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Underwriting"
+    },
+    {
+      "from": "Capital - Financing Engine v1.0.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Closing Engine v1.0.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Stakeholder"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Communication Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Document Intelligence"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Stakeholder"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Consent & Access Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Decision Record Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Journey"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Research"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Destination Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Journey"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Professional Determination"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Research"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Document Readiness & Checklist Engine v1.0.md",
+      "to": "Underwriting"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Document Intelligence"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Fact Verification"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Research"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Seller Note Liquidity"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Financial Modeling Engine.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Document Intelligence"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Fact Verification"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Research"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Goal-to-Reality Confidence Research Engine.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Stakeholder"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Vendor Administration"
+    },
+    {
+      "from": "Identity & Access Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Integration Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Journey"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Professional Determination"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Journey Builder Architecture & Employee Ownership Journey.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Document Intelligence"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Fact Verification"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Research"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Local Vault - Workspace Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Billing"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Journey"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Stakeholder"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Marketplace Engine v1.0.md",
+      "to": "Vendor Administration"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Billing"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Notification Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Seller Note Liquidity"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Ownership Lifecycle Engine v1.0.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Policy - Compliance Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Professional Determination"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Research"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Professional Determination Engine v1.0.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Journey"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Professional Determination"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Professional Review Engine v1.0.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Research"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Underwriting"
+    },
+    {
+      "from": "Professional Review Package Engine v1.0.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Research"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Seller Note Liquidity"
+    },
+    {
+      "from": "Scenario Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Seller Note Liquidity"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Seller-Note Liquidity Engine v1.0.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Professional Determination"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Stakeholder"
+    },
+    {
+      "from": "Stakeholder Document & Visibility Architecture.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Destination"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Underwriting"
+    },
+    {
+      "from": "Transaction - Orchestration Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Fact Verification"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Underwriting"
+    },
+    {
+      "from": "Underwriting Engine.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Confidence"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Research"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Scenario"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Seller Note Liquidity"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Valuation Engine.md",
+      "to": "Valuation"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Billing"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Capital"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Evidence Ledger"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Marketplace"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Research"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Stakeholder"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Vendor Administration"
+    },
+    {
+      "from": "Vendor Administration - Vetting Engine v1.0.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Blog"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Integration"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "WordPress"
+    },
+    {
+      "from": "WordPress Management Engine.md",
+      "to": "Workflow"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Audit"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Billing"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Business Reality"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Closing"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Communication"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Consent & Access"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Decision Record"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Document Readiness"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Financial Modeling"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Identity & Access"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Integration"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Local Vault"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Notification"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Ownership Lifecycle"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Policy"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Professional Review"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Review Package"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Transaction"
+    },
+    {
+      "from": "Workflow Engine.md",
+      "to": "Workflow"
+    }
+  ]
+}

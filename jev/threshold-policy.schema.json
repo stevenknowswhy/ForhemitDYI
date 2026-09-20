@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forhemit:schema:jev-threshold-policies:1.0.0",
+  "title": "JevThresholdPolicyRegistry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "status",
+    "policies"
+  ],
+  "properties": {
+    "registry_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "const": "evaluation_only"
+    },
+    "policies": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "version",
+          "action",
+          "production_approved"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "action": {
+            "enum": [
+              "display_only",
+              "shadow_only",
+              "human_confirmation",
+              "reversible_route"
+            ]
+          },
+          "production_approved": {
+            "const": false
+          },
+          "low_max": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "high_min": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "top_probability_min": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "margin_min": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

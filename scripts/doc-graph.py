@@ -440,6 +440,50 @@ def parse_readme_groups(docs):
     return out
 
 
+def parse_roster_claims(docs):
+    """Human-readable document/group count claims in README and index."""
+    claims = {}
+    patterns = {
+        "README": (
+            README,
+            re.compile(r"all\s+(\d+)\s+design documents", re.I),
+            re.compile(r"organized into\s+(\w+)\s+groups", re.I),
+        ),
+        "DOCUMENT-INDEX": (
+            INDEX,
+            re.compile(r"\*\*(\d+)\s+documents in\s+(\w+)\s+groups\*\*", re.I),
+            None,
+        ),
+    }
+    number_words = {
+        "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+        "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+        "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14,
+        "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
+        "nineteen": 19, "twenty": 20,
+    }
+
+    def as_number(raw):
+        raw = raw.lower()
+        return int(raw) if raw.isdigit() else number_words.get(raw)
+
+    for label, (filename, doc_re, group_re) in patterns.items():
+        text = docs.get(filename, "")
+        match = doc_re.search(text)
+        if not match:
+            claims[label] = (None, None)
+            continue
+        if label == "DOCUMENT-INDEX":
+            claims[label] = (int(match.group(1)), as_number(match.group(2)))
+        else:
+            group_match = group_re.search(text)
+            claims[label] = (
+                int(match.group(1)),
+                as_number(group_match.group(1)) if group_match else None,
+            )
+    return claims
+
+
 def parse_boundary_tables(docs):
     """
     Find every | Engine | Owns | Does Not Own | table.
@@ -866,6 +910,21 @@ def run_checks(docs):
     cov = []
     idx_total = len(index_groups)
     readme_total = sum(readme_groups.values())
+    group_total = len({gno for gno, _title in index_groups.values()})
+    roster_claims = parse_roster_claims(docs)
+
+    for source, (claimed_docs, claimed_groups) in roster_claims.items():
+        if claimed_docs is None:
+            cov.append(f"{source} has no parseable human-readable document count")
+        elif claimed_docs != idx_total:
+            cov.append(f"{source} prose says {claimed_docs} docs; index lists {idx_total}")
+        if claimed_groups is None:
+            cov.append(f"{source} has no parseable human-readable group count")
+        elif claimed_groups != group_total:
+            cov.append(
+                f"{source} prose says {claimed_groups} groups; index has {group_total}"
+            )
+
     if idx_total != len(content_docs):
         cov.append(f"DOCUMENT-INDEX lists {idx_total} docs; repo has "
                    f"{len(content_docs)} content docs")
@@ -922,6 +981,10 @@ def run_checks(docs):
         "group_counts": dict(per_group),
         "group_titles": dict(idx_titles),
         "readme_groups": dict(readme_groups),
+        "roster_claims": {
+            source: {"documents": values[0], "groups": values[1]}
+            for source, values in roster_claims.items()
+        },
     }
     return findings, stats, boundary, flow, ring, inbound_boundary
 
@@ -1252,6 +1315,44 @@ def main():
 
     if "--stdout" in sys.argv:
         print(report)
+        return
+
+    if "--check-report" in sys.argv:
+        report_path = os.path.join(OUTDIR, REPORT)
+        try:
+            with open(report_path, encoding="utf-8") as fh:
+                committed = fh.read()
+        except OSError as exc:
+            print(f"versioned report is unavailable: {exc}", file=sys.stderr)
+            raise SystemExit(1)
+        if normalize(committed) != normalize(report):
+            print(
+                "analysis/GAP-ANALYSIS.md is stale; run "
+                "python3 scripts/doc-graph.py and commit the result",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
+        print("versioned gap analysis is current")
+        return
+
+    check_keys = (
+        "declaration-consistency", "readme-roster", "no-dangling",
+        "stale-absence", "boundary-tier-none", "structural-ambiguity",
+        "undeclared-reference", "boundary-tier-prose", "never-named",
+        "naming-drift", "no-orphans", "no-layer-violation", "coverage",
+    )
+    if "--check" in sys.argv:
+        failed = False
+        for key in check_keys:
+            count = len(findings.get(key, []))
+            print(f"{key:22s} {count}")
+            if count:
+                failed = True
+                for finding in findings[key]:
+                    print(f"  - {finding}")
+        if failed:
+            raise SystemExit(1)
+        print("document graph validation passed")
         return
 
     os.makedirs(OUTDIR, exist_ok=True)

@@ -1,0 +1,386 @@
+{
+  "desired_outcome": {
+    "schema_version": "1.0.0",
+    "destination_id": "dest-001",
+    "version": 1,
+    "owner_id": "owner-001",
+    "business_id": "business-001",
+    "transition_horizon": "1_to_3_years",
+    "employee_ownership_intent": "essential",
+    "owner_involvement": "transition_period",
+    "objectives": [
+      {
+        "objective_id": "objective-001",
+        "statement": "Preserve jobs through meaningful employee ownership.",
+        "priority": 1
+      },
+      {
+        "objective_id": "objective-002",
+        "statement": "Step away from daily operations within three years.",
+        "priority": 2
+      }
+    ],
+    "nonnegotiables": [
+      {
+        "nonnegotiable_id": "constraint-001",
+        "statement": "Any explored path must preserve meaningful employee ownership.",
+        "status": "active",
+        "source_authority": "owner_stated",
+        "owner_confirmed_at": "2026-09-20T20:00:00Z",
+        "supersedes_id": null
+      }
+    ],
+    "preferences": [
+      "Maintain company culture",
+      "Use existing advisors where suitable"
+    ],
+    "unknowns": [
+      "Minimum acceptable liquidity at closing"
+    ],
+    "source_authority": "owner_stated",
+    "sensitivity": "confidential",
+    "confirmed_at": "2026-09-20T20:00:00Z"
+  },
+  "business_current_state": {
+    "schema_version": "1.0.0",
+    "current_state_id": "state-001",
+    "version": 1,
+    "business_id": "business-001",
+    "primary_jurisdiction": "US-CA",
+    "facts": [
+      {
+        "fact_id": "fact-001",
+        "field": "annual_revenue_range",
+        "value": "$5M-$10M",
+        "value_status": "range",
+        "source_authority": "owner_stated",
+        "sensitivity": "confidential",
+        "effective_at": "2026-09-20T20:00:00Z",
+        "provenance": [
+          {
+            "source_id": "input-001",
+            "source_type": "owner_input",
+            "source_version": "1",
+            "information_status": "stated",
+            "observed_at": "2026-09-20T20:00:00Z",
+            "excerpt_hash": null
+          }
+        ]
+      },
+      {
+        "fact_id": "fact-002",
+        "field": "employee_count",
+        "value": 42,
+        "value_status": "known",
+        "source_authority": "source_supported",
+        "sensitivity": "internal",
+        "effective_at": "2026-09-20T20:00:00Z",
+        "provenance": [
+          {
+            "source_id": "document-001",
+            "source_type": "document",
+            "source_version": "2026-08",
+            "information_status": "supported",
+            "observed_at": "2026-09-20T20:00:00Z",
+            "excerpt_hash": "sha256:synthetic-example"
+          }
+        ]
+      }
+    ],
+    "source_authority": "source_supported",
+    "sensitivity": "confidential",
+    "confirmed_at": "2026-09-20T20:00:00Z"
+  },
+  "scenario_version": {
+    "schema_version": "1.0.0",
+    "scenario_id": "scenario-001",
+    "version": 1,
+    "scenario_type": "esop_exploration",
+    "destination_reference": {
+      "object_type": "DesiredOutcome",
+      "object_id": "dest-001",
+      "version": 1
+    },
+    "current_state_reference": {
+      "object_type": "BusinessCurrentState",
+      "object_id": "state-001",
+      "version": 1
+    },
+    "assumptions": [
+      "The owner is willing to explore a transition period."
+    ],
+    "unknowns": [
+      "No professional has determined ESOP suitability or tax treatment."
+    ],
+    "conflicts": [],
+    "professional_questions": [
+      "Which legal, tax, valuation, and fiduciary questions must be resolved before further ESOP exploration?"
+    ],
+    "exploratory_only": true,
+    "source_authority": "platform_derived",
+    "sensitivity": "confidential",
+    "created_at": "2026-09-20T20:00:00Z"
+  },
+  "scenario_readiness": {
+    "scenario_reference": {
+      "object_type": "ScenarioVersion",
+      "object_id": "scenario-001",
+      "version": 1
+    },
+    "state": "ready_for_professional_review",
+    "deterministic_gates_passed": true,
+    "professionally_validated": false,
+    "source_authority": "platform_derived",
+    "jev_evaluation_reference": {
+      "evaluation_id": "jev-eval-001",
+      "question_id": "scenario.readiness",
+      "question_version": "1.0.0",
+      "threshold_policy_id": "display-only-v1",
+      "threshold_policy_version": "1.0.0",
+      "state_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "authority_effect": "displayed",
+      "request_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "criteria_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "consent_reference": {
+        "object_type": "ConsentRecord",
+        "object_id": "consent-jev-001",
+        "version": 1
+      },
+      "minimization_policy_id": "jev-minimization-v1",
+      "minimization_policy_version": "1.0.0",
+      "external_ai_disclosure_reference": {
+        "object_type": "ExternalAIDisclosureRecord",
+        "object_id": "ai-disclosure-001",
+        "version": 1
+      }
+    },
+    "evaluated_at": "2026-09-20T20:00:00Z"
+  },
+  "professional_review_package": {
+    "schema_version": "1.0.0",
+    "package_id": "package-001",
+    "version": 1,
+    "owner_id": "owner-001",
+    "business_id": "business-001",
+    "recipient_id": "professional-001",
+    "professional_role": "employee_ownership_attorney",
+    "purpose": "california_esop_exploration_review",
+    "destination_reference": {
+      "object_type": "DesiredOutcome",
+      "object_id": "dest-001",
+      "version": 1
+    },
+    "current_state_reference": {
+      "object_type": "BusinessCurrentState",
+      "object_id": "state-001",
+      "version": 1
+    },
+    "scenario_reference": {
+      "object_type": "ScenarioVersion",
+      "object_id": "scenario-001",
+      "version": 1
+    },
+    "included_categories": [
+      "owner_objectives",
+      "business_snapshot",
+      "scenario_assumptions",
+      "professional_questions"
+    ],
+    "excluded_categories": [
+      "personal_financial_details",
+      "customer_records"
+    ],
+    "consent_reference": {
+      "object_type": "ConsentRecord",
+      "object_id": "consent-001",
+      "version": 1
+    },
+    "sharing_status": "authorized",
+    "source_authority": "system_recorded",
+    "sensitivity": "restricted",
+    "created_at": "2026-09-20T20:00:00Z"
+  },
+  "professional_determination": {
+    "schema_version": "1.0.0",
+    "determination_id": "determination-001",
+    "review_id": "review-001",
+    "professional_id": "professional-001",
+    "professional_role": "employee_ownership_attorney",
+    "scenario_reference": {
+      "object_type": "ScenarioVersion",
+      "object_id": "scenario-001",
+      "version": 1
+    },
+    "determination_text": "Synthetic example: additional tax and valuation review is required before deciding whether to continue.",
+    "category": "additional_review_required",
+    "supporting_references": [
+      {
+        "object_type": "ProfessionalReviewPackage",
+        "object_id": "package-001",
+        "version": 1
+      }
+    ],
+    "owner_acknowledged_at": null,
+    "source_authority": "professional_attributed",
+    "sensitivity": "restricted",
+    "submitted_at": "2026-09-20T20:00:00Z",
+    "professional_identity_reference": "professional-001",
+    "credential_status": "self_attested",
+    "credential_verification_reference": null
+  },
+  "disclosure_record": {
+    "schema_version": "1.0.0",
+    "disclosure_id": "disclosure-001",
+    "consent_reference": {
+      "object_type": "ConsentRecord",
+      "object_id": "consent-001",
+      "version": 1
+    },
+    "package_reference": {
+      "object_type": "ProfessionalReviewPackage",
+      "object_id": "package-001",
+      "version": 1
+    },
+    "recipient_id": "professional-001",
+    "purpose": "california_esop_exploration_review",
+    "disclosed_categories": [
+      "owner_objectives",
+      "business_snapshot",
+      "scenario_assumptions",
+      "professional_questions"
+    ],
+    "source_authority": "system_recorded",
+    "disclosed_at": "2026-09-20T20:00:00Z"
+  },
+  "event_envelope": {
+    "schema_version": "1.0.0",
+    "event_id": "event-001",
+    "event_type": "ProfessionalReviewPackageAuthorized",
+    "occurred_at": "2026-09-20T20:00:00Z",
+    "actor_type": "human",
+    "actor_reference": "owner-001",
+    "source_module": "Professional Review Package",
+    "subject_reference": {
+      "object_type": "ProfessionalReviewPackage",
+      "object_id": "package-001",
+      "version": 1
+    },
+    "correlation_id": "correlation-001",
+    "causation_id": "command-001",
+    "idempotency_key": "authorize-package-001-v1",
+    "payload": {
+      "consent_reference": "consent-001"
+    }
+  },
+  "jev_evaluation_reference": {
+    "evaluation_id": "jev-eval-001",
+    "question_id": "scenario.readiness",
+    "question_version": "1.0.0",
+    "threshold_policy_id": "display-only-v1",
+    "threshold_policy_version": "1.0.0",
+    "state_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "authority_effect": "displayed",
+    "request_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "criteria_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "consent_reference": {
+      "object_type": "ConsentRecord",
+      "object_id": "consent-jev-001",
+      "version": 1
+    },
+    "minimization_policy_id": "jev-minimization-v1",
+    "minimization_policy_version": "1.0.0",
+    "external_ai_disclosure_reference": {
+      "object_type": "ExternalAIDisclosureRecord",
+      "object_id": "ai-disclosure-001",
+      "version": 1
+    }
+  },
+  "consent_records": [
+    {
+      "schema_version": "1.0.0",
+      "consent_id": "consent-001",
+      "owner_id": "owner-001",
+      "recipient_id": "professional-001",
+      "purpose": "california_esop_exploration_review",
+      "resource_references": [
+        {
+          "object_type": "ProfessionalReviewPackage",
+          "object_id": "package-001",
+          "version": 1
+        }
+      ],
+      "permissions": [
+        "full_view"
+      ],
+      "status": "active",
+      "granted_at": "2026-09-20T20:00:00Z",
+      "expires_at": "2026-10-20T20:00:00Z",
+      "revoked_at": null,
+      "source_authority": "owner_stated",
+      "version": 1,
+      "recipient_type": "professional",
+      "sensitivity": "restricted"
+    },
+    {
+      "schema_version": "1.0.0",
+      "consent_id": "consent-jev-001",
+      "version": 1,
+      "owner_id": "owner-001",
+      "recipient_type": "external_ai",
+      "recipient_id": "typesafe-jev",
+      "purpose": "scenario_readiness_evaluation",
+      "resource_references": [
+        {
+          "object_type": "ScenarioVersion",
+          "object_id": "scenario-001",
+          "version": 1
+        }
+      ],
+      "permissions": [
+        "summary"
+      ],
+      "status": "active",
+      "granted_at": "2026-09-20T19:55:00Z",
+      "expires_at": "2026-10-20T19:55:00Z",
+      "revoked_at": null,
+      "source_authority": "owner_stated",
+      "sensitivity": "restricted"
+    }
+  ],
+  "external_ai_disclosure_record": {
+    "schema_version": "1.0.0",
+    "disclosure_id": "ai-disclosure-001",
+    "version": 1,
+    "evaluation_id": "jev-eval-001",
+    "recipient_id": "typesafe-jev",
+    "purpose": "scenario_readiness_evaluation",
+    "consent_reference": {
+      "object_type": "ConsentRecord",
+      "object_id": "consent-jev-001",
+      "version": 1
+    },
+    "source_references": [
+      {
+        "object_type": "ScenarioVersion",
+        "object_id": "scenario-001",
+        "version": 1
+      }
+    ],
+    "input_fields": [
+      "scenario.assumptions",
+      "scenario.unknowns",
+      "scenario.conflicts",
+      "scenario.professional_questions",
+      "scenario.provenance_status_summary",
+      "scenario.deterministic_gate_results"
+    ],
+    "minimization_policy_id": "jev-minimization-v1",
+    "minimization_policy_version": "1.0.0",
+    "state_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "request_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "criteria_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "source_authority": "system_recorded",
+    "sensitivity": "restricted",
+    "disclosed_at": "2026-09-20T19:59:59Z"
+  }
+}

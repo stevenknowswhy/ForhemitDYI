@@ -1,0 +1,32 @@
+{
+  "registry_version": "1.0.0",
+  "status": "evaluation_only",
+  "policies": {
+    "display-only-v1": {
+      "version": "1.0.0",
+      "action": "display_only",
+      "production_approved": false
+    },
+    "noul-shadow-v1": {
+      "version": "1.0.0",
+      "action": "shadow_only",
+      "low_max": 0.1,
+      "high_min": 0.9,
+      "production_approved": false
+    },
+    "choice-shadow-v1": {
+      "version": "1.0.0",
+      "action": "shadow_only",
+      "top_probability_min": 0.8,
+      "margin_min": 0.25,
+      "production_approved": false
+    },
+    "choice-human-v1": {
+      "version": "1.0.0",
+      "action": "human_confirmation",
+      "top_probability_min": 0.8,
+      "margin_min": 0.25,
+      "production_approved": false
+    }
+  }
+}

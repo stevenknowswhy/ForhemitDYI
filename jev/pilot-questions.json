@@ -1,0 +1,422 @@
+{
+  "registry_version": "1.0.0",
+  "model_alias": "jev-latest",
+  "status": "evaluation_only",
+  "questions": [
+    {
+      "id": "destination.completeness",
+      "version": "1.0.0",
+      "owner_engine": "Destination",
+      "type": "score",
+      "instructions": "How complete and actionable is the owner destination while preserving uncertainty?",
+      "criteria": [
+        "Vague aspiration with essential dimensions absent",
+        "Partially specified with several material unknowns",
+        "Actionable but still has material unknowns",
+        "Specific and ready for scenario exploration"
+      ],
+      "maximum_authority": "signal_only",
+      "fallback": "owner_clarification",
+      "consent_purpose": "destination_quality_evaluation",
+      "threshold_policy": "display-only-v1",
+      "examples": [
+        {
+          "name": "specific exploratory destination",
+          "kind": "example",
+          "state": "Owner prioritizes employee continuity, wants to step back in 1\u20133 years, accepts a transition period, and marks liquidity timing as unknown.",
+          "expected": "Upper rubric levels are supported while the liquidity unknown remains visible."
+        },
+        {
+          "name": "aspiration without dimensions",
+          "kind": "counterexample",
+          "state": "Owner says only: I want what is best for everyone.",
+          "expected": "Lowest rubric level; the result must not invent goals or timing."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "desired_outcome.transition_horizon",
+          "desired_outcome.employee_ownership_intent",
+          "desired_outcome.owner_involvement",
+          "desired_outcome.objectives",
+          "desired_outcome.nonnegotiables",
+          "desired_outcome.preferences",
+          "desired_outcome.unknowns"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "destination.nonnegotiable_conflict",
+      "version": "1.0.0",
+      "owner_engine": "Destination",
+      "type": "noul",
+      "instructions": "Does the proposed preference or scenario state appear to conflict with an explicit owner nonnegotiable?",
+      "criteria": {
+        "true": "A stated preference, assumption, or path appears incompatible with a hard owner constraint.",
+        "false": "No apparent incompatibility with an explicit hard constraint is present."
+      },
+      "maximum_authority": "signal_only",
+      "fallback": "owner_review",
+      "consent_purpose": "destination_conflict_evaluation",
+      "threshold_policy": "noul-shadow-v1",
+      "examples": [
+        {
+          "name": "explicit continuity conflict",
+          "kind": "example",
+          "state": "Nonnegotiable: preserve all current jobs. Proposed path assumes immediate elimination of 30% of roles.",
+          "expected": "High probability of true; route to owner review without changing either statement."
+        },
+        {
+          "name": "preference is not a hard conflict",
+          "kind": "counterexample",
+          "state": "Preference: transition within one year. Proposed exploration uses an 18-month assumption and labels the timing mismatch.",
+          "expected": "Do not treat a disclosed preference mismatch as an automatic nonnegotiable conflict."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "desired_outcome.nonnegotiables",
+          "proposed_state.assumptions",
+          "proposed_state.preferences",
+          "proposed_state.disclosed_conflicts"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "destination.next_clarification",
+      "version": "1.0.0",
+      "owner_engine": "Destination",
+      "type": "choice",
+      "instructions": "Which destination dimension would most improve clarity if the owner addressed it next?",
+      "criteria": {
+        "timing": "The desired transition timing or pace is unclear.",
+        "liquidity": "The owner's liquidity needs or timing are unclear.",
+        "control": "The desired post-transition control or involvement is unclear.",
+        "employee_outcome": "The intended outcome for employees is unclear.",
+        "legacy": "The desired legacy or continuity outcome is unclear.",
+        "risk_tolerance": "The owner's tolerance for uncertainty or retained risk is unclear.",
+        "professional_review": "The ambiguity requires qualified professional input.",
+        "complete": "No material clarification is presently needed."
+      },
+      "maximum_authority": "human_confirmed",
+      "fallback": "owner_review",
+      "consent_purpose": "destination_quality_evaluation",
+      "threshold_policy": "choice-shadow-v1",
+      "examples": [
+        {
+          "name": "timing is the material unknown",
+          "kind": "example",
+          "state": "Legacy, employee outcome, control, liquidity, and risk tolerance are stated; no desired timing is present.",
+          "expected": "timing"
+        },
+        {
+          "name": "professional issue is not owner clarification",
+          "kind": "counterexample",
+          "state": "Owner goals are complete; unresolved question is whether a structure qualifies for a tax treatment.",
+          "expected": "professional_review, not a fabricated owner preference."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "desired_outcome.transition_horizon",
+          "desired_outcome.employee_ownership_intent",
+          "desired_outcome.owner_involvement",
+          "desired_outcome.objectives",
+          "desired_outcome.nonnegotiables",
+          "desired_outcome.preferences",
+          "desired_outcome.unknowns"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "journey.next_step",
+      "version": "1.0.0",
+      "owner_engine": "Journey",
+      "type": "choice",
+      "instructions": "Which caller-supplied permitted next step best reduces the most important unresolved uncertainty?",
+      "criteria_source": "runtime_permitted_steps",
+      "required_fallback_option": "human_help",
+      "maximum_authority": "reversible_route",
+      "fallback": "human_help",
+      "consent_purpose": "journey_routing",
+      "threshold_policy": "choice-shadow-v1",
+      "examples": [
+        {
+          "name": "choose among permitted steps",
+          "kind": "example",
+          "state": "Permitted steps are clarify_timing, capture_employee_outcome, and human_help. Timing is the only material destination gap.",
+          "expected": "clarify_timing when policy gates pass; otherwise human_help."
+        },
+        {
+          "name": "never invent a route",
+          "kind": "counterexample",
+          "state": "Permitted steps are request_owner_review and human_help. Evidence is missing.",
+          "expected": "Do not choose request_evidence because it is not caller-supplied; use a permitted option."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "journey.current_stage",
+          "journey.permitted_steps",
+          "journey.deterministic_gate_results",
+          "journey.unresolved_uncertainties"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "journey.ready_to_advance",
+      "version": "1.0.0",
+      "owner_engine": "Journey",
+      "type": "noul",
+      "instructions": "Is sufficient state present to advance from the current journey stage without skipping a mandatory gate?",
+      "criteria": {
+        "true": "The stage's deterministic gates pass and remaining ambiguity is within the caller-defined tolerance.",
+        "false": "Required state is absent, a mandatory gate fails, or material ambiguity remains."
+      },
+      "maximum_authority": "signal_only",
+      "fallback": "remain_in_stage",
+      "consent_purpose": "journey_routing",
+      "threshold_policy": "noul-shadow-v1",
+      "examples": [
+        {
+          "name": "mandatory gates complete",
+          "kind": "example",
+          "state": "All deterministic stage gates pass and remaining unknowns are explicitly allowed at this stage.",
+          "expected": "High probability of true, used only as a signal."
+        },
+        {
+          "name": "hard gate failure",
+          "kind": "counterexample",
+          "state": "A mandatory consent gate is false even though the narrative state appears complete.",
+          "expected": "False; deterministic gate failure overrides any Jev result."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "journey.current_stage",
+          "journey.deterministic_gate_results",
+          "journey.allowed_unknowns",
+          "journey.unresolved_uncertainties"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "scenario.readiness",
+      "version": "1.0.0",
+      "owner_engine": "Scenario",
+      "type": "score",
+      "instructions": "How ready is this exploratory scenario for owner review, not for transaction execution?",
+      "criteria": [
+        "Not reviewable because material state is absent or contradictory",
+        "Early exploration with substantial unsupported assumptions",
+        "Reviewable with clearly displayed material unknowns",
+        "Ready for owner exploration with sources, assumptions, and limits visible"
+      ],
+      "maximum_authority": "signal_only",
+      "fallback": "human_triage",
+      "consent_purpose": "scenario_readiness_evaluation",
+      "threshold_policy": "display-only-v1",
+      "examples": [
+        {
+          "name": "reviewable with visible unknowns",
+          "kind": "example",
+          "state": "Scenario sources, assumptions, conflicts, and limits are visible; two professional questions remain clearly labeled.",
+          "expected": "Reviewable rubric level, not transaction feasibility."
+        },
+        {
+          "name": "unsupported recommendation language",
+          "kind": "counterexample",
+          "state": "Scenario says this is the best structure, omits sources, and hides a material valuation assumption.",
+          "expected": "Lowest rubric levels; never infer that the transaction is infeasible or select another structure."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "scenario.assumptions",
+          "scenario.unknowns",
+          "scenario.conflicts",
+          "scenario.professional_questions",
+          "scenario.provenance_status_summary",
+          "scenario.deterministic_gate_results"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "scenario.next_route",
+      "version": "1.0.0",
+      "owner_engine": "Scenario",
+      "type": "choice",
+      "instructions": "Choose the safest next route for this exploratory scenario.",
+      "criteria": {
+        "request_evidence": "Required factual support is missing.",
+        "clarify_owner_intent": "Owner intent is ambiguous or contradictory.",
+        "resolve_conflict": "Material inputs conflict.",
+        "professional_review": "Qualified professional judgment is required.",
+        "owner_review": "The scenario is ready for owner exploration but is not a recommendation.",
+        "human_triage": "No route is sufficiently supported."
+      },
+      "maximum_authority": "signal_only",
+      "fallback": "human_triage",
+      "consent_purpose": "scenario_readiness_evaluation",
+      "threshold_policy": "choice-shadow-v1",
+      "examples": [
+        {
+          "name": "professional judgment required",
+          "kind": "example",
+          "state": "Facts are supported, owner intent is clear, and the remaining issue is a tax-qualification determination.",
+          "expected": "professional_review"
+        },
+        {
+          "name": "close competing routes",
+          "kind": "counterexample",
+          "state": "Evidence is missing and owner intent is also contradictory, with neither clearly primary.",
+          "expected": "human_triage when no route clears the configured probability and margin gates."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "scenario.unknowns",
+          "scenario.conflicts",
+          "scenario.professional_questions",
+          "scenario.provenance_status_summary",
+          "scenario.owner_intent_status",
+          "scenario.deterministic_gate_results"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    },
+    {
+      "id": "review_package.boundary_qa",
+      "version": "1.0.0",
+      "owner_engine": "Review Package",
+      "type": "choice",
+      "instructions": "Which is the most material review-package quality issue present?",
+      "criteria": {
+        "unsupported_claim": "A claim lacks evidence or attribution.",
+        "unattributed_professional_language": "A professional conclusion is not attributed to a qualified professional.",
+        "scenario_as_recommendation": "An exploratory platform scenario is presented like advice or a recommendation.",
+        "omitted_material_conflict": "A material known conflict or unknown is omitted.",
+        "recipient_purpose_mismatch": "Content appears unrelated or excessive for the stated recipient purpose.",
+        "no_material_issue": "No material issue under this rubric is present.",
+        "human_triage": "The package cannot be classified confidently."
+      },
+      "maximum_authority": "signal_only",
+      "fallback": "human_triage",
+      "consent_purpose": "review_package_quality_evaluation",
+      "threshold_policy": "choice-shadow-v1",
+      "examples": [
+        {
+          "name": "scenario presented as advice",
+          "kind": "example",
+          "state": "Package says the owner should choose Scenario A and does not attribute that conclusion to a professional.",
+          "expected": "scenario_as_recommendation or unattributed_professional_language, then human triage if materially close."
+        },
+        {
+          "name": "authorized exploratory language",
+          "kind": "counterexample",
+          "state": "Package labels all paths exploratory, attributes professional statements, includes material conflicts, and contains only purpose-authorized categories.",
+          "expected": "no_material_issue; this does not authorize disclosure."
+        }
+      ],
+      "input_contract": {
+        "schema_version": "1.0.0",
+        "allowed_fields": [
+          "package.claim_statements",
+          "package.claim_attribution",
+          "package.known_conflicts",
+          "package.known_unknowns",
+          "package.included_categories",
+          "package.recipient_role",
+          "package.purpose"
+        ],
+        "forbidden_fields": [
+          "raw_documents",
+          "secrets",
+          "credentials",
+          "unrelated_personal_identifiers",
+          "customer_records"
+        ],
+        "raw_documents_allowed": false,
+        "minimization_policy_id": "jev-minimization-v1",
+        "minimization_policy_version": "1.0.0"
+      }
+    }
+  ],
+  "threshold_policy_registry": "threshold-policies.json"
+}

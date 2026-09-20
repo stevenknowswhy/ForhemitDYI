@@ -34,37 +34,57 @@ subject_for() {
   printf '%s' "${1%.md}" | sed 's| - | / |g'
 }
 
-# Collect pending entries as "<XY><space><path>" straight from porcelain.
-pending=()
-while IFS= read -r line; do
-  [ -n "$line" ] || continue
-  pending+=("$line")
-done < <(git status --porcelain --untracked-files=all)
+# Read porcelain with NUL delimiters so spaces, quotes, tabs, renames and
+# deletions are preserved exactly. For rename/copy entries Git emits a second
+# path after the destination path.
+collect_pending() {
+  statuses=()
+  paths=()
+  old_paths=()
 
-if [ "${#pending[@]}" -eq 0 ]; then
+  while IFS= read -r -d '' entry; do
+    status="${entry:0:2}"
+    path="${entry:3}"
+    old_path=""
+
+    if [[ "$status" == *R* || "$status" == *C* ]]; then
+      IFS= read -r -d '' old_path || {
+        printf 'Malformed rename/copy entry from git status.\n' >&2
+        exit 1
+      }
+    fi
+
+    statuses+=("$status")
+    paths+=("$path")
+    old_paths+=("$old_path")
+  done < <(git status --porcelain=v1 -z --untracked-files=all)
+}
+
+verb_for() {
+  case "$1" in
+    '??') printf 'Add' ;;
+    *D*)  printf 'Remove' ;;
+    *R*)  printf 'Rename' ;;
+    *)    printf 'Update' ;;
+  esac
+}
+
+collect_pending
+
+if [ "${#paths[@]}" -eq 0 ]; then
   printf '\n  Working tree is clean — nothing to sync.\n\n'
   exit 0
 fi
 
-# Build the plan.
-verbs=(); paths=(); subjects=()
-for entry in "${pending[@]}"; do
-  status="${entry:0:2}"
-  path="${entry:3}"
-  case "$status" in
-    '??')  verb='Add' ;;
-    *D*)   verb='Remove' ;;
-    *)     verb='Update' ;;
-  esac
-  verbs+=("$verb")
-  paths+=("$path")
-  subjects+=("$(subject_for "$(basename "$path")")")
-done
-
 printf '\n  %s pending file(s) — will be committed individually:\n\n' "${#paths[@]}"
 for i in "${!paths[@]}"; do
-  printf '      %-7s %s\n' "${verbs[$i]}" "${subjects[$i]}"
-  printf '              %s\n' "${paths[$i]}"
+  verb="$(verb_for "${statuses[$i]}")"
+  printf '      %-7s %s\n' "$verb" "$(subject_for "$(basename "${paths[$i]}")")"
+  if [ -n "${old_paths[$i]}" ]; then
+    printf '              %s -> %s\n' "${old_paths[$i]}" "${paths[$i]}"
+  else
+    printf '              %s\n' "${paths[$i]}"
+  fi
 done
 printf '\n'
 
@@ -83,21 +103,38 @@ if [ "$ASSUME_YES" -ne 1 ]; then
   printf '\n'
 fi
 
-# Execute: stage, then commit each file on its own.
+# Execute dynamically. Hooks may generate and stage a companion artifact (for
+# example the versioned gap analysis); Git correctly includes that generated
+# artifact with the source change that caused it. Re-read status after every
+# commit so any remaining generated work is not silently left staged.
 made=0
-for i in "${!paths[@]}"; do
-  path="${paths[$i]}"
-  subject="${verbs[$i]} ${subjects[$i]}"
+while true; do
+  collect_pending
+  [ "${#paths[@]}" -gt 0 ] || break
 
-  if ! git add -A -- "$path"; then
+  status="${statuses[0]}"
+  path="${paths[0]}"
+  old_path="${old_paths[0]}"
+  verb="$(verb_for "$status")"
+  subject="$verb $(subject_for "$(basename "$path")")"
+  # For a staged rename/copy, adding the destination is sufficient, but the
+  # commit pathspec must include both source and destination to preserve the
+  # rename as one isolated commit.
+  stage_pathspec=("$path")
+  commit_pathspec=("$path")
+  [ -z "$old_path" ] || commit_pathspec+=("$old_path")
+
+  if ! git add -A -- "${stage_pathspec[@]}"; then
     printf '  FAILED to stage: %s\n' "$path" >&2
     exit 1
   fi
-  if git diff --cached --quiet -- "$path"; then
+  if git diff --cached --quiet -- "${commit_pathspec[@]}"; then
     printf '  skipped (no staged change): %s\n' "$path"
     continue
   fi
-  if ! git commit -q -m "$subject"; then
+
+  # `-- <pathspec>` isolates this commit from unrelated pre-staged files.
+  if ! git commit -q --only -m "$subject" -- "${commit_pathspec[@]}"; then
     printf '  FAILED to commit: %s\n' "$path" >&2
     exit 1
   fi

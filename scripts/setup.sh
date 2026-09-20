@@ -23,6 +23,6 @@ printf '\n  Guardrails armed:\n\n'
 printf '      core.hooksPath = %s\n' "$(git config --get core.hooksPath)"
 printf '      git sync       -> %s\n' "$(git config --get alias.sync)"
 printf '\n'
-printf '  Use `git sync` instead of `git push`.\n'
+printf "  Use \`git sync\` instead of \`git push\`.\n"
 printf '  It checks for uncommitted work even when git has nothing new to send.\n'
 printf '\n'

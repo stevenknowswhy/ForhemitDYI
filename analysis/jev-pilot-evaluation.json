@@ -1,0 +1,660 @@
+[
+  {
+    "id": "journey_next_step",
+    "name": "Journey next-step routing",
+    "state": "Choose the next relevant question or stage from caller-defined options based on current answers, unknowns, and completed stages. Routing is reversible; Jev does not generate the question or alter owner answers.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 1.74,
+      "confidence": 0.28,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.06,
+        "1": 0.51,
+        "2": 0.09,
+        "3": 0.31,
+        "4": 0.03
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.88,
+      "probabilities": {
+        "do_not_use_jev": 0.06,
+        "later": 0.01,
+        "pilot_now": 0.93
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "reversible_route",
+      "confidence": 0.92,
+      "probabilities": {
+        "professional_only": 0.0,
+        "human_confirmed": 0.05,
+        "no_role": 0.01,
+        "signal_only": 0.0,
+        "reversible_route": 0.93
+      }
+    }
+  },
+  {
+    "id": "destination_quality",
+    "name": "Destination completeness and contradiction QA",
+    "state": "Score whether an owner destination is sufficiently specific and flag tension among goals, preferences, avoidances, and hard nonnegotiables. The owner confirms all changes.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 2.57,
+      "confidence": 0.58,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.01,
+        "1": 0.18,
+        "2": 0.07,
+        "3": 0.7,
+        "4": 0.04
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.9,
+      "probabilities": {
+        "do_not_use_jev": 0.02,
+        "later": 0.04,
+        "pilot_now": 0.93
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "human_confirmed",
+      "confidence": 0.68,
+      "probabilities": {
+        "professional_only": 0.0,
+        "human_confirmed": 0.74,
+        "no_role": 0.0,
+        "signal_only": 0.25,
+        "reversible_route": 0.01
+      }
+    }
+  },
+  {
+    "id": "fact_conflict_triage",
+    "name": "Fact/evidence conflict triage",
+    "state": "Given already-extracted candidate facts and provenance metadata, classify whether they agree, differ by period/definition, conflict materially, or need human review. Jev does not extract facts or resolve truth.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 2.14,
+      "confidence": 0.25,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.05,
+        "1": 0.31,
+        "2": 0.11,
+        "3": 0.51,
+        "4": 0.02
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.6,
+      "probabilities": {
+        "do_not_use_jev": 0.08,
+        "later": 0.18,
+        "pilot_now": 0.74
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "professional_only",
+      "confidence": 0.36,
+      "probabilities": {
+        "professional_only": 0.49,
+        "human_confirmed": 0.06,
+        "no_role": 0.0,
+        "signal_only": 0.28,
+        "reversible_route": 0.17
+      }
+    }
+  },
+  {
+    "id": "scenario_readiness",
+    "name": "Scenario readiness signal",
+    "state": "Score a scenario against an explicit readiness rubric and choose the next route: request evidence, resolve conflict, professional review, or ready for owner review. Jev cannot declare legal or transaction feasibility.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 2.37,
+      "confidence": 0.42,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.02,
+        "1": 0.26,
+        "2": 0.09,
+        "3": 0.6,
+        "4": 0.03
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.83,
+      "probabilities": {
+        "do_not_use_jev": 0.05,
+        "later": 0.06,
+        "pilot_now": 0.89
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "reversible_route",
+      "confidence": 0.41,
+      "probabilities": {
+        "professional_only": 0.26,
+        "signal_only": 0.06,
+        "no_role": 0.0,
+        "human_confirmed": 0.14,
+        "reversible_route": 0.54
+      }
+    }
+  },
+  {
+    "id": "document_readiness",
+    "name": "Document readiness and missing-item prioritization",
+    "state": "Score a professional review package for completeness and prioritize the next missing information request. Exact required-document rules remain deterministic.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 1.88,
+      "confidence": 0.2,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.04,
+        "1": 0.45,
+        "2": 0.1,
+        "3": 0.39,
+        "4": 0.02
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.36,
+      "probabilities": {
+        "do_not_use_jev": 0.27,
+        "later": 0.16,
+        "pilot_now": 0.57
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "professional_only",
+      "confidence": 0.36,
+      "probabilities": {
+        "professional_only": 0.49,
+        "human_confirmed": 0.21,
+        "no_role": 0.01,
+        "signal_only": 0.12,
+        "reversible_route": 0.17
+      }
+    }
+  },
+  {
+    "id": "professional_matching",
+    "name": "Professional role-fit and matching",
+    "state": "Choose among pre-vetted professional roles or providers using explicit requirements and structured profile evidence. Show probabilities and reasons; the owner makes the selection.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 2.59,
+      "confidence": 0.62,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.02,
+        "1": 0.17,
+        "2": 0.05,
+        "3": 0.74,
+        "4": 0.02
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.53,
+      "probabilities": {
+        "do_not_use_jev": 0.04,
+        "later": 0.27,
+        "pilot_now": 0.69
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "human_confirmed",
+      "confidence": 0.68,
+      "probabilities": {
+        "professional_only": 0.05,
+        "human_confirmed": 0.74,
+        "no_role": 0.0,
+        "signal_only": 0.18,
+        "reversible_route": 0.03
+      }
+    }
+  },
+  {
+    "id": "package_boundary_qa",
+    "name": "Review-package boundary and language QA",
+    "state": "Check a prepared package against explicit criteria: scenario clearly labeled exploratory, claims attributed, no unsupported recommendation language, open questions exposed, and recipient purpose respected. Deterministic access controls run separately.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 1.43,
+      "confidence": 0.44,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.12,
+        "1": 0.58,
+        "2": 0.07,
+        "3": 0.22,
+        "4": 0.01
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.61,
+      "probabilities": {
+        "do_not_use_jev": 0.2,
+        "later": 0.06,
+        "pilot_now": 0.74
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "signal_only",
+      "confidence": 0.4,
+      "probabilities": {
+        "professional_only": 0.14,
+        "human_confirmed": 0.2,
+        "no_role": 0.03,
+        "signal_only": 0.52,
+        "reversible_route": 0.11
+      }
+    }
+  },
+  {
+    "id": "review_routing",
+    "name": "Professional review routing",
+    "state": "Classify a question or unresolved issue to tax, legal, valuation, lending, fiduciary, or multi-party review from caller-defined options. The professional supplies the determination.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 1.24,
+      "confidence": 0.49,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.19,
+        "1": 0.5599999999999999,
+        "2": 0.07,
+        "3": 0.17,
+        "4": 0.01
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "do_not_use_jev",
+      "confidence": 0.79,
+      "probabilities": {
+        "do_not_use_jev": 0.86,
+        "later": 0.02,
+        "pilot_now": 0.12
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "professional_only",
+      "confidence": 0.92,
+      "probabilities": {
+        "professional_only": 0.94,
+        "human_confirmed": 0.03,
+        "no_role": 0.0,
+        "signal_only": 0.02,
+        "reversible_route": 0.01
+      }
+    }
+  },
+  {
+    "id": "workflow_exception",
+    "name": "Workflow exception routing",
+    "state": "Choose a reversible next queue for ambiguous failures, stale inputs, conflicts, or blocked tasks. Deterministic workflow state transitions and protected actions remain rule-based.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 0.75,
+      "confidence": 0.63,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.35,
+        "1": 0.58,
+        "2": 0.04,
+        "3": 0.03,
+        "4": 0.0
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "do_not_use_jev",
+      "confidence": 0.27,
+      "probabilities": {
+        "do_not_use_jev": 0.51,
+        "later": 0.1,
+        "pilot_now": 0.39
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "reversible_route",
+      "confidence": 0.91,
+      "probabilities": {
+        "professional_only": 0.0,
+        "human_confirmed": 0.02,
+        "no_role": 0.05,
+        "signal_only": 0.0,
+        "reversible_route": 0.93
+      }
+    }
+  },
+  {
+    "id": "communication_triage",
+    "name": "Communication urgency/request triage",
+    "state": "Classify a message as question, request, decision reference, escalation, or informational and score urgency. It does not send messages or convert them into binding decisions without confirmation.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 2.67,
+      "confidence": 0.67,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.02,
+        "1": 0.13,
+        "2": 0.06,
+        "3": 0.76,
+        "4": 0.03
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.91,
+      "probabilities": {
+        "do_not_use_jev": 0.02,
+        "pilot_now": 0.94,
+        "later": 0.04
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "signal_only",
+      "confidence": 0.6,
+      "probabilities": {
+        "professional_only": 0.02,
+        "human_confirmed": 0.16,
+        "no_role": 0.0,
+        "signal_only": 0.68,
+        "reversible_route": 0.14
+      }
+    }
+  },
+  {
+    "id": "notification_priority",
+    "name": "Notification priority and digest inclusion",
+    "state": "Score attention priority and choose immediate, digest, or suppress-duplicate for an otherwise authorized notification. Mandatory notices and delivery permissions are deterministic.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 1.75,
+      "confidence": 0.34,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.02,
+        "1": 0.51,
+        "2": 0.15,
+        "3": 0.31,
+        "4": 0.01
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "pilot_now",
+      "confidence": 0.45,
+      "probabilities": {
+        "do_not_use_jev": 0.13,
+        "later": 0.24,
+        "pilot_now": 0.63
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "reversible_route",
+      "confidence": 0.62,
+      "probabilities": {
+        "professional_only": 0.0,
+        "human_confirmed": 0.06,
+        "no_role": 0.01,
+        "signal_only": 0.23,
+        "reversible_route": 0.7
+      }
+    }
+  },
+  {
+    "id": "policy_authorization",
+    "name": "Policy and access authorization",
+    "state": "Decide whether an actor may access a specific resource or whether a protected transaction action is allowed. This is a security-critical policy decision that must be deterministic and explainable.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 0.05,
+      "confidence": 0.96,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.95,
+        "1": 0.05,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "do_not_use_jev",
+      "confidence": 0.97,
+      "probabilities": {
+        "do_not_use_jev": 0.98,
+        "later": 0.0,
+        "pilot_now": 0.02
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "no_role",
+      "confidence": 0.85,
+      "probabilities": {
+        "professional_only": 0.01,
+        "human_confirmed": 0.09,
+        "no_role": 0.88,
+        "signal_only": 0.01,
+        "reversible_route": 0.01
+      }
+    }
+  },
+  {
+    "id": "financial_calculation",
+    "name": "Financial calculations and valuation outputs",
+    "state": "Calculate DSCR, valuation, seller proceeds, financing gaps, taxes, or model outputs. These results require exact formulas, reproducibility, and professional boundaries.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 0.2,
+      "confidence": 0.84,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.81,
+        "1": 0.19,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "do_not_use_jev",
+      "confidence": 0.98,
+      "probabilities": {
+        "do_not_use_jev": 0.99,
+        "later": 0.0,
+        "pilot_now": 0.01
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "no_role",
+      "confidence": 0.3,
+      "probabilities": {
+        "professional_only": 0.24,
+        "signal_only": 0.0,
+        "no_role": 0.45,
+        "human_confirmed": 0.31,
+        "reversible_route": 0.0
+      }
+    }
+  },
+  {
+    "id": "vendor_approval",
+    "name": "Vendor/professional approval",
+    "state": "Assess evidence against a vetting rubric and flag missing or risky claims. Approval, suspension, credential conclusions, and marketplace eligibility have governance and professional consequences.",
+    "model": "jev-1.13.0",
+    "value": {
+      "type": "score",
+      "score": 1.01,
+      "confidence": 0.66,
+      "legend": {
+        "0": "Poor fit or actively unsafe",
+        "1": "Marginal supporting use",
+        "2": "Useful later",
+        "3": "Strong MVP candidate",
+        "4": "Highest-priority MVP use"
+      },
+      "probabilities": {
+        "0": 0.2,
+        "1": 0.66,
+        "2": 0.08,
+        "3": 0.06,
+        "4": 0.0
+      }
+    },
+    "timing": {
+      "type": "choice",
+      "choice": "do_not_use_jev",
+      "confidence": 0.7,
+      "probabilities": {
+        "do_not_use_jev": 0.8,
+        "later": 0.14,
+        "pilot_now": 0.06
+      }
+    },
+    "authority": {
+      "type": "choice",
+      "choice": "professional_only",
+      "confidence": 0.54,
+      "probabilities": {
+        "professional_only": 0.64,
+        "human_confirmed": 0.32,
+        "no_role": 0.0,
+        "signal_only": 0.04,
+        "reversible_route": 0.0
+      }
+    }
+  }
+]

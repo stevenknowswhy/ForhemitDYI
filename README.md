@@ -14,6 +14,56 @@ The owner brings the goal. The platform organizes the goal. Professionals determ
 
 ---
 
+## Current Product Direction
+
+The first build is intentionally narrower than the full architecture described in this repository.
+
+| Dimension | First vertical slice |
+| --- | --- |
+| User | Controlling owner of a privately held operating business |
+| Jurisdiction | California, plus applicable US federal requirements |
+| Transition horizon | 1–3 years |
+| Path explored | ESOP exploration |
+| Professional model | Bring your own professional first |
+| End point | Professional feedback and owner acknowledgment |
+| Excluded | ESOP implementation, transaction execution, financing execution, and closing |
+
+The slice has five stages:
+
+1. **Destination** — capture the owner's desired outcome, priorities, nonnegotiables, and preferences without rewriting owner intent.
+2. **Business Snapshot** — collect structured facts, provenance, freshness, conflicts, and missing evidence.
+3. **ESOP Scenario Exploration** — build a clearly labeled scenario under explicit assumptions; do not present feasibility, valuation, or advice as established fact.
+4. **Professional Review Package** — assemble a versioned, purpose-limited package and disclose exactly what will be shared, with whom, and why.
+5. **Professional Review** — record qualified-professional feedback separately from platform output, then obtain owner acknowledgment.
+
+This is the first buildable slice—not a claim that the broader engine architecture is already implemented.
+
+### How Jev fits
+
+[Jev](Jev%20Decision%20Layer%20Architecture.md) is a typed, probability-scored decision primitive used **inside** the module that owns a workflow step. It is not a new engine, an advisor, or a source of domain truth.
+
+The initial Jev opportunities are deliberately assistive:
+
+| Workflow point | Jev may help with | Jev may not decide |
+| --- | --- | --- |
+| Destination | Completeness, contradiction, and next-clarification signals | Owner intent or whether a nonnegotiable may be relaxed |
+| Journey | A reversible next-step signal among caller-permitted steps | Access, authorization, or advancement past deterministic gates |
+| Scenario | Readiness, missing-context, and escalation signals | Feasibility, valuation, tax, legal, financing, or fiduciary conclusions |
+| Review package | Unsupported-claim, attribution, conflict, and advice-like-language QA | Disclosure authorization or whether sharing is permitted |
+| Professional review | Organizing already-recorded feedback | A professional determination or the owner's decision |
+
+Every Jev call must use a registered, versioned question; purpose-specific external-AI consent; minimized inputs; an immutable disclosure record; an auditable evaluation record; and an explicit human/manual fallback. Deterministic rules always take precedence.
+
+### Release sequence
+
+1. **Release 0 — deterministic vertical slice, no Jev dependency.** Implement persistence, domain invariants, deterministic gates, consent, disclosure-before-transmission, minimization, invalidation, audit/outbox behavior, and the complete manual fallback path.
+2. **Release 1 — Jev shadow mode.** Run selected registered questions without changing workflow state; compare results with labeled human outcomes and measure calibration, abstention, fallback, false advancement, and hard-boundary violations.
+3. **Release 2 — bounded assistance.** Enable only calibrated, low-risk, reversible behavior. Keep professional conclusions, owner decisions, access, policy, consent, exact calculations, and protected actions outside Jev authority.
+
+The system must remain usable when Jev is unavailable, unauthorized, disabled, or replaced.
+
+---
+
 ## The Load-Bearing Principles
 
 These recur across nearly every document and should be treated as constraints on any implementation:
@@ -31,9 +81,9 @@ These recur across nearly every document and should be treated as constraints on
 
 ## The Documents
 
-**→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 56 design documents, each with a description of what it covers.
+**→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 61 design documents, each with a description of what it covers.
 
-They are organized into twelve groups, each a layer of the platform or a phase of the design work:
+They are organized into thirteen groups, each a layer of the platform, a phase of the design work, or a cross-cutting implementation concern:
 
 | Group | Docs | What it covers |
 | --- | --- | --- |
@@ -48,8 +98,9 @@ They are organized into twelve groups, each a layer of the platform or a phase o
 | Platform Infrastructure & Governance | 9 | The private, secure, auditable foundation every engine depends on. |
 | Publishing & External Surfaces | 2 | Public content, and the external sites that carry it. |
 | Strategic Expansion | 1 | Adjacent business lines beyond the core platform. |
+| Jev Decision Layer | 5 | Safe typed-decision architecture, the California ESOP vertical slice and implementation shape, the migration checklist, and the adversarial second-pass review. |
 | Superseded | 3 | Documents replaced by a newer one, kept for provenance. |
-| **Total** | **56** | |
+| **Total** | **61** | |
 
 ---
 
@@ -64,6 +115,8 @@ Four reading paths, depending on what you need.
 **The product experience** — [Three Decision Layers](THREE%20DECISION%20LAYERS.md) → [Make Complexity Feel Simple](THE%20MOST%20IMPORTANT%20PRODUCT%20PRINCIPLE%20-%20MAKE%20COMPLEXITY%20FEEL%20SIMPLE.md) → [Goal-Driven Transaction Journey](GOAL-DRIVEN%20TRANSACTION%20JOURNEY.md).
 
 **A specific engine** — go straight to the [Document Index](DOCUMENT-INDEX.md).
+
+**Building with Jev** — start with [Jev Decision Layer Architecture](Jev%20Decision%20Layer%20Architecture.md), implement the [California ESOP Exploration Vertical Slice](California%20ESOP%20Exploration%20Vertical%20Slice.md) using its [Implementation Architecture](California%20ESOP%20Vertical%20Slice%20Implementation%20Architecture.md), then use the [Jev Repository Migration Checklist](Jev%20Repository%20Migration%20Checklist.md) and executable contracts in [`jev/`](jev/README.md) and [`contracts/`](contracts/README.md).
 
 ---
 
@@ -103,12 +156,22 @@ Independently operating engines, communicating through versioned contracts, orga
 
 **Cross-cutting, not an engine** — Security. It is a property every engine must have rather than a component with its own boundary, so it has no document of its own; the responsibility is distributed across Identity & Access, Policy / Compliance, Consent & Access, Local Vault, Integration, and Audit / Provenance. See [Complete Architecture](Complete%20Architecture%20-%20Decision%20Engines,%20Transaction%20Engines,%20Platform%20Infrastructure.md) §20 for where each part lives.
 
+**Cross-cutting typed decision layer, not an engine** — Jev. Existing engines may use Jev for bounded classification, rubric scoring, prioritization, and reversible routing. Jev never owns domain truth, authorization, exact calculations, owner intent, or professional determinations. See [Jev Decision Layer Architecture](Jev%20Decision%20Layer%20Architecture.md).
+
 ---
 
 ## Status
 
-Early-stage design. No application code yet — these documents are the conceptual architecture that precedes it.
+**Specification and executable-contract stage.** There is not yet a runnable product. The repository now includes:
 
-The first published journey will be **Employee Ownership**, with the first MVP release scoped to stop at *Professional Review* rather than attempting to automate closing.
+- a locked California ESOP exploration vertical slice;
+- a modular-monolith implementation architecture;
+- versioned domain contracts and semantic workflow validation;
+- versioned Jev question, threshold-policy, minimization, disclosure, and evaluation-record contracts;
+- adversarial contract cases and repository validation tooling.
 
-The documents deliberately contain open questions requiring professional legal, tax, securities, lending, and fiduciary review. Nothing here constitutes legal, tax, investment, valuation, or financing advice.
+The next milestone is **Release 0: the deterministic vertical slice without Jev**. Jev follows in shadow mode only after the manual workflow, authority enforcement, consent, minimization, disclosure, invalidation, audit, and fallback paths work end to end.
+
+The broader documents remain the long-range architecture. They should not be read as implemented features or as a commitment to build every engine before validating the first slice.
+
+The documents deliberately contain open questions requiring professional legal, tax, securities, lending, privacy, security, and fiduciary review. Nothing here constitutes legal, tax, investment, valuation, or financing advice.
