@@ -1562,7 +1562,39 @@ without changing the owner's meaning.
 
 ---
 
-# 57. ONE-SENTENCE DEFINITION
+# 57. ARCHITECTURAL BOUNDARY SUMMARY
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Review Package** | Package templates, disclosure levels defined as data-access policies, stakeholder profiles, per-role content, the owner approval screen, package generation, versioning, change summaries, expiration and revocation, and the Disclosure and Exclusion Manifests | Whether the recipient acts on the package, or what the owner should do |
+| **Professional Review** | Reviews, questions, and professional determinations | Package assembly |
+| **Destination** | The owner's desired outcome | Package content |
+| **Business Reality** | Current-state business facts | Package narrative |
+| **Scenario** | Potential transaction paths | Which path the owner prefers |
+| **Research** | External evidence and its sources | Professional determinations |
+| **Evidence Ledger** | Claims and their supporting evidence | Package assembly |
+| **Confidence** | The goal-alignment signal | Package readiness |
+| **Document Readiness** | Document requirements, status, and outstanding items | Sharing decisions |
+| **Valuation** | Value determinations | Package narrative |
+| **Financial Modeling** | Calculations and projections | Professional opinion |
+| **Capital / Financing** | The capital plan and the financing process | The lender's credit decision |
+| **Underwriting** | Lender requirement profiles and packet assembly | Purpose-built stakeholder packages |
+| **Marketplace** | Professional discovery, curation, and role fit | Package content |
+| **Consent & Access** | Who may see which package content, for what purpose | The package itself |
+| **Local Vault** | Private source documents and the local workspace | Package semantics |
+| **Decision Record** | The owner's recorded decisions and rationale | Package narrative |
+| **Audit / Provenance** | The historical record of package generation and sharing | The content that was shared |
+| **Policy / Compliance** | The rules governing how engines may operate | Disclosure decisions |
+
+## Hard Boundary
+
+**The package contains the minimum information necessary for the recipient to understand their role and take the next useful action, unless the owner explicitly authorizes more.** That is the governing disclosure principle, and the engine enforces it as a data-access policy rather than as a page count.
+
+A package is not a publication. Assembling one does not share it, and the engine never overrides privacy permissions to make a package look complete.
+
+---
+
+# 58. ONE-SENTENCE DEFINITION
 
 > **The Professional Review Package Engine converts the owner's evolving destination, business reality, scenarios, research, questions, and authorized documents into versioned, stakeholder-specific packages at Summary, Detailed, or Comprehensive visibility levels, ensuring each recipient receives the information relevant to their role without unnecessarily exposing information they do not need.**
 
