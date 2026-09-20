@@ -1602,7 +1602,35 @@ The following should be locked:
 
 ---
 
-# 58. The Bigger Architecture
+# 58. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Local Vault** | Private source documents, local storage, encryption at rest, integrity checks, versioning, local indexing and search, offline operation, selective synchronization, and provenance from derived facts back to their source material | Who may see a document, or the meaning of its contents |
+| **Consent & Access** | Who may see which resource, for what purpose, and for how long | The document itself or where it is stored |
+| **Document Intelligence** | OCR, extraction, classification, and document interpretation | Verification of what was extracted |
+| **Fact Verification** | Conflicts between sources and the verification of extracted facts | Document storage or access |
+| **Business Reality** | Current business facts and financial statements | The source documents those facts derive from |
+| **Evidence Ledger** | The provenance and authority of research evidence | Local document storage |
+| **Research** | Investigation of what must be true for the goal to be achievable | Where source material physically resides |
+| **Destination** | The owner's desired outcome and objectives | Private business records |
+| **Scenario** | Potential transaction paths and their assumptions | The underlying documents and facts |
+| **Professional Review** | Professional determinations and their attribution | The private master document |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The private master the package draws from |
+| **Identity & Access** | Who a party is and what they may do on the platform | What they may possess locally |
+| **Audit / Provenance** | The historical record of what happened | The document contents themselves |
+| **Integration** | Connectivity to external systems, treated as disclosure destinations | Unrestricted access to the Vault |
+| **Policy / Compliance** | The rules governing how engines may operate | Storage, encryption, or local retrieval |
+
+## Hard Boundary
+
+The Local Vault / Workspace Engine owns the platform's **private information boundary**: what the owner privately possesses and works with, where it physically resides, how it is encrypted and versioned, and what provenance connects a derived fact back to its source. It does not own who may see it.
+
+**Possession does not equal permission. Importing a document does not upload it, and no other engine receives unrestricted Vault access.** Consent & Access answers *who is allowed to see it, what exactly they are allowed to see, and for how long*; the Vault answers *what the owner privately possesses*. Every externally shared document is explicitly authorized and version-specific, and the private master remains in the Vault even when an external copy is disclosed.
+
+---
+
+# 59. The Bigger Architecture
 
 This gives us an increasingly clean separation:
 
