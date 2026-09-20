@@ -133,6 +133,7 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Underwriting",           "Underwriting Engine.md"),
     ("Seller Note Liquidity",  "Seller-Note Liquidity Engine v1.0.md"),
     ("Professional Review",    "Professional Review Engine v1.0.md"),
+    ("Professional Determination", "Professional Determination Engine v1.0.md"),
     ("Document Readiness",     "Document Readiness & Checklist Engine v1.0.md"),
     ("Review Package",         "Professional Review Package Engine v1.0.md"),
     ("Transaction",            "Transaction - Orchestration Engine.md"),
@@ -220,7 +221,7 @@ LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
     ]),
     ("Transaction", [
         "Capital", "Underwriting", "Seller Note Liquidity", "Professional Review",
-        "Document Readiness", "Review Package", "Transaction", "Stakeholder",
+        "Professional Determination", "Document Readiness", "Review Package", "Transaction", "Stakeholder",
         "Workflow", "Communication", "Closing", "Ownership Lifecycle",
     ]),
     ("Infrastructure", [
@@ -284,6 +285,8 @@ ALIASES = {
     "document readiness": "Document Readiness",
     "review package": "Review Package",
     "professional review package": "Review Package",
+    "professional determination": "Professional Determination",
+    "professional determination engine": "Professional Determination",
     "transaction": "Transaction",
     "transaction / orchestration": "Transaction",
     "orchestration": "Transaction",
@@ -736,7 +739,7 @@ def run_checks(docs):
         f"{', '.join(sorted(ks))} -> one document ({h})"
         for h, ks in sorted(home_to_keys.items()) if len(ks) > 1
     ]
-    if "__ProfessionalDetermination__" in flow:
+    if "__ProfessionalDetermination__" in flow and "Professional Determination" not in ENGINE_HOME:
         collapsed.append(
             "Professional Determination is a node in the section-20 flow "
             "diagram, between Professional Review and Document Readiness, but "
