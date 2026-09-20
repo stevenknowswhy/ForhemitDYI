@@ -19,6 +19,7 @@ Edge syntax it understands (in descending order of authority):
 Checks it runs:
 
   declaration-consistency  ENGINE_HOME, LAYERS and LAYERLESS disagreeing
+  readme-roster        README's prose roster disagreeing with those layers
   no-dangling          an engine named in the architecture with no backing doc
   stale-absence        a document claiming a built component is absent
   no-orphans           a document no other document declares a boundary with
@@ -589,6 +590,76 @@ def check_stale_absence(docs):
 
 
 # --------------------------------------------------------------------------
+# 2c. README's three-layer roster: the last hand-maintained view
+# --------------------------------------------------------------------------
+# README "Architecture at a Glance" declares the architecture a second time,
+# in prose, as three dot-separated rosters. Nothing parsed it, so it could
+# drift freely -- and it did: "Security" sat in the infrastructure roster
+# while CROSS_CUTTING excluded it from the engine set, which is what made
+# Security read as a missing engine in the first place. The group-count table
+# beside it was checked (coverage); the roster was not.
+#
+# This is the same class of defect as declaration-consistency: a hand-kept
+# view of the roster that no check reads. Verify it against LAYERS (the
+# three-layer declaration) and CROSS_CUTTING (the deliberate non-engines).
+
+ROSTER_LINE_RE = re.compile(
+    r"^\*\*(Decision engines|Transaction engines|Platform infrastructure)"
+    r"\*\*\s*\u2014\s*(.+?)\s*$", re.M)
+
+ROSTER_LAYER = {
+    "Decision engines": "Decision",
+    "Transaction engines": "Transaction",
+    "Platform infrastructure": "Infrastructure",
+}
+
+CROSS_ROSTER_RE = re.compile(
+    r"^\*\*Cross-cutting, not an engine\*\*\s*\u2014\s*([^.,;]+)", re.M)
+
+
+def check_readme_roster(docs):
+    """README's prose roster must agree with LAYERS and CROSS_CUTTING."""
+    findings = []
+    text = docs.get(README, "")
+    seen = defaultdict(set)
+    for m in ROSTER_LINE_RE.finditer(text):
+        layer = ROSTER_LAYER[m.group(1)]
+        for raw in m.group(2).split("\u00b7"):
+            raw = raw.strip()
+            if not raw:
+                continue
+            key = canon(raw)
+            if not key:
+                findings.append(
+                    f"README roster ({layer}) names \u201c{raw}\u201d, which is "
+                    f"not a declared engine")
+            else:
+                seen[layer].add(key)
+    for layer, keys in LAYERS.items():
+        missing = sorted(set(keys) - seen.get(layer, set()))
+        if missing:
+            findings.append(
+                f"README {layer} roster omits declared engines: "
+                f"{', '.join(missing)}")
+        extra = sorted(seen.get(layer, set()) - set(keys))
+        if extra:
+            findings.append(
+                f"README {layer} roster lists engines not declared in that "
+                f"layer: {', '.join(extra)}")
+    for m in CROSS_ROSTER_RE.finditer(text):
+        name = m.group(1).strip()
+        if name not in CROSS_CUTTING:
+            findings.append(
+                f"README cross-cutting line names \u201c{name}\u201d, which is "
+                f"not recorded in CROSS_CUTTING")
+    if CROSS_CUTTING and not CROSS_ROSTER_RE.search(text):
+        findings.append(
+            "README does not name the cross-cutting properties: "
+            + ", ".join(CROSS_CUTTING))
+    return findings
+
+
+# --------------------------------------------------------------------------
 # 3. Checks
 # --------------------------------------------------------------------------
 
@@ -719,6 +790,10 @@ def run_checks(docs):
             decl.append(f"“{k}” is in LAYERLESS but also declared in "
                         f"{placed[k][0]}")
     findings["declaration-consistency"] = decl
+
+    # README's prose roster is the fourth view of the same roster, and the
+    # last one nothing read.
+    findings["readme-roster"] = check_readme_roster(docs)
 
     # ---- check 3: no-layer-violation -----------------------------------
     violations = []
@@ -964,6 +1039,7 @@ def render_report(findings, stats, boundary, flow, ring):
     A("| --- | --- | --- | --- |")
     sev = {
         "declaration-consistency": "High",
+        "readme-roster": "High",
         "no-dangling": "High",
         "stale-absence": "High",
         "boundary-tier-none": "High",
@@ -978,17 +1054,18 @@ def render_report(findings, stats, boundary, flow, ring):
     }
     order = [
         ("1", "declaration-consistency", "Roster views that disagree with each other"),
-        ("2", "no-dangling", "Dangling engines — declared, no document"),
-        ("3", "stale-absence", "Documents claiming a built component is absent"),
-        ("4", "boundary-tier-none", "Engine docs with no boundary section"),
-        ("5", "structural-ambiguity", "Structural ambiguity"),
-        ("6", "undeclared-reference", "Boundaries with undeclared engines"),
-        ("7", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
-        ("8", "never-named", "Engines no boundary table mentions"),
-        ("9", "naming-drift", "Naming drift"),
-        ("10", "no-orphans", "Orphan documents"),
-        ("11", "no-layer-violation", "Layer violations"),
-        ("12", "coverage", "Coverage and count mismatches"),
+        ("2", "readme-roster", "README's prose roster disagreeing with the layers"),
+        ("3", "no-dangling", "Dangling engines — declared, no document"),
+        ("4", "stale-absence", "Documents claiming a built component is absent"),
+        ("5", "boundary-tier-none", "Engine docs with no boundary section"),
+        ("6", "structural-ambiguity", "Structural ambiguity"),
+        ("7", "undeclared-reference", "Boundaries with undeclared engines"),
+        ("8", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
+        ("9", "never-named", "Engines no boundary table mentions"),
+        ("10", "naming-drift", "Naming drift"),
+        ("11", "no-orphans", "Orphan documents"),
+        ("12", "no-layer-violation", "Layer violations"),
+        ("13", "coverage", "Coverage and count mismatches"),
     ]
     for num, key, label in order:
         n = len(findings.get(key, []))
@@ -1010,52 +1087,56 @@ def render_report(findings, stats, boundary, flow, ring):
             "declaration-consistency",
             "None — ENGINE_HOME, LAYERS and LAYERLESS agree.")
 
-    section("2", "Dangling engines — declared in the architecture, no document",
+    section("2", "README's prose roster disagreeing with the declared layers",
+            "readme-roster",
+            "None — the README roster matches LAYERS and CROSS_CUTTING.")
+
+    section("3", "Dangling engines — declared in the architecture, no document",
             "no-dangling",
             "None — every declared engine resolves to a document.")
 
-    section("3", "Documents claiming a built component is absent",
+    section("4", "Documents claiming a built component is absent",
             "stale-absence",
             "None — no document still presents a built component as missing.")
 
-    section("4", "Engine docs with no boundary section at all",
+    section("5", "Engine docs with no boundary section at all",
             "boundary-tier-none",
             "None.")
 
-    section("5", "Structural ambiguity",
+    section("6", "Structural ambiguity",
             "structural-ambiguity",
             "None.")
 
-    section("6", "Boundaries with engines that are not declared anywhere",
+    section("7", "Boundaries with engines that are not declared anywhere",
             "undeclared-reference",
             "None — every boundary names a declared engine.")
 
-    section("7", "Boundary declared in prose only (not machine-readable)",
+    section("8", "Boundary declared in prose only (not machine-readable)",
             "boundary-tier-prose",
             "None — every boundary is expressed as a table.")
 
-    section("8", "Engines that no boundary table anywhere mentions",
+    section("9", "Engines that no boundary table anywhere mentions",
             "never-named",
             "None — every engine is named by at least one boundary table.")
 
-    section("9", "Naming drift — one engine, several names",
+    section("10", "Naming drift — one engine, several names",
             "naming-drift",
             "None — engine names are used consistently.")
 
-    section("10", "Orphan documents", "no-orphans",
+    section("11", "Orphan documents", "no-orphans",
             "None — every document is referenced by at least one other.")
 
-    section("11", "Layer violations", "no-layer-violation",
+    section("12", "Layer violations", "no-layer-violation",
             "None — every layer-organized group agrees with its declared layer.")
 
-    section("12", "Coverage and count mismatches", "coverage",
+    section("13", "Coverage and count mismatches", "coverage",
             "None — roster, README table, and disk all agree.")
 
-    A("## 13. Cross-cutting properties — deliberately not engines")
+    A("## 14. Cross-cutting properties — deliberately not engines")
     A("")
     A("These names appear in the architecture but are properties every engine")
     A("must have, rather than components with their own boundary. They are")
-    A("excluded from check 2 on purpose: the finding \"this has no document\"")
+    A("excluded from check 3 on purpose: the finding \"this has no document\"")
     A("was correct, and the answer was \"it should not have one\".")
     A("")
     if not CROSS_CUTTING:
@@ -1067,11 +1148,11 @@ def render_report(findings, stats, boundary, flow, ring):
             A(f"  * Out of scope: {out_of_scope}")
     A("")
 
-    A("## 14. Declared pipeline topology")
+    A("## 15. Declared pipeline topology")
     A("")
     A(mermaid_topology())
     A("")
-    A("## 15. Declared boundary graph")
+    A("## 16. Declared boundary graph")
     A("")
     A(mermaid_boundaries(boundary))
     A("")
@@ -1144,8 +1225,8 @@ def main():
     print(f"documents:      {stats['docs_total']}")
     print(f"boundary edges: {stats['boundary_edges']}")
     print(f"link edges:     {stats['link_edges']}")
-    for key in ("declaration-consistency", "no-dangling", "stale-absence",
-                "boundary-tier-none", "structural-ambiguity",
+    for key in ("declaration-consistency", "readme-roster", "no-dangling",
+                "stale-absence", "boundary-tier-none", "structural-ambiguity",
                 "undeclared-reference", "boundary-tier-prose", "never-named",
                 "naming-drift", "no-orphans", "no-layer-violation", "coverage"):
         print(f"{key:22s} {len(findings.get(key, []))}")
