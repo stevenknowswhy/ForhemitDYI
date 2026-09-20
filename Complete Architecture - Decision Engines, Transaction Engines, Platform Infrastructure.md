@@ -1,3 +1,7 @@
+> **Status note (added 2026-09-19).** This document is a **point-in-time proposal**, written when the platform had only its thinking layer. It opens *"I see **10 major gaps**"*, and sections 2–19 each proposed an engine to close one. **Every gap has since been closed** — all eighteen engines exist as their own documents, and each section below now names its engine and links to it. Read this document as the **rationale** for why each engine exists, not as a statement of what is outstanding. That is also why the prose below is in the present tense of the conversation it came from: the body text is preserved as written, and only the headings were brought up to date. For the current roster see [`DOCUMENT-INDEX.md`](DOCUMENT-INDEX.md).
+
+---
+
 Yes. We have the **thinking layer** of the platform, but not yet the complete **transaction operating layer**.
 
 Right now our engines can answer:
@@ -26,11 +30,9 @@ I would organize the complete architecture into **three layers: Decision Engines
 
 That's an excellent foundation.
 
+> **As-of note:** this was the roster when this document was written. The platform has since grown well past it — see [`DOCUMENT-INDEX.md`](DOCUMENT-INDEX.md) for the current set.
+
 But I see **10 major gaps**.
-
----
-
-> **Status note (added 2026-09-19).** This document was written as a point-in-time gap analysis — it opens with *"I see **10 major gaps**"* — so its sections were originally headed *"Missing: …"*. Every engine it proposed has since been specified as its own document. The headings below now name the engine, and each section keeps its original reasoning as the rationale for why that engine exists. The count also grew past ten as the conversation continued; the sections run to nineteen.
 
 ---
 

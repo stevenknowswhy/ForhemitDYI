@@ -19,6 +19,7 @@ Edge syntax it understands (in descending order of authority):
 Checks it runs:
 
   no-dangling          an engine named in the architecture with no backing doc
+  stale-absence        a document claiming a built component is absent
   no-orphans           a document no other document declares a boundary with
   no-layer-violation   a layer-organized group's doc contradicting that layer
   coverage             roster counts vs README table vs actual files
@@ -501,6 +502,77 @@ def parse_links(docs):
 
 
 # --------------------------------------------------------------------------
+# 2b. Staleness: a document asserting a component is absent when it exists
+# --------------------------------------------------------------------------
+# The corpus grew by appending documents, and several early documents were
+# written as proposals -- "here is what we do not have yet". Nothing revisited
+# them once the components were built, so their headings and claims still read
+# as present tense. That is a real defect: it made the author believe eighteen
+# built engines were missing.
+#
+# Both patterns are deliberately narrow. The corpus legitimately says "missing
+# information", "missing documents", "proposed transaction" and "NOT YET
+# REVIEWED" -- domain vocabulary about a transaction in progress, not claims
+# about the architecture. So a hit only counts when it names a component that
+# actually has a backing document.
+
+ABSENCE_HEADING_RE = re.compile(
+    r"^#{1,4}\s*[0-9.]*\s*(?:Missing|Not Yet Built|To Build|Proposed|Needed)"
+    r"\s*[:\u2014-]?\s*(.+?)\s*$", re.I | re.M)
+
+ABSENCE_CLAIM_RE = re.compile(
+    r"(?:does not|doesn't|do not|don't)\s+(?:yet\s+)?exist"
+    r"|has not been (?:built|specified|defined|written|created)"
+    r"|not yet (?:built|specified|defined|implemented|created)"
+    r"|needs? to be (?:built|specified|defined|written|created)"
+    r"|still missing",
+    re.I)
+
+
+def check_stale_absence(docs):
+    """
+    A document claiming a component is absent when that component exists.
+
+    Catches two shapes:
+
+      * an absence heading naming a built component
+        ("# 3. Missing: Financial Modeling Engine")
+      * an absence claim within a sentence of a built component's name
+
+    Domain vocabulary is never a finding, because a hit only counts when it
+    resolves to a component with a backing document.
+
+    Self-references are skipped: a document necessarily names its own engine
+    ("The Workflow Engine should know: ... a task needs to be created"), and
+    that is domain language, not a claim about the architecture. The defect
+    this looks for is a document talking about SOMEONE ELSE's component.
+    """
+    findings = []
+    for name, text in sorted(docs.items()):
+        if name in (README, INDEX):
+            continue
+        for m in ABSENCE_HEADING_RE.finditer(text):
+            target = m.group(1).strip()
+            eng = canon(target)
+            home = ENGINE_HOME.get(eng) if eng else None
+            if home and home != name:
+                findings.append(
+                    f"{name}: heading \u201c{m.group(0).strip()}\u201d presents "
+                    f"{eng} as absent, but it has a document ({home})")
+        for m in ABSENCE_CLAIM_RE.finditer(text):
+            window = text[max(0, m.start() - 160):m.end() + 160]
+            for eng, home in ENGINE_HOME.items():
+                if not home or home == name:
+                    continue
+                if re.search(r"\b" + re.escape(eng) + r"\b", window, re.I):
+                    findings.append(
+                        f"{name}: \u201c{m.group(0).strip()}\u201d appears beside "
+                        f"{eng}, which has a document ({home})")
+                    break
+    return findings
+
+
+# --------------------------------------------------------------------------
 # 3. Checks
 # --------------------------------------------------------------------------
 
@@ -592,6 +664,9 @@ def run_checks(docs):
     findings["undeclared-reference"] = sorted(
         f"{src} declares a boundary with “{raw}”, which is not a declared engine"
         for src, raw in unresolved)
+
+    # a document still telling the reader that a built component is absent
+    findings["stale-absence"] = check_stale_absence(docs)
 
     # ---- check 3: no-layer-violation -----------------------------------
     violations = []
@@ -837,6 +912,7 @@ def render_report(findings, stats, boundary, flow, ring):
     A("| --- | --- | --- | --- |")
     sev = {
         "no-dangling": "High",
+        "stale-absence": "High",
         "boundary-tier-none": "High",
         "structural-ambiguity": "Medium",
         "undeclared-reference": "Medium",
@@ -849,15 +925,16 @@ def render_report(findings, stats, boundary, flow, ring):
     }
     order = [
         ("1", "no-dangling", "Dangling engines — declared, no document"),
-        ("2", "boundary-tier-none", "Engine docs with no boundary section"),
-        ("3", "structural-ambiguity", "Structural ambiguity"),
-        ("4", "undeclared-reference", "Boundaries with undeclared engines"),
-        ("5", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
-        ("6", "never-named", "Engines no boundary table mentions"),
-        ("7", "naming-drift", "Naming drift"),
-        ("8", "no-orphans", "Orphan documents"),
-        ("9", "no-layer-violation", "Layer violations"),
-        ("10", "coverage", "Coverage and count mismatches"),
+        ("2", "stale-absence", "Documents claiming a built component is absent"),
+        ("3", "boundary-tier-none", "Engine docs with no boundary section"),
+        ("4", "structural-ambiguity", "Structural ambiguity"),
+        ("5", "undeclared-reference", "Boundaries with undeclared engines"),
+        ("6", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
+        ("7", "never-named", "Engines no boundary table mentions"),
+        ("8", "naming-drift", "Naming drift"),
+        ("9", "no-orphans", "Orphan documents"),
+        ("10", "no-layer-violation", "Layer violations"),
+        ("11", "coverage", "Coverage and count mismatches"),
     ]
     for num, key, label in order:
         n = len(findings.get(key, []))
@@ -879,40 +956,44 @@ def render_report(findings, stats, boundary, flow, ring):
             "no-dangling",
             "None — every declared engine resolves to a document.")
 
-    section("2", "Engine docs with no boundary section at all",
+    section("2", "Documents claiming a built component is absent",
+            "stale-absence",
+            "None — no document still presents a built component as missing.")
+
+    section("3", "Engine docs with no boundary section at all",
             "boundary-tier-none",
             "None.")
 
-    section("3", "Structural ambiguity",
+    section("4", "Structural ambiguity",
             "structural-ambiguity",
             "None.")
 
-    section("4", "Boundaries with engines that are not declared anywhere",
+    section("5", "Boundaries with engines that are not declared anywhere",
             "undeclared-reference",
             "None — every boundary names a declared engine.")
 
-    section("5", "Boundary declared in prose only (not machine-readable)",
+    section("6", "Boundary declared in prose only (not machine-readable)",
             "boundary-tier-prose",
             "None — every boundary is expressed as a table.")
 
-    section("6", "Engines that no boundary table anywhere mentions",
+    section("7", "Engines that no boundary table anywhere mentions",
             "never-named",
             "None — every engine is named by at least one boundary table.")
 
-    section("7", "Naming drift — one engine, several names",
+    section("8", "Naming drift — one engine, several names",
             "naming-drift",
             "None — engine names are used consistently.")
 
-    section("8", "Orphan documents", "no-orphans",
+    section("9", "Orphan documents", "no-orphans",
             "None — every document is referenced by at least one other.")
 
-    section("9", "Layer violations", "no-layer-violation",
+    section("10", "Layer violations", "no-layer-violation",
             "None — every layer-organized group agrees with its declared layer.")
 
-    section("10", "Coverage and count mismatches", "coverage",
+    section("11", "Coverage and count mismatches", "coverage",
             "None — roster, README table, and disk all agree.")
 
-    A("## 11. Cross-cutting properties — deliberately not engines")
+    A("## 12. Cross-cutting properties — deliberately not engines")
     A("")
     A("These names appear in the architecture but are properties every engine")
     A("must have, rather than components with their own boundary. They are")
@@ -928,11 +1009,11 @@ def render_report(findings, stats, boundary, flow, ring):
             A(f"  * Out of scope: {out_of_scope}")
     A("")
 
-    A("## 12. Declared pipeline topology")
+    A("## 13. Declared pipeline topology")
     A("")
     A(mermaid_topology())
     A("")
-    A("## 13. Declared boundary graph")
+    A("## 14. Declared boundary graph")
     A("")
     A(mermaid_boundaries(boundary))
     A("")
@@ -1005,9 +1086,10 @@ def main():
     print(f"documents:      {stats['docs_total']}")
     print(f"boundary edges: {stats['boundary_edges']}")
     print(f"link edges:     {stats['link_edges']}")
-    for key in ("no-dangling", "boundary-tier-none", "structural-ambiguity",
-                "undeclared-reference", "boundary-tier-prose", "never-named",
-                "naming-drift", "no-orphans", "no-layer-violation", "coverage"):
+    for key in ("no-dangling", "stale-absence", "boundary-tier-none",
+                "structural-ambiguity", "undeclared-reference",
+                "boundary-tier-prose", "never-named", "naming-drift",
+                "no-orphans", "no-layer-violation", "coverage"):
         print(f"{key:22s} {len(findings.get(key, []))}")
     if changed:
         for p in changed:
