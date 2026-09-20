@@ -1,3 +1,5 @@
+> **Superseded.** This note is the seed the [Journey Builder Architecture & Employee Ownership Journey](Journey%20Builder%20Architecture%20&%20Employee%20Ownership%20Journey.md) document grew from — it closes by asking for that architecture, and that document is now the home of the Journey engine. Kept for provenance.
+
 Locked. 🔒
 These are now **core journey-builder rules** for the app.
 The journey engine should decide **how to ask**, not just **what to ask**:
