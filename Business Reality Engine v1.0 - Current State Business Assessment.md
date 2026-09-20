@@ -1256,7 +1256,34 @@ That single sentence should govern the engine's design.
 
 ---
 
-# 42. COMPLETE FLOW
+# 42. ARCHITECTURAL BOUNDARY SUMMARY
+
+The Business Reality Engine establishes a structured, evidence-aware representation of the business as it exists today. It describes reality; it does not judge the destination (Architectural Rule). It is the factual counterweight to the Destination Engine — neither overwrites the other.
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Business Reality** | The structured, evidence-aware representation of the business as it exists today — collects, organizes, classifies, and validates current-state business information | Business value, transaction feasibility, tax or legal treatment, financing approval, investment suitability, whether an employee-ownership structure should be pursued, or the destination |
+| **Destination** | The owner's desired future state | The current reality or whether the objectives are attainable |
+| **Research** | What external evidence says about the business's facts and assumptions | The current-state representation itself |
+| **Evidence Ledger** | The proof that supports the business's findings | The business assessment |
+| **Confidence** | How well the destination is aligned with the available evidence | The current reality or the destination |
+| **Scenario** | The paths that might connect current reality to the desired destination | The current state or the chosen path |
+| **Capital / Financing** | Financing approval and the capital plan | The business assessment or its accuracy |
+| **Valuation** | Business value determination | The current-state representation |
+| **Professional Review** | The professional determinations about the business | The facts or their validation |
+| **Transaction / Orchestration** | Coordinating execution once reality is understood | The assessment of current state |
+| **Closing** | Executing the transaction | Defining what the business is today |
+| **Audit / Provenance** | The provenance of current-state business facts | The facts themselves |
+| **Journey** | The ownership journey context | The business assessment |
+| **Identity & Access** | Who may see current-state business information | The information itself |
+
+## Hard Boundary
+
+The Business Reality Engine owns the current-state representation of the business: it collects, organizes, classifies, and validates business information. It does not determine business value, transaction feasibility, tax or legal treatment, financing approval, investment suitability, or whether an employee-ownership structure should be pursued — those belong to other engines and qualified professionals. The destination is owned by the Destination Engine; the Business Reality Engine describes reality without judging where the owner wants to go.
+
+---
+
+# 43. COMPLETE FLOW
 
 ```text id="m58vkl"
 DESTINATION ENGINE
