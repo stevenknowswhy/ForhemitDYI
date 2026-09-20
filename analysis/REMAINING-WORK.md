@@ -109,11 +109,31 @@ the engine it is most naturally adjacent to and it will fall out on its own.
 
 ### C1. The 5 structural ambiguities
 
-- [ ] Document Intelligence + Fact Verification share one document
-- [ ] Confidence + Evidence Ledger + Research share one document
-- [ ] Professional Determination is a node in the section-20 flow diagram, between Professional Review and Document Readiness, but is declared as no engine and sits in no layer
-- [ ] `Stakeholder` maps to `Stakeholder Document & Visibility Architecture.md`, but section 7 describes a Stakeholder / Relationship engine that owns who participates and why
-- [ ] `Journey` maps to `Journey Builder Architecture & Employee Ownership Journey.md` out of three candidate journey documents
+**Decision inputs, measured 2026-09-19.** Three things were measured before proposing an order.
+
+**1. The blast radius is small — and uneven.** Rows in *existing* boundary tables that name each engine:
+
+| Engine | Named by | Prose mentions |
+| --- | --- | --- |
+| `Journey` | **2** tables | 40 documents |
+| `Stakeholder` | **3** tables | 21 documents |
+| `Professional Review` (settled, for contrast) | **24** tables | — |
+
+Resolving Journey or Stakeholder therefore costs **5 table rows** today. That number only grows as more tables are written — an argument for deciding *before* A1a, not after. It is also small enough that the cost of getting the order wrong is bounded either way.
+
+**2. The five items are not the same kind of thing.** Reading the check itself:
+
+- **2 items are computed structural facts** — *"N engines share one document"*, derived generically from `ENGINE_HOME` (`len(ks) > 1`). Any multi-engine document is flagged, with **no suppression mechanism**. But the corpus has *decided* to allow multi-engine documents: both instances now carry N self-rows, exactly as the recipe prescribes. So these two are a **decision with no way to record it** — the identical shape to `Security` before `CROSS_CUTTING` existed. Fix: a register analogous to `LAYERLESS`, e.g. `MULTI_ENGINE_DOCS`, so "deliberately multi-engine" stops reading as an open question.
+- **1 item is computed and genuinely open** — *Professional Determination is a node in the section-20 flow diagram but no engine*. Detected by parsing that diagram. **This is the largest of the five by far: it appears 219 times across 47 documents and is named by zero boundary tables.**
+- **2 items are hardcoded strings, not detections.** The Stakeholder and Journey findings are literal `collapsed.append(...)` calls in `run_checks()`. Nothing computes them, so **no amount of document editing will ever clear them** — they are a to-do list embedded in the analyzer, resolvable only by editing the script. Worth knowing before treating them as findings that respond to work.
+
+**3. So C1 is two tasks, not one:** a **decision** (what are Journey, Stakeholder and Professional Determination?) and a **tooling** task (add a multi-engine register; delete the two hardcoded strings once decided).
+
+- [ ] Document Intelligence + Fact Verification share one document → *decided (N self-rows); needs a register entry*
+- [ ] Confidence + Evidence Ledger + Research share one document → *decided (N self-rows); needs a register entry*
+- [ ] Professional Determination is a node in the section-20 flow diagram, between Professional Review and Document Readiness, but is declared as no engine and sits in no layer → **the real open question: 219 mentions across 47 documents, named by 0 tables**
+- [ ] `Stakeholder` maps to `Stakeholder Document & Visibility Architecture.md`, but section 7 describes a Stakeholder / Relationship engine that owns who participates and why → *hardcoded finding; decide, then remove the string*
+- [ ] `Journey` maps to `Journey Builder Architecture & Employee Ownership Journey.md` out of three candidate journey documents → *hardcoded finding; decide, then remove the string*
 
 ### C2. Two "Engine"-titled documents declared nowhere in `ENGINE_HOME`
 
