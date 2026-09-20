@@ -32,6 +32,13 @@ track that has not been worked.
 | `structural-ambiguity` | **0** ✅ | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
 | boundary edges | **495** | — |
+| link edges | **91** | — |
+| DOCUMENT-INDEX groups | **12** | — |
+
+`coverage` is the check to watch on any roster edit: it cross-checks DOCUMENT-INDEX group
+counts against the README group table **per group, by exact title**, and against the file count
+on disk. A new group must be added to both files in the same commit, and the README prose
+("organized into N groups") updated with it.
 
 Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **34**, which is
 the total number of engine documents. That is where the target of 34 comes from.
@@ -160,23 +167,75 @@ Resolving Journey or Stakeholder therefore costs **5 table rows** today. That nu
 
 *Note (2026-09-19): building Professional Determination also cleared a `stale-absence` finding — `Scenario Engine.md` had an example heading `### Missing Professional Determination` that the check now correctly read as "this engine is absent". Renamed to `### Awaiting Professional Determination` (commit d23f9c0). This is the check working: a "Missing X" heading naming a now-built engine is a real signal, fixed in the doc, not the check.*
 
-### C2. Two "Engine"-titled documents declared nowhere in `ENGINE_HOME`
+### C2. Two "Engine"-titled documents declared nowhere in `ENGINE_HOME` — ✅ RESOLVED 2026-09-20
 
-- [ ] `Professional Marketplace Engine v1.0.md` — the curation principle; distinct from `Marketplace Engine v1.0.md`, which is the discovery layer
-- [ ] `Journey-Builder Rules and Journey Definition Engine.md`
+**Neither was a missing engine. Both were superseded drafts — and the C2 framing was wrong.**
+The entry above claimed `Professional Marketplace Engine v1.0.md` was "the curation principle;
+distinct from `Marketplace Engine v1.0.md`". The evidence contradicts that:
 
-Declaring them raises `boundary-tier-none` by 2 and `never-named` by 2 unless they also
-gain boundary sections. Decide: declare, rename, or retire.
+- `Professional Marketplace Engine v1.0.md` — its §37 lists Organizations · Professionals ·
+  Specialties · Profiles · Credentials · **Vetting** · Publication · Visibility · Search ·
+  Matching · Reviews · **Moderation** · analytics: exactly the union of the two documents that
+  replaced it (`Marketplace Engine v1.0.md` = discovery, `Vendor Administration - Vetting Engine
+  v1.0.md` = governance). **Neither successor mentions it once.** Its "curation principle"
+  already lives in `Marketplace Engine v1.0.md` §2 (Principle 1 *Curated, not open*; Principle 2
+  *No pay-to-play placement*). → a consolidated predecessor, later decomposed.
+- `Journey-Builder Rules and Journey Definition Engine.md` — 40 lines, no H1, no sections,
+  referenced by **nothing but the index**. Its closing line asks for the journey-builder
+  architecture, which is `Journey Builder Architecture & Employee Ownership Journey.md`
+  (1,373 lines). "Journey Definition Engine" ≈ that document's §1 "Journey Engine". → its seed.
 
-### C3. Version-marked / superseded documents
+Both bannered `> **Superseded.** …` and moved to DOCUMENT-INDEX group 12. Declaring them would
+have created a third marketplace authority overlapping two declared engines, and raised
+`boundary-tier-none` and `never-named` by 2 — the entry's own warning, avoided rather than paid.
 
-- [ ] `Journey Builder Architecture & Employee Ownership Journey.md` is headed "## Version 0.1" while `Employee Ownership Journey v0.2 - Optimized Guided Journey.md` exists — six journey-ish docs in total. *(Migrated here from C1 on 2026-09-20: it was a hardcoded analyzer string no document edit could clear.)*
-- [ ] **Stakeholder / Relationship: does the relationship layer get its own document?** `Complete Architecture` §7 marks it *Partly built* — the visibility layer exists, the "who participates, and why" layer does not. The boundary table is written either way (it is the same boundary); this is a scope decision. *(Migrated here from C1 on 2026-09-20, same reason.)*
-- [ ] Two marketplace documents
-- [ ] `Standalone Engine Architecture - Ownership Transition Engine Platform.md` overlaps `Core Architecture Principle - No Engine Owns the Entire Transaction.md`
+**Method note worth keeping: the document's own cross-references date it, not the filename.**
+All 58 files were imported in one bulk commit on 2026-09-19, so git dates prove nothing. What
+separates "distinct engine" from "superseded draft" is whether the *successors* acknowledge the
+predecessor. They did not.
 
-Recommended: retire or banner superseded documents rather than leaving version markers.
-One current document per concept.
+### C3. Supersession — ✅ POLICY ADOPTED 2026-09-20; 2 piles still open
+
+**The decision is one policy, not four questions:** *one current document per concept; a
+superseded document is bannered and kept for provenance, never left carrying a version marker.*
+Adopted as **banner, keep indexed** — nothing is deleted, so no inbound reference breaks and
+`no-orphans` stays satisfied by the index link. Four piles exist; two are closed.
+
+- [x] **Journey** (4 candidates) — **DONE.** Two concepts, two documents: `Journey Builder
+  Architecture & Employee Ownership Journey.md` is the framework (its `## Version 0.1` heading
+  dropped — it is current, not a version) and `Employee Ownership Journey v0.2 - Optimized
+  Guided Journey.md` is the journey instance. `GOAL-DRIVEN TRANSACTION JOURNEY.md` and
+  `Journey-Builder Rules and Journey Definition Engine.md` bannered superseded.
+  **Still open inside this pile:** the home document keeps its own STAGE 0–19 journey, which now
+  duplicates the instance document. Decide whether it sheds that half.
+- [x] **Marketplace** (2 candidates) — **DONE.** See C2.
+
+Two piles were **never put to Stefano, so neither was touched**:
+
+- [ ] **Destination** (2 candidates) — `EMPLOYEE OWNERSHIP JOURNEY - Start With the Desired End
+  State.md` and `Employee Ownership Journey - Destination Builder v1.0.md`, against the declared
+  home `Destination Engine v1.0.md`. **These may be complementary rather than superseded** — the
+  engine owns the model, the builders are screen specs for it. Read before bannering.
+- [ ] **Platform architecture** (2 candidates) — `Standalone Engine Architecture - Ownership
+  Transition Engine Platform.md` (referenced only by the index) overlaps `Core Architecture
+  Principle - No Engine Owns the Entire Transaction.md` (referenced by README). The former still
+  names a "Professional Determination Layer" and a "Professional Marketplace", both since
+  superseded, so it reads as a point-in-time proposal like `Complete Architecture` — which is
+  exactly the document class that must never be cited as a status report.
+
+- [ ] **Stakeholder / Relationship — DECIDED: build its own document.** Stefano chose to build
+  the relationship layer rather than fold it into the visibility document. **Blocked on one
+  structural question before authoring:** `ENGINE_HOME` maps one engine to one document, so a
+  second Stakeholder document is either **(a) a split into two engines** — the relationship layer
+  takes `Stakeholder` and the visibility layer becomes a second engine — which rewrites the
+  existing 10-row table's self-row `**Stakeholder / Relationship**` and every document naming it;
+  or **(b) a second document under one engine**, which reproduces exactly the C2 defect this
+  track just closed. **Decide (a) or (b) before writing.**
+
+**Version markers, reported not renamed** (the brief asked for the report, not a silent rename):
+15 filenames carry `v1.0`/`v0.2`; **only one heading in the corpus ever did**, and it is now
+removed. The `v1.0` suffixes are a uniform naming convention, not a status claim — do not read
+them as supersession.
 
 ---
 
@@ -203,6 +262,7 @@ One current document per concept.
 - [x] **A1a — the four remaining boundary summaries** (2026-09-19): `Destination` (9 rows), `Marketplace` (11 rows), `Vendor Administration / Vetting` (15 rows), `Business Reality` (14 rows). Each was transcription from the document's own "does not own" / "Architectural Lock" / NORTH STAR, not authoring. Tables 27 → 31, edges 403 → 452 (+49, exactly the row count), `boundary-tier-none` 6 → 2. Commits `c9ab3ef`, `51338d5`, `2d6c04b`, `3a753f9`.
 - [x] **C1 — `structural-ambiguity` cleared** (2026-09-20): added the `MULTI_ENGINE_DOCS` register (analogous to `LAYERLESS`) for the two deliberately multi-engine documents, deleted the two hardcoded Stakeholder/Journey strings — which no document edit could ever clear — and extended `declaration-consistency` to validate the register so a stale entry surfaces. Registered docs are still printed in report section 6 as "decided, so not counted above". Three regression probes confirm the detectors still fire. **4 → 0, and every check in the analyzer is now 0.**
 - [x] **B1 — naming-drift resolved** (2026-09-19): `**Vendor Vetting**` → `**Vendor Administration / Vetting**` (Billing table) and `**Blog Engine**` → `**Blog / Publishing**` (WordPress Management table). `naming-drift` 2 → 0. Commits `79309ad`, `e7aebf4`. Note: a stray untracked archive (`1905.md`) was created by a manual `scripts/doc-graph.py` run used to confirm the fix; it was committed separately (`e875d84`) — lesson reinforced: verify with `/tmp/verify.py` (parser-only), never the publisher, to avoid orphan archives.
+- [x] **C2 + the supersession policy** (2026-09-20): both C2 documents proved to be superseded drafts, not missing engines (see C2 above), so C2 **dissolved into C3's policy** instead of needing a decision of its own. Adopted *one current document per concept — banner and keep indexed*; applied to 3 documents (`Professional Marketplace Engine v1.0.md`, `Journey-Builder Rules and Journey Definition Engine.md`, `GOAL-DRIVEN TRANSACTION JOURNEY.md`), dropped the corpus's only `## Version 0.1` heading from the Journey home document, and added DOCUMENT-INDEX group 12 *Superseded*. Commits `45a41b3`, `56ff724`, `5790424`, `4d05cc8`, `f8b0d6f`. **Verified with the parser, not the publisher** — `/tmp/verify_roster.py`, a new full-check wrapper alongside `/tmp/verify.py`, calls `run_checks()` directly so nothing is published or archived: all 13 checks 0, boundary edges unchanged at **495** (no boundary row touched), link edges **86 → 91** (exactly the 5 links the banners added), documents **58**, index and README agreeing at **12 groups / 56 documents**.
 
 ---
 
