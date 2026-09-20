@@ -638,7 +638,7 @@ getSiteHistory()
 | Engine                | Owns                                                                                          | Does Not Own                            |
 | --------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------- |
 | **WordPress Management** | Site operations, WordPress connections, themes, plugins, deployment, backups, synchronization | Core business data or editorial meaning |
-| **Blog Engine**       | Editorial content, publishing workflow, posts, authors, SEO metadata                          | WordPress infrastructure                |
+| **Blog / Publishing**       | Editorial content, publishing workflow, posts, authors, SEO metadata                          | WordPress infrastructure                |
 | **Identity & Access** | Platform identity and roles                                                                   | WordPress content delivery              |
 | **Integration**       | External connectivity infrastructure                                                          | Site-specific operational state         |
 | **Policy / Compliance** | Platform rules for publishing/security                                                      | WordPress administration itself         |
