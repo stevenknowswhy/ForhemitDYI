@@ -1832,7 +1832,7 @@ Examples:
 
 > This assumption relies on research outside the configured freshness window.
 
-### Missing Professional Determination
+### Awaiting Professional Determination
 
 > Tax treatment requires professional review.
 
