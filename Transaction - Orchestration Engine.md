@@ -1931,7 +1931,39 @@ The following should be treated as requirements:
 
 ---
 
-# 65. The Role of This Engine in the Overall Architecture
+# 65. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Transaction / Orchestration** | Transaction plans, stages, milestones, tasks, dependencies, requirements, participants, deadlines, the critical path, blockers as explicit objects, and versioned transaction state | Whether the owner should proceed, or the specialist work the plan coordinates |
+| **Scenario** | Potential transaction paths and their assumptions | The execution plan derived from them |
+| **Destination** | The owner's desired outcome and objectives | How the transaction is executed |
+| **Business Reality** | Current business facts and financial statements | Transaction stages or execution state |
+| **Financial Modeling** | Calculations, cash flows, debt schedules, and projections | Financing processes or execution state |
+| **Capital / Financing** | The capital plan, capital stack, and financing requests | The execution plan or transaction state |
+| **Underwriting** | Lender requirement profiles and conformance to stated requirements | The transaction's execution state |
+| **Professional Review** | Professional determinations and their attribution | The execution that follows them |
+| **Document Readiness** | Document status, completeness, and outstanding requests | Whether a required condition is resolved |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The transaction plan |
+| **Closing** | Closing execution and its requirements | The aggregation of conditions that permit closing |
+| **Ownership Lifecycle** | Post-transaction ownership state | The execution that produced it |
+| **Workflow** | Tasks, dependencies, scheduling, and execution mechanics | The transaction plan and its state |
+| **Communication** | Conversations and messages | Execution progress |
+| **Notification** | Delivery of attention, including follow-up alerts | The underlying work state |
+| **Decision Record** | The owner's recorded reasoning and rationale | Execution of the decision |
+| **Consent & Access** | Who may see which resource, for what purpose, and for how long | Transaction state |
+| **Local Vault** | Private source documents, storage, encryption, and versioning | Transaction requirements |
+| **Audit / Provenance** | The historical record of what happened | Current operational state |
+
+## Hard Boundary
+
+The Transaction / Orchestration Engine owns the execution plan and its current state: stages, milestones, tasks, dependencies, requirements, participants, deadlines, the critical path, and blockers as explicit objects. It coordinates execution without absorbing specialist responsibilities, and it does not determine whether the owner should proceed.
+
+**The engine never represents execution progress as a probability of transaction success.** Closing requirements are aggregated from the relevant engines rather than invented here, professional determinations remain professional determinations, owner decisions remain owner decisions, and source documents remain with Local Vault. A transaction cannot reach Closing or Complete while required conditions remain unresolved, and after closing it hands off to the Ownership Lifecycle Engine.
+
+---
+
+# 66. The Role of This Engine in the Overall Architecture
 
 We now have a very clean progression:
 
