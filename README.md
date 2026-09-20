@@ -33,14 +33,14 @@ These recur across nearly every document and should be treated as constraints on
 
 **→ [Document Index](DOCUMENT-INDEX.md)** — the complete annotated roster: all 56 design documents, each with a description of what it covers.
 
-They are organized into eleven groups, each a layer of the platform or a phase of the design work:
+They are organized into twelve groups, each a layer of the platform or a phase of the design work:
 
 | Group | Docs | What it covers |
 | --- | --- | --- |
 | Foundations & Thesis | 3 | The platform thesis, the original brief, and the locked destination-first core. |
 | Core Product Principles | 4 | The UX and decision-layer principles that constrain every screen. |
-| Journey Design | 7 | How a journey is defined, built, and walked — through the Employee Ownership journey. |
-| Professional Network & Marketplace | 5 | Curated discovery, role fit, and the vendor governance behind it. |
+| Journey Design | 5 | How a journey is defined, built, and walked — through the Employee Ownership journey. |
+| Professional Network & Marketplace | 4 | Curated discovery, role fit, and the vendor governance behind it. |
 | Evidence, Confidence & Documents | 5 | Turning reality and documents into verifiable fact, confidence, and readiness. |
 | Exploration & Modeling | 4 | The decision-layer engines that build representations rather than act — what it might be worth, what the numbers look like, and which paths exist. |
 | Architecture Principles & Platform Overview | 5 | The architectural rules, the full engine roster, and the build roadmap. |
@@ -48,6 +48,7 @@ They are organized into eleven groups, each a layer of the platform or a phase o
 | Platform Infrastructure & Governance | 9 | The private, secure, auditable foundation every engine depends on. |
 | Publishing & External Surfaces | 2 | Public content, and the external sites that carry it. |
 | Strategic Expansion | 1 | Adjacent business lines beyond the core platform. |
+| Superseded | 3 | Documents replaced by a newer one, kept for provenance. |
 | **Total** | **56** | |
 
 ---

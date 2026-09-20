@@ -47,8 +47,6 @@ How a journey is defined, built, and walked — through the Employee Ownership j
 
 | Document | What it covers |
 | --- | --- |
-| [Goal-Driven Transaction Journey](GOAL-DRIVEN%20TRANSACTION%20JOURNEY.md) | Why the journey starts from the owner's goals, the draft plan, the "My Ownership Transition Brief" review package, and the core product loop. |
-| [Journey-Builder Rules and Journey Definition Engine](Journey-Builder%20Rules%20and%20Journey%20Definition%20Engine.md) | Locks the journey-builder rules and introduces the Journey Definition Engine so new journeys don't require rebuilding the app. |
 | [Journey Builder Architecture & Employee Ownership Journey](Journey%20Builder%20Architecture%20&%20Employee%20Ownership%20Journey.md) | Full Journey Builder / Journey Engine architecture, node types, question metadata, storage scopes, and the STAGE 0–19 Employee Ownership journey. |
 | [Employee Ownership Journey v0.2 — Optimized Guided Journey](Employee%20Ownership%20Journey%20v0.2%20-%20Optimized%20Guided%20Journey.md) | The optimized journey: negative constraints ("what to avoid"), "ask only when relevant" rules, information value, question exit, and the one-page executive summary. |
 | [Employee Ownership Journey — Start With the Desired End State](EMPLOYEE%20OWNERSHIP%20JOURNEY%20-%20Start%20With%20the%20Desired%20End%20State.md) | The destination-first journey: "Picture Your Success", the Destination Card, the owner's success-story narrative, and the `DesiredOutcome` object. |
@@ -65,7 +63,6 @@ Curated discovery, role fit, and the vendor governance behind it.
 | --- | --- |
 | [Professional Choice — Bring Your Own or Use Our Curated Network](PROFESSIONAL%20CHOICE%20-%20BRING%20YOUR%20OWN%20OR%20USE%20OUR%20CURATED%20NETWORK.md) | The BYO-vs-curated pattern for every professional category, capital providers, the seller-note buyer directory, and the match-vs-offer distinction. |
 | [Professional Role-Fit and Team Optimization](PROFESSIONAL%20ROLE-FIT%20AND%20TEAM%20OPTIMIZATION.md) | The Role-Fit Check for the owner's existing professionals, the "right person, right job" framework, the responsibility matrix, and gap/overlap detection. |
-| [Professional Marketplace Engine v1.0](Professional%20Marketplace%20Engine%20v1.0.md) | Curated-not-open marketplace: no pay-to-play, organization-first model, vetting and re-verification, review moderation, contextual matching, and visibility controls. |
 | [Marketplace Engine v1.0](Marketplace%20Engine%20v1.0.md) | The curated discovery-and-matching system, separated from vendor governance: the seven marketplace principles (curated not open, no pay-to-play, user chooses, relevance over volume, organizations ≠ people, structured profiles, ratings inform), the `Organization` / `Professional` / Specialty / Service objects, the hierarchical specialty taxonomy, the structured experience and credential models, `MarketplaceListing`, the curation layer (curation is not ranking), contextual matching with `MarketplaceMatch` and `MatchExplanation`, the standalone visibility engine and rule-driven eligibility, ratings / comments / verified platform experience and moderation, vendor-vs-platform authority, comparison without a winner, the selection handoff to the Stakeholder Engine, analytics and demand-gap analysis, profile completeness and freshness, `CurationRecord`, marketplace versioning, and the explicit "what the Marketplace Engine does not do" list. |
 | [Vendor Administration / Vetting Engine v1.0](Vendor%20Administration%20-%20Vetting%20Engine%20v1.0.md) | The back-office governance counterpart to the Marketplace Engine: the twelve primary objects (`VendorApplication`, `OrganizationReview`, `CredentialRecord`, `ExperienceClaim`, `VettingCase`, `ApprovalRecord`, `Complaint`, `ReviewModerationCase`, `VisibilityAction`…), the application lifecycle, credential and experience verification (provider claim vs. platform verification), the vetting checklist and decision model, approval-with-restrictions, public claim control and the verification badge taxonomy, publication and fine-grained visibility controls, suspension and appeal workflows, re-verification and freshness states, the admin "what changed?" view, complaints and review moderation, the conflict-of-interest record and the enforceable no-paid-placement rule, the governance events consumed by the Marketplace Engine, administrator override and auditability, and configurable per-category vetting rules. |
 
@@ -168,5 +165,17 @@ Adjacent business lines beyond the core platform.
 | Document | What it covers |
 | --- | --- |
 | [Seller-Note Liquidity Marketplace](Critical%20Strategic%20Expansion%20-%20Seller-Note%20Liquidity%20Marketplace.md) | The seller-note marketplace as a potentially distinct business line: buyers, pricing, marketplace mechanics, conflicts of interest, and regulatory questions. |
+
+---
+
+## 12. Superseded
+
+Documents replaced by a newer document covering the same concept. Kept for provenance — read the replacement, not these.
+
+| Document | What it covers |
+| --- | --- |
+| [Professional Marketplace Engine v1.0](Professional%20Marketplace%20Engine%20v1.0.md) | Curated-not-open marketplace: no pay-to-play, organization-first model, vetting and re-verification, review moderation, contextual matching, and visibility controls. Superseded by Marketplace Engine v1.0 (discovery) and Vendor Administration / Vetting Engine v1.0 (governance). |
+| [Journey-Builder Rules and Journey Definition Engine](Journey-Builder%20Rules%20and%20Journey%20Definition%20Engine.md) | Locks the journey-builder rules and introduces the Journey Definition Engine so new journeys don't require rebuilding the app. Superseded by Journey Builder Architecture & Employee Ownership Journey. |
+| [Goal-Driven Transaction Journey](GOAL-DRIVEN%20TRANSACTION%20JOURNEY.md) | Why the journey starts from the owner's goals, the draft plan, the "My Ownership Transition Brief" review package, and the core product loop. Superseded by Journey Builder Architecture & Employee Ownership Journey and Employee Ownership Journey v0.2. |
 
 ---
