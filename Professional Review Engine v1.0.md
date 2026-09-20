@@ -1461,7 +1461,39 @@ The engine provides the common transaction memory.
 
 ---
 
-# 58. ONE-SENTENCE DEFINITION
+# 58. ARCHITECTURAL BOUNDARY SUMMARY
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Professional Review** | Reviews and their scope, invitations, assignments, questions, information requests, structured feedback, professional determinations, requested changes, review status, sign-off, escalation, and review decision provenance | Professional advice itself, or converting a professional opinion into platform truth |
+| **Journey** | The evolving ownership journey and its stages | Review mechanics |
+| **Destination** | The owner's desired outcome | What a professional concludes about it |
+| **Business Reality** | The current-state business facts under review | Professional review state |
+| **Scenario** | Potential transaction paths under review | Professional determinations |
+| **Financial Modeling** | Calculations and projections submitted for review | Professional opinion about them |
+| **Valuation** | Value determinations made by qualified professionals | Review coordination |
+| **Evidence Ledger** | Claims and their supporting evidence | Professional determinations |
+| **Confidence** | The goal-alignment signal | Professional review status |
+| **Document Readiness** | Document requirements, status, and outstanding items | The professional determination |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The review itself |
+| **Marketplace** | Professional discovery, curation, and role fit | Selecting the professional for the owner |
+| **Decision Record** | The owner's recorded decisions and rationale | Professional opinion |
+| **Transaction / Orchestration** | The execution plan and transaction state | Review coordination |
+| **Communication** | Conversation, messages, questions, and requests | Professional determinations |
+| **Consent & Access** | Who may see which review material, for what purpose | The review content itself |
+| **Local Vault** | Private source documents and the local workspace | Review semantics |
+| **Audit / Provenance** | The historical record of review activity | The determinations themselves |
+| **Policy / Compliance** | The rules governing how engines may operate | Professional judgment |
+
+## Hard Boundary
+
+**A professional determination is never normalized into platform truth.** The engine records what a qualified professional concluded, attributes it, and preserves it. It does not become the platform's own answer.
+
+Nor does it resolve professional disagreement. Where two professionals differ, both positions are preserved as first-class objects: the engine surfaces the conflict and leaves the judgment to the owner and the professionals.
+
+---
+
+# 59. ONE-SENTENCE DEFINITION
 
 > **The Professional Review Engine is the collaboration and decision-record system that moves owner-defined objectives and platform-generated scenarios through qualified professional review, captures questions, information requests, feedback, determinations, and requested changes, and returns those inputs to the evolving ownership journey without replacing professional judgment.**
 
