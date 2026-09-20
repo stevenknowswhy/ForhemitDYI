@@ -1144,7 +1144,39 @@ TRANSACTION ENGINE
 
 ---
 
-# 44. FINAL PRINCIPLE
+# 44. ARCHITECTURAL BOUNDARY SUMMARY
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Capital / Financing** | The capital plan, capital stack, sources and uses, source/use reconciliation, the capital gap, financing requests, provider matching, indicative proposals, financing readiness | The decision to finance, the terms themselves, or whether the transaction is advisable |
+| **Destination** | The owner's desired outcome | Capital structure or financing strategy |
+| **Business Reality** | Actual business facts and historical financials | Financing scenarios or capital requirements |
+| **Scenario** | Potential transaction paths and their assumptions | Which capital sources exist or are available |
+| **Financial Modeling** | Calculations, cash flows, debt schedules, projections | The financing process or provider relationships |
+| **Valuation** | Value determination and value ranges | The capital stack or how it is funded |
+| **Confidence** | Goal-alignment and evidence signals | Financing readiness or capital availability |
+| **Marketplace** | Professional and provider discovery, curation, role fit | Provider ranking or financing decisions |
+| **Seller-Note Liquidity** | The actual seller note, its servicing, and liquidity exploration | The capital plan or sources and uses |
+| **Underwriting** | Lender requirement profiles, packet assembly, conformance to a lender's stated requirements | The financing process, provider selection, or the credit decision |
+| **Document Readiness** | Document status, completeness, and outstanding requests | Financing readiness or capital sufficiency |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The capital plan or the financing request itself |
+| **Professional Review** | Professional determinations and their attribution | Financing decisions or provider selection |
+| **Transaction / Orchestration** | The execution plan and transaction state | Capital planning or the financing process |
+| **Policy / Compliance** | The rules governing how engines may operate | Capital logic or financing analysis |
+| **Consent & Access** | Who may see which capital information, for what purpose | The capital data itself |
+| **Local Vault** | Private source documents and the local workspace | Capital semantics or financing state |
+| **Audit / Provenance** | The historical record of capital activity | Capital decisions or their rationale |
+| **Decision Record** | The owner's recorded financing choice and rationale | Capital planning or provider matching |
+
+## Hard Boundary
+
+The Capital Engine coordinates the capital conversation: how much may be needed, where it might come from, what the gaps are, what each provider has actually said, and what remains for professionals to determine. It does not become the lender, underwriter, financial advisor, or transaction decision-maker.
+
+**Capital produces the financing request. Underwriting turns it into a submittable package.** Capital owns *what is being asked for and of whom*; the **Underwriting** engine owns whether the resulting packet conforms to the requirements a specific lender, the SBA, or an investor has actually stated. Neither engine decides whether the financing is good — that remains the lender's credit decision and the owner's decision to proceed.
+
+---
+
+# 45. FINAL PRINCIPLE
 
 The Capital Engine should make financing understandable without pretending that financing is simple.
 
