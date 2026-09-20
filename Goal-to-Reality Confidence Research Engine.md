@@ -1030,7 +1030,38 @@ Its greatest value may sometimes be telling the owner:
 
 ---
 
-# 37. NORTH STAR
+# 37. ARCHITECTURAL BOUNDARY SUMMARY
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Research** | External evidence gathering, the source hierarchy, research questions, disconfirming evidence, research freshness and versioning | Whether the owner's goal is achievable, or what the owner should do |
+| **Evidence Ledger** | Claims, their supporting and contradicting evidence, source provenance, applicability and limitations | Verification state, conflict resolution, or the facts themselves |
+| **Confidence** | The goal-alignment signal and its dimensions, explainability, and what would improve it | The underlying evidence, or the professional determination |
+| **Destination** | The owner's desired outcome | Whether that outcome is realistic |
+| **Business Reality** | The current-state business model and reconciled facts | External evidence or goal alignment |
+| **Document Intelligence** | Extraction of candidate facts from documents | Whether an extracted fact is true |
+| **Fact Verification** | Conflict detection and owner verification state | External research or professional determination |
+| **Scenario** | Potential transaction paths | The evidentiary support for those paths |
+| **Financial Modeling** | Calculations, projections, debt schedules | Whether the assumptions behind them hold |
+| **Valuation** | Value determination and value ranges | Goal alignment or research confidence |
+| **Capital / Financing** | The capital plan and the financing process | Whether financing is achievable |
+| **Professional Review** | Professional determinations and their attribution | Research evidence or confidence scoring |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The confidence assessment behind them |
+| **Decision Record** | The owner's recorded decisions and rationale | The evidence those decisions rested on |
+| **Local Vault** | Private source documents and the local workspace | Research semantics or confidence state |
+| **Consent & Access** | Who may see which research inputs, for what purpose | The research itself |
+| **Policy / Compliance** | The rules governing how engines may operate | Research logic or confidence scoring |
+| **Audit / Provenance** | The historical record of research and evidence activity | Research conclusions or their interpretation |
+
+## Hard Boundary
+
+This engine exists to improve the owner's understanding. It does not manufacture reassurance, and it does not tell the owner what to do.
+
+Research evidence is a **layer of its own** — *Owner Objective → Research Evidence → Platform Scenario → Professional Determination* — and it must never be collapsed into any of the other three. A platform research finding is not an owner objective, and it is not a professional determination. Where the evidence is thin, the engine's job is to say so and to generate a question for a professional, not to fill the gap with an assumption.
+
+---
+
+# 38. NORTH STAR
 
 The final experience should feel like:
 
