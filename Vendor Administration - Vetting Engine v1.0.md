@@ -1573,7 +1573,35 @@ It creates a **repeatable, auditable process for maintaining marketplace trust**
 
 ---
 
-# 64. ONE-SENTENCE DEFINITION
+# 64. ARCHITECTURAL BOUNDARY SUMMARY
+
+The Vendor Administration / Vetting Engine independently vets, verifies, publishes, monitors, and when necessary restricts or removes marketplace participants. It manages marketplace eligibility and trust information and creates a repeatable, auditable process for maintaining marketplace trust.
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Vendor Administration / Vetting** | Marketplace eligibility and trust information; the independent verification and vetting process; vendor credential management; a repeatable, auditable process for maintaining marketplace trust | Determining who is the best professional, giving professional advice, guaranteeing outcomes or provider performance, making legal, tax, financing, or investment conclusions, replacing licensing authorities, or automatically treating provider claims as verified facts |
+| **Marketplace** | Curated discovery and matching of providers | Eligibility, trust, or the verification process |
+| **Evidence Ledger** | The credentials and proof that support a vendor's claims | The vetting decision or its governance |
+| **Policy / Compliance** | The rules governing vetting, monitoring, and restriction | Individual vetting judgments |
+| **Identity & Access** | Vendor identity, accounts, and access control | The verification of vendor claims |
+| **Audit / Provenance** | The historical record of vetting, monitoring, and restriction events | The vetting process itself |
+| **Integration** | Connections to external verification and licensing sources | The curation or matching of providers |
+| **Transaction / Orchestration** | Coordinating vetting within the engagement flow | Discovery or provider selection |
+| **Workflow** | The vetting, re-verification, and restriction steps | The marketplace presentation |
+| **Capital / Financing** | Financing decisions, including eligibility signals vetting informs | The vetting or trust process |
+| **Billing / Commercial** | The commercial relationship once a vendor is engaged | Marketplace eligibility or vetting |
+| **Communication** | Notifying the owner of vetting status and governance events | The vetting decision |
+| **Stakeholder / Relationship** | Who participates, once a vendor becomes a stakeholder | Vendor eligibility or trust |
+| **Professional Review** | The professional determinations vetting inputs inform | The verification of vendor claims |
+| **Research** | Background research that supports or challenges vendor claims | The vetting or trust decision |
+
+## Hard Boundary
+
+The Vendor Administration / Vetting Engine owns marketplace eligibility, trust information, and the independent verification process. It does not determine who is the best professional, give professional advice, guarantee outcomes or provider performance, make legal, tax, financing, or investment conclusions, replace professional licensing authorities, or automatically treat provider claims as verified facts. Discovery and matching belong to the Marketplace Engine; professional judgment to Professional Review.
+
+---
+
+# 65. ONE-SENTENCE DEFINITION
 
 > **The Vendor Administration / Vetting Engine is the governance system that independently vets, verifies, publishes, monitors, and, when necessary, restricts or removes marketplace participants so the public marketplace remains curated, transparent, current, and independent of paid placement.**
 
