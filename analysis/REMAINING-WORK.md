@@ -29,7 +29,7 @@ track that has not been worked.
 | boundary tables | **34** | 34 |
 | `never-named` — engine named by no boundary table | **0** ✅ | 0 |
 | `naming-drift` — one engine, several raw names | **0** ✅ | 0 |
-| `structural-ambiguity` | 4 | decisions made (not necessarily 0) |
+| `structural-ambiguity` | **0** ✅ | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
 | boundary edges | **495** | — |
 
@@ -113,7 +113,7 @@ the engine it is most naturally adjacent to and it will fall out on its own.
 
 ## Track C — Architecture decisions (Stefano's call; not mechanical)
 
-### C1. The 5 structural ambiguities
+### C1. The 5 structural ambiguities — ✅ ALL RESOLVED 2026-09-20
 
 **Decision inputs, measured 2026-09-19.** Three things were measured before proposing an order.
 
@@ -135,11 +135,28 @@ Resolving Journey or Stakeholder therefore costs **5 table rows** today. That nu
 
 **3. So C1 is two tasks, not one:** a **decision** (what are Journey, Stakeholder and Professional Determination?) and a **tooling** task (add a multi-engine register; delete the two hardcoded strings once decided).
 
-- [ ] Document Intelligence + Fact Verification share one document → *decided (N self-rows); needs a register entry*
-- [ ] Confidence + Evidence Ledger + Research share one document → *decided (N self-rows); needs a register entry*
+- [x] Document Intelligence + Fact Verification share one document → **RESOLVED 2026-09-20:** registered in `MULTI_ENGINE_DOCS` with a stated reversal condition ("split only if either engine ever gains a home document of its own").
+- [x] Confidence + Evidence Ledger + Research share one document → **RESOLVED 2026-09-20:** registered in `MULTI_ENGINE_DOCS`, same form.
 - [x] Professional Determination is a node in the section-20 flow diagram, between Professional Review and Document Readiness → **RESOLVED 2026-09-19:** engine built and wired (`Professional Determination Engine v1.0.md`); the `structural-ambiguity` gating now also checks `ENGINE_HOME`, so the finding clears. The §20 node still names it; expected.
-- [ ] `Stakeholder` maps to `Stakeholder Document & Visibility Architecture.md`, but section 7 describes a Stakeholder / Relationship engine that owns who participates and why → *hardcoded finding; decide, then remove the string*
-- [ ] `Journey` maps to `Journey Builder Architecture & Employee Ownership Journey.md` out of three candidate journey documents → *hardcoded finding; decide, then remove the string*
+- [x] `Stakeholder` maps to `Stakeholder Document & Visibility Architecture.md`, but section 7 describes a Stakeholder / Relationship engine that owns who participates and why → **the hardcoded string is GONE (2026-09-20).** It was not a detection: no document edit could ever clear it. The underlying question is documentation scope and now lives in **C3**.
+- [x] `Journey` maps to `Journey Builder Architecture & Employee Ownership Journey.md` out of three candidate journey documents → **the hardcoded string is GONE (2026-09-20)**, same reasoning. The underlying question is supersession and now lives in **C3**.
+
+**What the C1 tooling change actually did** (`scripts/doc-graph.py`, 2026-09-20):
+
+- Added `MULTI_ENGINE_DOCS`, a register analogous to `LAYERLESS`. A multi-engine document is ambiguous only while it is *unexplained*; the register is where the explanation lives, so "deliberately multi-engine" stops reading as an open question.
+- Registered documents are still **printed** in section 6 under "Multi-engine documents on record — decided, so not counted above". Suppression is not silence: the decision stays visible in the report.
+- Deleted both hardcoded `collapsed.append(...)` strings. A finding that no amount of work can clear is a to-do list embedded in a detector, and it trains you to ignore the detector.
+- Extended `declaration-consistency` to validate the register, so a **stale** entry surfaces instead of quietly suppressing a real finding. An exemption set nobody checks is just a way to hide things.
+
+**Regression probes run** (a check that finds nothing is indistinguishable from a broken one):
+
+| Probe | Expected | Result |
+| --- | --- | --- |
+| Point an extra engine at an **unregistered** document | fires | ✅ `Scenario, Valuation -> one document (Scenario Engine.md)` |
+| Add a **stale** `MULTI_ENGINE_DOCS` entry | fires | ✅ `…but only one engine (Scenario) has it as home` |
+| Remove `Professional Determination` from `ENGINE_HOME` | fires | ✅ the §20 flow-diagram detector re-fires |
+
+`structural-ambiguity` 4 → 0, and **every check in the analyzer is now 0.**
 
 *Note (2026-09-19): building Professional Determination also cleared a `stale-absence` finding — `Scenario Engine.md` had an example heading `### Missing Professional Determination` that the check now correctly read as "this engine is absent". Renamed to `### Awaiting Professional Determination` (commit d23f9c0). This is the check working: a "Missing X" heading naming a now-built engine is a real signal, fixed in the doc, not the check.*
 
@@ -153,7 +170,8 @@ gain boundary sections. Decide: declare, rename, or retire.
 
 ### C3. Version-marked / superseded documents
 
-- [ ] `Journey Builder Architecture & Employee Ownership Journey.md` is headed "## Version 0.1" while `Employee Ownership Journey v0.2 - Optimized Guided Journey.md` exists — six journey-ish docs in total
+- [ ] `Journey Builder Architecture & Employee Ownership Journey.md` is headed "## Version 0.1" while `Employee Ownership Journey v0.2 - Optimized Guided Journey.md` exists — six journey-ish docs in total. *(Migrated here from C1 on 2026-09-20: it was a hardcoded analyzer string no document edit could clear.)*
+- [ ] **Stakeholder / Relationship: does the relationship layer get its own document?** `Complete Architecture` §7 marks it *Partly built* — the visibility layer exists, the "who participates, and why" layer does not. The boundary table is written either way (it is the same boundary); this is a scope decision. *(Migrated here from C1 on 2026-09-20, same reason.)*
 - [ ] Two marketplace documents
 - [ ] `Standalone Engine Architecture - Ownership Transition Engine Platform.md` overlaps `Core Architecture Principle - No Engine Owns the Entire Transaction.md`
 
@@ -183,6 +201,7 @@ One current document per concept.
 - [x] **A2 — the eight prose-only boundary summaries** (2026-09-19): `Audit / Provenance` (15 rows), `Communication` (15), `Consent & Access` (17), `Decision Record` (15), `Local Vault / Workspace` (15), `Notification` (16), `Transaction / Orchestration` (19), `Workflow` (19). Tables 19 → 27, boundary edges 272 → 403, **`boundary-tier-prose` 8 → 0**. Commits `0effe66`, `660f557`, `cc2ea91`, `8199702`, `e9fba92`, `a8a9249`, `2b7fbde`, `d4b5b7c`.
 - [x] **B2 — `never-named` cleared** (2026-09-19): the new Notification table names `Billing / Commercial`. 1 → 0. A free consequence of A2, not separately targeted.
 - [x] **A1a — the four remaining boundary summaries** (2026-09-19): `Destination` (9 rows), `Marketplace` (11 rows), `Vendor Administration / Vetting` (15 rows), `Business Reality` (14 rows). Each was transcription from the document's own "does not own" / "Architectural Lock" / NORTH STAR, not authoring. Tables 27 → 31, edges 403 → 452 (+49, exactly the row count), `boundary-tier-none` 6 → 2. Commits `c9ab3ef`, `51338d5`, `2d6c04b`, `3a753f9`.
+- [x] **C1 — `structural-ambiguity` cleared** (2026-09-20): added the `MULTI_ENGINE_DOCS` register (analogous to `LAYERLESS`) for the two deliberately multi-engine documents, deleted the two hardcoded Stakeholder/Journey strings — which no document edit could ever clear — and extended `declaration-consistency` to validate the register so a stale entry surfaces. Registered docs are still printed in report section 6 as "decided, so not counted above". Three regression probes confirm the detectors still fire. **4 → 0, and every check in the analyzer is now 0.**
 - [x] **B1 — naming-drift resolved** (2026-09-19): `**Vendor Vetting**` → `**Vendor Administration / Vetting**` (Billing table) and `**Blog Engine**` → `**Blog / Publishing**` (WordPress Management table). `naming-drift` 2 → 0. Commits `79309ad`, `e7aebf4`. Note: a stray untracked archive (`1905.md`) was created by a manual `scripts/doc-graph.py` run used to confirm the fix; it was committed separately (`e875d84`) — lesson reinforced: verify with `/tmp/verify.py` (parser-only), never the publisher, to avoid orphan archives.
 
 ---
