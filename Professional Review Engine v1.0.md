@@ -1466,6 +1466,7 @@ The engine provides the common transaction memory.
 | Engine | Owns | Does Not Own |
 | --- | --- | --- |
 | **Professional Review** | Reviews and their scope, invitations, assignments, questions, information requests, structured feedback, professional determinations, requested changes, review status, sign-off, escalation, and review decision provenance | Professional advice itself, or converting a professional opinion into platform truth |
+| **Professional Determination** | The goal determinations attributed to professionals through review | The analytical comparison that produces the draft |
 | **Journey** | The evolving ownership journey and its stages | Review mechanics |
 | **Destination** | The owner's desired outcome | What a professional concludes about it |
 | **Business Reality** | The current-state business facts under review | Professional review state |
