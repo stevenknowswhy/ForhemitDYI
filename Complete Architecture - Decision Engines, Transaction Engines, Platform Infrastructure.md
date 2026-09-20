@@ -30,7 +30,13 @@ But I see **10 major gaps**.
 
 ---
 
-# 2. Missing: Current State / Business Assessment Engine
+> **Status note (added 2026-09-19).** This document was written as a point-in-time gap analysis — it opens with *"I see **10 major gaps**"* — so its sections were originally headed *"Missing: …"*. Every engine it proposed has since been specified as its own document. The headings below now name the engine, and each section keeps its original reasoning as the rationale for why that engine exists. The count also grew past ten as the conversation continued; the sections run to nineteen.
+
+---
+
+# 2. Current State / Business Assessment Engine
+
+> **Built** — [Business Reality Engine v1.0 - Current State Business Assessment](Business%20Reality%20Engine%20v1.0%20-%20Current%20State%20Business%20Assessment.md)
 
 The Destination tells us:
 
@@ -80,7 +86,9 @@ That distinction will feed both Research and Confidence.
 
 ---
 
-# 3. Missing: Financial Modeling Engine
+# 3. Financial Modeling Engine
+
+> **Built** — [Financial Modeling Engine](Financial%20Modeling%20Engine.md)
 
 I would **not** let the Scenario Engine become a giant financial calculator.
 
@@ -113,7 +121,9 @@ That's a very clean separation.
 
 ---
 
-# 4. Missing: Capital / Financing Engine
+# 4. Capital / Financing Engine
+
+> **Built** — [Capital - Financing Engine v1.0](Capital%20-%20Financing%20Engine%20v1.0.md)
 
 This deserves its own engine because financing becomes a major part of the transaction.
 
@@ -153,7 +163,9 @@ I would keep seller-note liquidity separate because it may eventually become a s
 
 ---
 
-# 5. Missing: Professional Review / Determination Engine
+# 5. Professional Review / Determination Engine
+
+> **Built** — [Professional Review Engine v1.0](Professional%20Review%20Engine%20v1.0.md)
 
 We've carefully defined this concept, but it isn't yet on our engine list.
 
@@ -190,7 +202,9 @@ This engine should feed changes back into the Journey, Destination, Scenario, an
 
 ---
 
-# 6. Missing: Transaction Orchestration Engine
+# 6. Transaction Orchestration Engine
+
+> **Built** — [Transaction - Orchestration Engine](Transaction%20-%20Orchestration%20Engine.md)
 
 This is probably the **biggest missing piece**.
 
@@ -246,7 +260,9 @@ It manages the process around them.
 
 ---
 
-# 7. Missing: Stakeholder / Relationship Engine
+# 7. Stakeholder / Relationship Engine
+
+> **Partly built** — [Stakeholder Document & Visibility Architecture](Stakeholder%20Document%20%26%20Visibility%20Architecture.md) covers the document-visibility layer. The relationship layer this section proposes — who participates, and why — is still not its own document.
 
 We're going to have a lot of people attached to one transaction.
 
@@ -277,7 +293,9 @@ This engine should also handle the organization/contact hierarchy we discussed f
 
 ---
 
-# 8. Missing: Secure Sharing / Consent Engine
+# 8. Secure Sharing / Consent Engine
+
+> **Built** — [Consent & Access Engine](Consent%20%26%20Access%20Engine.md)
 
 The Document Readiness Engine knows **what documents exist and are needed**.
 
@@ -303,7 +321,9 @@ This is especially important with the hybrid local-first model.
 
 ---
 
-# 9. Missing: Local Workspace / Data Vault Engine
+# 9. Local Workspace / Data Vault Engine
+
+> **Built** — [Local Vault - Workspace Engine](Local%20Vault%20-%20Workspace%20Engine.md)
 
 We've discussed local-first, but it deserves standalone status.
 
@@ -332,7 +352,9 @@ That's a fundamental part of our architecture.
 
 ---
 
-# 10. Missing: Workflow / Task Engine
+# 10. Workflow / Task Engine
+
+> **Built** — [Workflow Engine](Workflow%20Engine.md)
 
 The Transaction Engine knows the overall deal.
 
@@ -368,7 +390,9 @@ One event can trigger several engines without hard-coding everything together.
 
 ---
 
-# 11. Missing: Communication Engine
+# 11. Communication Engine
+
+> **Built** — [Communication Engine](Communication%20Engine.md)
 
 Once 8–12 participants are involved, email chaos becomes a second transaction.
 
@@ -400,7 +424,9 @@ This is particularly important for maintaining a clean transaction record.
 
 ---
 
-# 12. Missing: Notification Engine
+# 12. Notification Engine
+
+> **Built** — [Notification Engine](Notification%20Engine.md)
 
 This could be separate from Communications.
 
@@ -424,7 +450,9 @@ This engine should be event-driven.
 
 ---
 
-# 13. Missing: Compliance / Policy Engine
+# 13. Compliance / Policy Engine
+
+> **Built** — [Policy - Compliance Engine](Policy%20-%20Compliance%20Engine.md)
 
 This is another important one.
 
@@ -455,7 +483,9 @@ without providing the professional conclusion.
 
 ---
 
-# 14. Missing: Audit / Provenance Engine
+# 14. Audit / Provenance Engine
+
+> **Built** — [Audit - Provenance Engine](Audit%20-%20Provenance%20Engine.md)
 
 The Evidence Ledger handles research evidence.
 
@@ -484,7 +514,9 @@ That is incredibly important for major transactions.
 
 ---
 
-# 15. Missing: Integration Engine
+# 15. Integration Engine
+
+> **Built** — [Integration Engine](Integration%20Engine.md)
 
 Eventually we will want to connect to external systems.
 
@@ -509,7 +541,9 @@ But because we're local-first, integrations should follow the same principle:
 
 ---
 
-# 16. Missing: Post-Closing Ownership Engine
+# 16. Post-Closing Ownership Engine
+
+> **Built** — [Ownership Lifecycle Engine v1.0](Ownership%20Lifecycle%20Engine%20v1.0.md)
 
 If we really mean **end-to-end**, the product cannot die at closing.
 
@@ -537,7 +571,9 @@ But architecturally, we should anticipate it now.
 
 ---
 
-# 17. Missing: Vendor Administration Engine
+# 17. Vendor Administration Engine
+
+> **Built** — [Vendor Administration - Vetting Engine v1.0](Vendor%20Administration%20-%20Vetting%20Engine%20v1.0.md)
 
 The Marketplace Engine manages the marketplace.
 
@@ -562,7 +598,9 @@ This is our "WordPress Admin" concept.
 
 ---
 
-# 18. Missing: Identity / Organization / Permission Engine
+# 18. Identity / Organization / Permission Engine
+
+> **Built** — [Identity & Access Engine](Identity%20%26%20Access%20Engine.md)
 
 This isn't a business engine, but it's fundamental infrastructure.
 
@@ -593,7 +631,9 @@ The architecture needs to support that.
 
 ---
 
-# 19. Missing: Billing / Commercial Engine
+# 19. Billing / Commercial Engine
+
+> **Built** — [Billing - Commercial Engine](Billing%20-%20Commercial%20Engine.md)
 
 Not necessary for the first prototype, but eventually:
 
