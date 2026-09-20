@@ -1333,7 +1333,40 @@ The deeper transaction execution system can then be layered onto the same journe
 
 ---
 
-# 28. Product Architecture in One Sentence
+# 28. ARCHITECTURAL BOUNDARY SUMMARY
+
+The Journey Engine owns the conversation that discovers the owner's intent. It converts an owner's
+goals into structured decisions, structured decisions into exploratory scenarios, scenarios into
+Professional Review Packages, and professional feedback back into an evolving ownership plan. It
+does not own the intent itself (Destination), the transaction execution system (Transaction /
+Orchestration), or the professional determinations that close the loop (Professional Determination).
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Journey** | The conversation that discovers the owner's intent and the journey framework (goal discovery → preference capture → business snapshot → scenario exploration → professional selection → review package → professional feedback) | The owner's destination (Destination); the transaction execution system (Transaction / Orchestration); professional determinations (Professional Determination) |
+| **Destination** | The owner's stated intent the journey discovers | The conversation that discovers it (Journey owns that) |
+| **Scenario** | The exploratory paths the journey generates | The discovery conversation that frames them |
+| **Business Reality** | The business snapshot the journey captures | The journey framing |
+| **Professional Review** | Review of the package the journey produces | The journey itself |
+| **Review Package** | The package the journey assembles for review | The journey that produces it |
+| **Professional Determination** | The professional's conclusion on the journey's output | The journey (Journey owns the conversation) |
+| **Transaction / Orchestration** | The execution system layered onto the journey framework | The journey framework itself (Journey owns that) |
+| **Communication** | Delivery of journey updates to the owner and advisors | The journey content |
+| **Workflow** | The steps that move a journey forward | The journey definition |
+| **Confidence** | The alignment signal the journey informs | The journey framing |
+| **Capital / Financing** | The financing path the journey may explore | The journey framing |
+
+## Hard Boundary
+
+> The Journey Engine owns the **conversation that discovers the owner's intent** — the journey
+> framework from goal discovery through professional feedback (Journey Builder §27–§28). It does
+> not own the owner's destination (Destination), the transaction execution system that is layered
+> onto the same framework (Transaction / Orchestration), or the professional determinations that
+> close the loop (Professional Determination).
+
+---
+
+# 29. Product Architecture in One Sentence
 
 > **The Journey Engine converts an owner's goals into structured decisions, structured decisions into exploratory scenarios, exploratory scenarios into Professional Review Packages, and professional feedback back into an evolving ownership plan.**
 
