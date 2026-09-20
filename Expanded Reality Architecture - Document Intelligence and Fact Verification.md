@@ -723,7 +723,33 @@ Compares sources, manages conflicts, and records owner verification.
 
 The three cooperate, but none owns the others.
 
-# 27. The Result
+# 27. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Document Intelligence** | Reading files, extracting candidate facts, structure recovery for spreadsheets / PDFs / Word, extraction provenance | Whether an extracted fact is true |
+| **Fact Verification** | Source comparison, first-class conflict objects, verification states, owner verification, the fact graph | External research, or professional determination |
+| **Business Reality** | The current-state business model and the reconciled model | Source extraction or conflict resolution |
+| **Destination** | The owner's desired outcome | What is currently true about the business |
+| **Evidence Ledger** | Claims and the evidence supporting them | Extraction or verification state |
+| **Research** | External evidence about the business | Internal document extraction |
+| **Confidence** | The goal-alignment signal | The facts that signal rests on |
+| **Scenario** | Potential transaction paths | The facts those paths rest on |
+| **Professional Review** | Professional determinations and their attribution | Owner verification |
+| **Review Package** | Purpose-built packages assembled for a named recipient | Fact provenance |
+| **Local Vault** | Private source files and the local workspace | Extraction semantics |
+| **Consent & Access** | Who may see which extracted facts, for what purpose | The facts themselves |
+| **Policy / Compliance** | The rules governing how engines may operate | Extraction or verification logic |
+| **Audit / Provenance** | The historical record of extraction and verification | The facts, or whether they are true |
+| **Decision Record** | The owner's recorded choices and rationale | The evidence behind them |
+
+## Hard Boundary
+
+**Owner verification is not professional verification.** The owner confirming "yes, this is correct" establishes what the business believes about itself. It does not establish what is true, and it never becomes a professional determination.
+
+The engine reads documents and proposes facts. It must never quietly correct the owner, and a conflict it cannot resolve is a **first-class object to be shown**, not an error to be smoothed away. Where two numbers disagree, both may be correct about different things — the engine's job is to surface the difference and ask, not to pick a winner.
+
+# 28. The Result
 
 We now have:
 
