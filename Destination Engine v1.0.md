@@ -1287,7 +1287,29 @@ The Destination Engine simply keeps the destination clear.
 
 ---
 
-# 48. ONE-SENTENCE DEFINITION
+# 48. ARCHITECTURAL BOUNDARY SUMMARY
+
+The Destination Engine is the system of record for the owner's desired future state. Downstream engines consume the destination but do not own it (Rule 10). The Journey Engine owns the conversation that discovers the intent, so the destination object stays stable even if the journey changes.
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Destination** | The owner's desired future state — what they want, how important each element is, what is nonnegotiable, what is flexible, and how those objectives evolve over time | The conversation that discovers the intent, where the owner is today, the evidence, the paths, what should be done, or execution |
+| **Journey** | The conversation that discovers the owner's intent | The destination object itself |
+| **Business Reality** | Where the owner is today (current state) | The desired future state or which objectives are attainable |
+| **Research** | What the evidence says about the destination and its assumptions | The destination itself or its relative importance |
+| **Confidence** | How well the destination is currently supported by evidence | The destination or the owner's priorities |
+| **Scenario** | The paths that might connect today's reality to the desired destination | The destination or which path is chosen |
+| **Professional Review** | The professional determinations of what should actually be done | The owner's desired outcome or its priority |
+| **Closing** | Executing the transaction to the stated finish line | Defining the finish line |
+| **Transaction / Orchestration** | Coordinating execution toward the destination | The destination or its desirability |
+
+## Hard Boundary
+
+The Destination Engine owns the owner's intent and preserves it as a structured, editable, versioned object. It does not become the journey that discovers that intent, the assessment of current reality, the research into evidence, the modeling of scenarios, or the professional judgment of what to do. Downstream engines work from the destination; none of them own it.
+
+---
+
+# 49. ONE-SENTENCE DEFINITION
 
 > **The Destination Engine is the system of record for the owner's desired future state, capturing what the owner wants, how important each element is, what is nonnegotiable, what is flexible, and how those objectives evolve over time.**
 
