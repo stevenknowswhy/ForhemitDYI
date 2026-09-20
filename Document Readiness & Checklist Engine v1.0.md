@@ -951,7 +951,39 @@ The smallest useful next document actions for the owner.
 
 ---
 
-# 34. NORTH STAR
+# 34. ARCHITECTURAL BOUNDARY SUMMARY
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Document Readiness** | Document requirements, the checklist, conditional and recommended documents, outstanding items, document status, recipient requirements, readiness state, and completion tracking | Whether the transaction is ready, or the contents of any document |
+| **Journey** | The evolving ownership journey and its stages | Document status |
+| **Destination** | The owner's desired outcome | Document requirements |
+| **Scenario** | Potential transaction paths | Document readiness |
+| **Research** | External evidence about the business | Internal document tracking |
+| **Evidence Ledger** | Claims and their supporting evidence | Document availability |
+| **Confidence** | The goal-alignment signal | Document completeness |
+| **Review Package** | Purpose-built packages assembled for a named recipient | Whether its inputs exist |
+| **Professional Review** | Reviews and professional information requests | Document status |
+| **Marketplace** | Professional discovery, curation, and role fit | Document requirements |
+| **Business Reality** | Current-state business facts | Document readiness |
+| **Capital / Financing** | The capital plan and the financing process | Whether the documents exist |
+| **Underwriting** | Lender requirement profiles and packet assembly | Document completeness |
+| **Transaction / Orchestration** | The execution plan and transaction state | Document readiness |
+| **Consent & Access** | Who may see which documents, for what purpose | The documents themselves |
+| **Local Vault** | Private source documents and the local workspace | Readiness semantics |
+| **Audit / Provenance** | The historical record of document and sharing activity | Document contents |
+| **Policy / Compliance** | The rules governing how engines may operate | Document requirements |
+| **Notification** | Delivery of document requests and reminders | Document state |
+
+## Hard Boundary
+
+**The engine maintains the authoritative document-readiness state. It does not own the documents, and it does not decide whether the transaction is ready.**
+
+It operates independently of the engines it receives requirements from: it can be asked "what is outstanding?" without any of them being consulted, and document readiness is never a statement about transaction success.
+
+---
+
+# 35. NORTH STAR
 
 The system should ultimately make the owner feel:
 
