@@ -625,7 +625,7 @@ getPaymentHistory()
 | **Identity & Access**   | Users, roles, platform permissions                                        | Commercial entitlement amounts                                        |
 | **Policy / Compliance** | Commercial rules and restrictions                                         | Billing execution                                                     |
 | **Marketplace**         | Vendor matching and visibility                                            | Vendor payment relationship                                           |
-| **Vendor Vetting**      | Provider verification                                                     | Commercial billing                                                    |
+| **Vendor Administration / Vetting**      | Provider verification                                                     | Commercial billing                                                    |
 | **Local Vault**         | User's private data                                                       | Commercial account status                                             |
 | **Audit / Provenance**  | Billing history and changes                                               | Current subscription logic                                            |
 | **Workflow**            | Billing reminders and commercial workflows                                | Commercial source of truth                                            |
