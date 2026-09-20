@@ -22,19 +22,19 @@ track that has not been worked.
 
 ## Progress snapshot
 
-| Metric | 2026-09-19 19:05 | Target |
+| Metric | 2026-09-19 19:30 | Target |
 | --- | --- | --- |
 | `boundary-tier-none` — docs with no boundary section | 2 | 0 |
 | `boundary-tier-prose` — boundary in prose only | **0** ✅ | 0 |
-| boundary tables | **31** | 33 |
+| boundary tables | **32** | 34 |
 | `never-named` — engine named by no boundary table | **0** ✅ | 0 |
 | `naming-drift` — one engine, several raw names | **0** ✅ | 0 |
-| `structural-ambiguity` | 5 | decisions made (not necessarily 0) |
+| `structural-ambiguity` | 4 | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
-| boundary edges | **452** | — |
+| boundary edges | **473** | — |
 
-Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **33**, which is
-the total number of engine documents. That is where the target of 33 comes from.
+Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **34**, which is
+the total number of engine documents. That is where the target of 34 comes from.
 
 ---
 
@@ -128,16 +128,18 @@ Resolving Journey or Stakeholder therefore costs **5 table rows** today. That nu
 **2. The five items are not the same kind of thing.** Reading the check itself:
 
 - **2 items are computed structural facts** — *"N engines share one document"*, derived generically from `ENGINE_HOME` (`len(ks) > 1`). Any multi-engine document is flagged, with **no suppression mechanism**. But the corpus has *decided* to allow multi-engine documents: both instances now carry N self-rows, exactly as the recipe prescribes. So these two are a **decision with no way to record it** — the identical shape to `Security` before `CROSS_CUTTING` existed. Fix: a register analogous to `LAYERLESS`, e.g. `MULTI_ENGINE_DOCS`, so "deliberately multi-engine" stops reading as an open question.
-- **1 item is computed and genuinely open** — *Professional Determination is a node in the section-20 flow diagram but no engine*. Detected by parsing that diagram. **This is the largest of the five by far: it appears 219 times across 47 documents and is named by zero boundary tables.**
+- **1 item is computed and genuinely open** — *Professional Determination is a node in the section-20 flow diagram but no engine*. **RESOLVED 2026-09-19:** the engine is now built (`Professional Determination Engine v1.0.md`), wired into `ENGINE_HOME` / `LAYERS` / `ALIASES`, and the `structural-ambiguity` gating was fixed so the finding clears once the engine is declared (it now also checks `ENGINE_HOME`). The §20 node still names it; that is expected.
 - **2 items are hardcoded strings, not detections.** The Stakeholder and Journey findings are literal `collapsed.append(...)` calls in `run_checks()`. Nothing computes them, so **no amount of document editing will ever clear them** — they are a to-do list embedded in the analyzer, resolvable only by editing the script. Worth knowing before treating them as findings that respond to work.
 
 **3. So C1 is two tasks, not one:** a **decision** (what are Journey, Stakeholder and Professional Determination?) and a **tooling** task (add a multi-engine register; delete the two hardcoded strings once decided).
 
 - [ ] Document Intelligence + Fact Verification share one document → *decided (N self-rows); needs a register entry*
 - [ ] Confidence + Evidence Ledger + Research share one document → *decided (N self-rows); needs a register entry*
-- [ ] Professional Determination is a node in the section-20 flow diagram, between Professional Review and Document Readiness, but is declared as no engine and sits in no layer → **the real open question: 219 mentions across 47 documents, named by 0 tables**
+- [x] Professional Determination is a node in the section-20 flow diagram, between Professional Review and Document Readiness → **RESOLVED 2026-09-19:** engine built and wired (`Professional Determination Engine v1.0.md`); the `structural-ambiguity` gating now also checks `ENGINE_HOME`, so the finding clears. The §20 node still names it; expected.
 - [ ] `Stakeholder` maps to `Stakeholder Document & Visibility Architecture.md`, but section 7 describes a Stakeholder / Relationship engine that owns who participates and why → *hardcoded finding; decide, then remove the string*
 - [ ] `Journey` maps to `Journey Builder Architecture & Employee Ownership Journey.md` out of three candidate journey documents → *hardcoded finding; decide, then remove the string*
+
+*Note (2026-09-19): building Professional Determination also cleared a `stale-absence` finding — `Scenario Engine.md` had an example heading `### Missing Professional Determination` that the check now correctly read as "this engine is absent". Renamed to `### Awaiting Professional Determination` (commit d23f9c0). This is the check working: a "Missing X" heading naming a now-built engine is a real signal, fixed in the doc, not the check.*
 
 ### C2. Two "Engine"-titled documents declared nowhere in `ENGINE_HOME`
 
