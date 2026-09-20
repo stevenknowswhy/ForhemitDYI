@@ -1,3 +1,5 @@
+> **Superseded.** The journey framework now lives in [Journey Builder Architecture & Employee Ownership Journey](Journey%20Builder%20Architecture%20&%20Employee%20Ownership%20Journey.md), and the Employee Ownership journey itself in [Employee Ownership Journey v0.2 - Optimized Guided Journey](Employee%20Ownership%20Journey%20v0.2%20-%20Optimized%20Guided%20Journey.md). Kept for provenance.
+
 # GOAL-DRIVEN TRANSACTION JOURNEY
 
 The first transaction category supported by the platform should be:
