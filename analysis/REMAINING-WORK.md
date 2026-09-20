@@ -22,15 +22,16 @@ track that has not been worked.
 
 ## Progress snapshot
 
-| Metric | 2026-09-19 18:12 | Target |
+| Metric | 2026-09-19 18:24 | Target |
 | --- | --- | --- |
 | `boundary-tier-none` — docs with no boundary section | 6 | 0 |
-| `boundary-tier-prose` — boundary in prose only | 8 | 0 |
-| boundary tables | 19 | 33 |
-| `never-named` — engine named by no boundary table | 1 | 0 |
+| `boundary-tier-prose` — boundary in prose only | **0** ✅ | 0 |
+| boundary tables | **27** | 33 |
+| `never-named` — engine named by no boundary table | **0** ✅ | 0 |
 | `naming-drift` — one engine, several raw names | 2 | 0 |
 | `structural-ambiguity` | 5 | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
+| boundary edges | **403** | — |
 
 Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **33**, which is
 the total number of engine documents. That is where the target of 33 comes from.
@@ -51,19 +52,11 @@ flow, Capital → Underwriting → …). What remains:
 - [ ] `Stakeholder Document & Visibility Architecture.md`
 - [ ] `Vendor Administration - Vetting Engine v1.0.md`
 
-### A2. Convert the 8 prose-only boundaries into tables
+### A2. Convert the 8 prose-only boundaries into tables — ✅ DONE 2026-09-19
 
-These already *describe* their boundary in prose, so this is transcription rather than
-authoring — the cheapest remaining win.
-
-- [ ] `Audit - Provenance Engine.md`
-- [ ] `Communication Engine.md`
-- [ ] `Consent & Access Engine.md`
-- [ ] `Decision Record Engine.md`
-- [ ] `Local Vault - Workspace Engine.md`
-- [ ] `Notification Engine.md`
-- [ ] `Transaction - Orchestration Engine.md`
-- [ ] `Workflow Engine.md`
+All eight were transcribed rather than authored: each already described its boundary in
+prose, so the rows came from the document's own "What This Engine Owns / Does Not Own"
+pair and its "Architectural Lock" section. See Completed below.
 
 ---
 
@@ -76,14 +69,16 @@ Pick **one** raw form per engine and use it everywhere.
 - [ ] Blog — currently `**Blog / Publishing**` and `**Blog Engine**`
 - [ ] Vendor Administration — currently `**Vendor Administration / Vetting**` and `**Vendor Vetting**`
 
-### B2. Clear the 1 engine that no boundary table names
+### B2. Clear the 1 engine that no boundary table names — ✅ DONE 2026-09-19
 
-A self-row does **not** count — self-references are excluded from inbound edges by
-design. This needs a row in a *related* document's table.
+`Billing` was cleared by the **Notification** boundary table's `**Billing / Commercial**`
+row, not by `Identity & Access` as originally planned. `never-named` is now **0**.
 
-- [ ] `Billing` — easiest via `Identity & Access Engine.md` (entitlements relate to identity), which already has a table
-
-`Journey` was cleared on 2026-09-19: the new **Professional Review** boundary table names it.
+The lesson is worth keeping: **`never-named` is cleared from the other side, by a related
+document naming the engine — never by the engine's own document.** Both times it has been
+cleared (Journey, then Billing) it happened as a *side effect* of writing a boundary table
+for an unrelated engine, not by targeting it. If you need to clear one, write the table for
+the engine it is most naturally adjacent to and it will fall out on its own.
 
 ---
 
@@ -134,6 +129,8 @@ One current document per concept.
 - [x] `Expanded Reality Architecture - Document Intelligence and Fact Verification.md` boundary summary (15 rows, 2 engines) — `62e1cf6`
 - [x] `declaration-consistency` check + `LAYERLESS`; self-referencing boundary rows no longer count as inbound; `Security` removed from the README roster and from `LAYERS`
 - [x] **A1 — the four transaction-layer boundary summaries** (2026-09-19): `Professional Review Engine v1.0` (19 rows, and it also cleared `Journey` from `never-named`), `Professional Review Package Engine v1.0` (19 rows), `Seller-Note Liquidity Engine v1.0` (17 rows), `Document Readiness & Checklist Engine v1.0` (19 rows). Tables 15 → 19, edges 198 → 272, `boundary-tier-none` 10 → 6, `never-named` 2 → 1.
+- [x] **A2 — the eight prose-only boundary summaries** (2026-09-19): `Audit / Provenance` (15 rows), `Communication` (15), `Consent & Access` (17), `Decision Record` (15), `Local Vault / Workspace` (15), `Notification` (16), `Transaction / Orchestration` (19), `Workflow` (19). Tables 19 → 27, boundary edges 272 → 403, **`boundary-tier-prose` 8 → 0**. Commits `0effe66`, `660f557`, `cc2ea91`, `8199702`, `e9fba92`, `a8a9249`, `2b7fbde`, `d4b5b7c`.
+- [x] **B2 — `never-named` cleared** (2026-09-19): the new Notification table names `Billing / Commercial`. 1 → 0. A free consequence of A2, not separately targeted.
 
 ---
 
@@ -142,12 +139,15 @@ One current document per concept.
 **Adding a boundary table to an existing document:**
 
 1. Derive the vocabulary from the analyzer, not from memory — print canonical name → set of raw variants actually in use, then copy the dominant form verbatim into every row.
-2. Place it near the end, *before* the closing section ("Final Principle" / "North Star" / "One-Sentence Definition").
-3. Renumber the heading you displaced.
-4. Match the document's own style — some separate sections with `---`, some do not; some number in caps, some in mixed case.
-5. **Confirm `naming-drift` did not change.** If it grew, you invented a raw form. This is the best self-check the recipe has.
-6. Boundary edges should increase by **exactly** your row count. If not, a row failed to resolve.
-7. A document declaring **N** engines needs **N** self-rows, not one.
+2. **Place it as the second-to-last section**, immediately before the document's final section. Verified against all 19 pre-existing tables: in every one, the summary sits directly before the closing section. Not "somewhere near the end" — the section *before* the closing one.
+3. **Put the self-row first.** 15 of the 19 existing tables do (Underwriting is the lone outlier). One row per declared engine, then the related engines.
+4. Renumber the heading you displaced.
+5. Match the document's own style — some separate sections with `---`, some do not; some number in caps (`# 44. ARCHITECTURAL BOUNDARY SUMMARY`), some in title case (`# 73. Architectural Boundary Summary`). Read the *document*, not the house style. Section shape: `# N. …Boundary Summary` → table → `## Hard Boundary` prose → the closing section.
+6. **Confirm `naming-drift` did not change.** If it grew, you invented a raw form. This is the best self-check the recipe has — it caught a real one: a row written as `**Stakeholder**` when the corpus's only established form is `**Stakeholder / Relationship**`.
+7. Boundary edges should increase by **exactly** your row count. If not, a row failed to resolve.
+8. A document declaring **N** engines needs **N** self-rows, not one.
+9. **Verify with the parser, not the publisher.** Running `scripts/doc-graph.py` publishes the report and archives the outgoing version. Doing that on every intermediate attempt litters `analysis/archive/` with reports of states that never shipped, which then have to be deleted by hand. Read `parse_boundary_tables()` directly while iterating; publish once, when the edit is final.
+10. Existing tables run **8–19 rows**. Hub engines (Capital, Professional Review, Transaction / Orchestration, Workflow) sit at 19; infrastructure engines at 8–12.
 
 **Committing:**
 
