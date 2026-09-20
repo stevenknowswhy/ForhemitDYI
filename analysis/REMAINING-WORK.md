@@ -22,16 +22,16 @@ track that has not been worked.
 
 ## Progress snapshot
 
-| Metric | 2026-09-19 18:24 | Target |
+| Metric | 2026-09-19 19:05 | Target |
 | --- | --- | --- |
-| `boundary-tier-none` — docs with no boundary section | 6 | 0 |
+| `boundary-tier-none` — docs with no boundary section | 2 | 0 |
 | `boundary-tier-prose` — boundary in prose only | **0** ✅ | 0 |
-| boundary tables | **27** | 33 |
+| boundary tables | **31** | 33 |
 | `never-named` — engine named by no boundary table | **0** ✅ | 0 |
-| `naming-drift` — one engine, several raw names | 2 | 0 |
+| `naming-drift` — one engine, several raw names | **0** ✅ | 0 |
 | `structural-ambiguity` | 5 | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
-| boundary edges | **403** | — |
+| boundary edges | **452** | — |
 
 Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **33**, which is
 the total number of engine documents. That is where the target of 33 comes from.
@@ -49,10 +49,10 @@ six was checked for explicit ownership language (`does not own`, `not responsibl
 
 #### A1a — the boundary is already written; transcribe it (4 docs, mechanical)
 
-- [ ] `Destination Engine v1.0.md` — §47 Rule 10 *"Downstream engines consume the destination but do not own it"*; §47 NORTH STAR names Business Reality, Research, Confidence, Scenario and professionals; §48 ONE-SENTENCE DEFINITION supplies the positive half plus the explicit split *"the Destination Engine owns the owner's intent, while the Journey Engine owns the conversation that discovers it."*
-- [ ] `Marketplace Engine v1.0.md` — §61 WHAT THE MARKETPLACE ENGINE DOES NOT DO (10 items) supplies the negative half; §2's seven CORE MARKETPLACE PRINCIPLES supply the positive half; §18 *"matching should never override user preference."*
-- [ ] `Vendor Administration - Vetting Engine v1.0.md` — §61 WHAT THIS ENGINE DOES NOT DO (10 items) plus its own summary line *"It manages marketplace eligibility and trust information."* Closing section is §63 NORTH STAR.
-- [ ] `Business Reality Engine v1.0 - Current State Business Assessment.md` — thinnest of the four but present: its closing line *"Business Reality becomes the factual counterweight to Destination. Neither is allowed to overwrite the other."* plus §19 CURRENT STATE SHOULD NEVER CHANGE THE DESTINATION AUTOMATICALLY and §34 RELATIONSHIP WITH GOAL-TO-REALITY CONFIDENCE. It is also named by **19** other boundary tables — the most-referenced engine in the corpus — so its boundary is already described extensively from the outside.
+- [x] `Destination Engine v1.0.md` — §47 Rule 10 *"Downstream engines consume the destination but do not own it"*; §47 NORTH STAR names Business Reality, Research, Confidence, Scenario and professionals; §48 ONE-SENTENCE DEFINITION supplies the positive half plus the explicit split *"the Destination Engine owns the owner's intent, while the Journey Engine owns the conversation that discovers it."* **(9 rows)**
+- [x] `Marketplace Engine v1.0.md` — §61 WHAT THE MARKETPLACE ENGINE DOES NOT DO (10 items) supplies the negative half; §2's seven CORE MARKETPLACE PRINCIPLES supply the positive half; §18 *"matching should never override user preference."* **(11 rows)**
+- [x] `Vendor Administration - Vetting Engine v1.0.md` — §61 WHAT THIS ENGINE DOES NOT DO (10 items) plus its own summary line *"It manages marketplace eligibility and trust information."* Closing section is §63 NORTH STAR. **(15 rows)**
+- [x] `Business Reality Engine v1.0 - Current State Business Assessment.md` — thinnest of the four but present: its closing line *"Business Reality becomes the factual counterweight to Destination. Neither is allowed to overwrite the other."* plus §19 CURRENT STATE SHOULD NEVER CHANGE THE DESTINATION AUTOMATICALLY and §34 RELATIONSHIP WITH GOAL-TO-REALITY CONFIDENCE. It is also named by **19** other boundary tables — the most-referenced engine in the corpus — so its boundary is already described extensively from the outside. **(14 rows)**
 
 #### A1b — boundary undecided? REVISED 2026-09-19: the boundary *is* decided; the DOCUMENT is not (2 docs)
 
@@ -93,8 +93,8 @@ pair and its "Architectural Lock" section. See Completed below.
 
 Pick **one** raw form per engine and use it everywhere.
 
-- [ ] Blog — currently `**Blog / Publishing**` and `**Blog Engine**`
-- [ ] Vendor Administration — currently `**Vendor Administration / Vetting**` and `**Vendor Vetting**`
+- [x] Blog — `**Blog Engine**` (in the WordPress Management table) standardized to `**Blog / Publishing**` (the Blog doc's own self-row form)
+- [x] Vendor Administration — `**Vendor Vetting**` (in the Billing table) standardized to `**Vendor Administration / Vetting**` (now dominant, matches the filename)
 
 ### B2. Clear the 1 engine that no boundary table names — ✅ DONE 2026-09-19
 
@@ -178,6 +178,8 @@ One current document per concept.
 - [x] **A1 — the four transaction-layer boundary summaries** (2026-09-19): `Professional Review Engine v1.0` (19 rows, and it also cleared `Journey` from `never-named`), `Professional Review Package Engine v1.0` (19 rows), `Seller-Note Liquidity Engine v1.0` (17 rows), `Document Readiness & Checklist Engine v1.0` (19 rows). Tables 15 → 19, edges 198 → 272, `boundary-tier-none` 10 → 6, `never-named` 2 → 1.
 - [x] **A2 — the eight prose-only boundary summaries** (2026-09-19): `Audit / Provenance` (15 rows), `Communication` (15), `Consent & Access` (17), `Decision Record` (15), `Local Vault / Workspace` (15), `Notification` (16), `Transaction / Orchestration` (19), `Workflow` (19). Tables 19 → 27, boundary edges 272 → 403, **`boundary-tier-prose` 8 → 0**. Commits `0effe66`, `660f557`, `cc2ea91`, `8199702`, `e9fba92`, `a8a9249`, `2b7fbde`, `d4b5b7c`.
 - [x] **B2 — `never-named` cleared** (2026-09-19): the new Notification table names `Billing / Commercial`. 1 → 0. A free consequence of A2, not separately targeted.
+- [x] **A1a — the four remaining boundary summaries** (2026-09-19): `Destination` (9 rows), `Marketplace` (11 rows), `Vendor Administration / Vetting` (15 rows), `Business Reality` (14 rows). Each was transcription from the document's own "does not own" / "Architectural Lock" / NORTH STAR, not authoring. Tables 27 → 31, edges 403 → 452 (+49, exactly the row count), `boundary-tier-none` 6 → 2. Commits `c9ab3ef`, `51338d5`, `2d6c04b`, `3a753f9`.
+- [x] **B1 — naming-drift resolved** (2026-09-19): `**Vendor Vetting**` → `**Vendor Administration / Vetting**` (Billing table) and `**Blog Engine**` → `**Blog / Publishing**` (WordPress Management table). `naming-drift` 2 → 0. Commits `79309ad`, `e7aebf4`. Note: a stray untracked archive (`1905.md`) was created by a manual `scripts/doc-graph.py` run used to confirm the fix; it was committed separately (`e875d84`) — lesson reinforced: verify with `/tmp/verify.py` (parser-only), never the publisher, to avoid orphan archives.
 
 ---
 
