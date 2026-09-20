@@ -1718,7 +1718,35 @@ Those records should **never collapse into one another**.
 
 ---
 
-# 72. The Most Valuable User Experience
+# 72. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Decision Record** | The owner's substantive decisions: what was decided, when, by whom, the context that existed at the time, alternatives considered, trade-offs, uncertainty, and reconsideration lineage | Technical activity logs, professional determinations, or owner objectives |
+| **Destination** | The owner's desired outcome and objectives | The decisions taken toward reaching it |
+| **Professional Review** | Professional determinations and their attribution | The owner's decision to accept or reject them |
+| **Scenario** | Potential transaction paths and their assumptions | Which path the owner chooses |
+| **Business Reality** | Current business facts and financial statements | The information the owner had when deciding |
+| **Valuation** | Value determinations and ranges | The owner's pricing decision |
+| **Financial Modeling** | Cash flows, debt schedules, and projections | The decision the model informed |
+| **Capital / Financing** | The capital plan, capital stack, and financing requests | The owner's financing decision |
+| **Workflow** | Tasks, dependencies, and execution mechanics | The decisions that trigger them |
+| **Transaction / Orchestration** | Transaction stages and current execution state | The rationale behind a decision |
+| **Communication** | Conversations and messages | The decision record itself |
+| **Audit / Provenance** | The historical record of what technically happened | The owner's reasoning and intent |
+| **Consent & Access** | Who may see a decision record, for what purpose, and for how long | The decision content |
+| **Identity & Access** | Who a party is and what they may do on the platform | What they decided |
+| **Evidence Ledger** | The provenance and authority of research evidence | The owner's reasoning |
+
+## Hard Boundary
+
+The Decision Record Engine owns human agency across time: what the owner decided, when, by whom, what information existed at that moment, what alternatives were considered, what trade-offs were accepted, and what uncertainty remained. It does not own technical activity, professional determinations, or the owner's underlying objectives.
+
+**The system never invents or assumes owner rationale, and it never uses today's information to reconstruct yesterday's decision context.** Owner rationale stays distinguishable from platform-generated summaries, professional determinations stay separate from owner decisions, and Audit records the technical change without replacing the record of what the owner intended.
+
+---
+
+# 73. The Most Valuable User Experience
 
 Eventually the owner should be able to open:
 
