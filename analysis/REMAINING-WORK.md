@@ -42,15 +42,38 @@ the total number of engine documents. That is where the target of 33 comes from.
 
 ### A1. Add a boundary table to the 6 docs that have none
 
-The four transaction-layer docs were done first (they are the next edges in the financing
-flow, Capital → Underwriting → …). What remains:
+**Probed 2026-09-19 — this is not one task, it is two.** The question asked was: *is the
+boundary already decided somewhere, or would writing the table force a decision?* Each of the
+six was checked for explicit ownership language (`does not own`, `not responsible for`,
+`does not do`, `never … own/decide/determine`) and for an existing boundary section.
 
-- [ ] `Business Reality Engine v1.0 - Current State Business Assessment.md`
-- [ ] `Destination Engine v1.0.md`
-- [ ] `Marketplace Engine v1.0.md`
-- [ ] `Journey Builder Architecture & Employee Ownership Journey.md`
-- [ ] `Stakeholder Document & Visibility Architecture.md`
-- [ ] `Vendor Administration - Vetting Engine v1.0.md`
+#### A1a — the boundary is already written; transcribe it (4 docs, mechanical)
+
+- [ ] `Destination Engine v1.0.md` — §47 Rule 10 *"Downstream engines consume the destination but do not own it"*; §47 NORTH STAR names Business Reality, Research, Confidence, Scenario and professionals; §48 ONE-SENTENCE DEFINITION supplies the positive half plus the explicit split *"the Destination Engine owns the owner's intent, while the Journey Engine owns the conversation that discovers it."*
+- [ ] `Marketplace Engine v1.0.md` — §61 WHAT THE MARKETPLACE ENGINE DOES NOT DO (10 items) supplies the negative half; §2's seven CORE MARKETPLACE PRINCIPLES supply the positive half; §18 *"matching should never override user preference."*
+- [ ] `Vendor Administration - Vetting Engine v1.0.md` — §61 WHAT THIS ENGINE DOES NOT DO (10 items) plus its own summary line *"It manages marketplace eligibility and trust information."* Closing section is §63 NORTH STAR.
+- [ ] `Business Reality Engine v1.0 - Current State Business Assessment.md` — thinnest of the four but present: its closing line *"Business Reality becomes the factual counterweight to Destination. Neither is allowed to overwrite the other."* plus §19 CURRENT STATE SHOULD NEVER CHANGE THE DESTINATION AUTOMATICALLY and §34 RELATIONSHIP WITH GOAL-TO-REALITY CONFIDENCE. It is also named by **19** other boundary tables — the most-referenced engine in the corpus — so its boundary is already described extensively from the outside.
+
+#### A1b — the boundary is genuinely undecided; the table would force a decision (2 docs, BLOCKED)
+
+- [ ] `Journey Builder Architecture & Employee Ownership Journey.md` — has a positive definition (§28 Product Architecture in One Sentence) but **no statement of what it does not own**, and only 2 other tables name it. Its own identity is unresolved.
+- [ ] `Stakeholder Document & Visibility Architecture.md` — asserts its three visibility levels *"are data-permission policies"*, which overlaps Consent & Access's remit, and the document covers only the visibility layer while a relationship layer is proposed. No ownership language at all.
+
+**These two are not merely "not yet done" — they are blocked on Track C1.** Both are already
+on the `structural-ambiguity` list, for exactly the reason that makes their boundary
+unwritable:
+
+> * Stakeholder maps to `Stakeholder Document & Visibility Architecture.md`, but that document is about document visibility; section 7 describes a Stakeholder / Relationship engine that owns who participates and why
+> * Journey maps to `Journey Builder Architecture & Employee Ownership Journey.md` out of three candidate journey documents
+
+**Writing a boundary table for an engine whose identity is undecided would freeze an
+undecided structure into the graph.** The table would assert a boundary that C1 may then move
+or rename, and the analyzer would treat it as settled. Resolve C1 first; A1b then becomes
+mechanical like the rest.
+
+**The correlation worth remembering: the A1 documents that need authoring are precisely the
+ones `structural-ambiguity` already flags.** When a mechanical track stalls, check whether the
+analyzer has already explained why.
 
 ### A2. Convert the 8 prose-only boundaries into tables — ✅ DONE 2026-09-19
 
