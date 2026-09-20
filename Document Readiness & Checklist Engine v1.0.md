@@ -974,6 +974,7 @@ The smallest useful next document actions for the owner.
 | **Audit / Provenance** | The historical record of document and sharing activity | Document contents |
 | **Policy / Compliance** | The rules governing how engines may operate | Document requirements |
 | **Notification** | Delivery of document requests and reminders | Document state |
+| **Professional Determination** | The goal determinations that imply which documents are required | The documents themselves |
 
 ## Hard Boundary
 
