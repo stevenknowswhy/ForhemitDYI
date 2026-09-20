@@ -1575,7 +1575,37 @@ The buyer and the owner's qualified professionals determine what the transaction
 
 ---
 
-# 58. ONE-SENTENCE DEFINITION
+# 58. ARCHITECTURAL BOUNDARY SUMMARY
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Seller-Note Liquidity** | The seller note, note ingestion and verification, note data quality, the keep / partial / full paths, liquidity scenarios, modeled (never declared) pricing, buyer profiles and matching, the disclosure policy, indicative bids, offer comparison without ranking, the transfer and closing workflow, assignment and servicing separation, buyer vetting, and fraud safeguards | What the seller should do, or the price |
+| **Capital / Financing** | The capital plan and the financing process | The note itself, or its liquidity |
+| **Closing** | Closing readiness and the closing event | Note liquidity exploration |
+| **Professional Review** | Professional determinations on the note or the transfer | Liquidity mechanics |
+| **Valuation** | Value determinations | Modeled note pricing |
+| **Financial Modeling** | Calculations and projections | The actual note |
+| **Business Reality** | Current-state business facts | The note |
+| **Marketplace** | Buyer and professional discovery, curation, and role fit | Ranking buyers, or making offers |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The disclosure policy itself |
+| **Document Readiness** | Document requirements, status, and outstanding items | Note terms |
+| **Transaction / Orchestration** | The execution plan and transaction state | The note transfer workflow |
+| **Ownership Lifecycle** | The continuing ownership relationship after closing | The note |
+| **Consent & Access** | Who may see which note information, for what purpose | The note data |
+| **Local Vault** | Private source documents and the local workspace | Note semantics |
+| **Decision Record** | The owner's recorded decisions and rationale | The note |
+| **Audit / Provenance** | The historical record of note and offer activity | The offers themselves |
+| **Policy / Compliance** | The rules governing how engines may operate | The regulatory operating modes |
+
+## Hard Boundary
+
+**The engine facilitates discovery and coordination. It does not determine what the seller should do.**
+
+The owner can keep the note, change the amount, change the liquidity target, explore another buyer, withdraw, or ask a professional — at every appropriate stage. The engine never converts an indicative bid into a valuation, and it never ranks one buyer above another.
+
+---
+
+# 59. ONE-SENTENCE DEFINITION
 
 > **The Seller-Note Liquidity Engine is the system that transforms an outstanding seller-financed receivable into a controlled, evidence-backed, owner-directed liquidity exploration and potential secondary transaction.**
 
