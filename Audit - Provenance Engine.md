@@ -1695,7 +1695,35 @@ These should now be treated as requirements:
 
 ---
 
-# 73. The Platform's History Stack
+# 73. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Audit / Provenance** | The append-only historical record: what happened, who or what caused it, previous and new values, approvals, sharing and revocation records, version lineage, integrity mechanisms | The reasoning behind a decision, the truth of a business fact, or the authority to act |
+| **Decision Record** | The owner's recorded reasoning and rationale | The technical history of what changed |
+| **Evidence Ledger** | The provenance and authority of research evidence | The platform-wide change history |
+| **Communication** | The actual conversation and what was said | The immutable record of platform events |
+| **Professional Review** | Professional determinations and their attribution | The record of how a determination was produced |
+| **Business Reality** | Current business facts and financial statements | The history of how those facts changed |
+| **Document Readiness** | Document status, completeness, and outstanding requests | The audit history of document access |
+| **Workflow** | Execution mechanics and workflow state | The immutable record of completed steps |
+| **Transaction / Orchestration** | Current execution state and the execution plan | The historical chain of execution |
+| **Consent & Access** | Current authorization — who may see what now | The historical record of what was once permitted |
+| **Identity & Access** | Who a party is and what they may do on the platform | The audit trail of privileged actions |
+| **Local Vault** | Private source documents, storage, encryption, and versioning | The audit record of who accessed them |
+| **Policy / Compliance** | The rules governing how engines may operate | The historical record of policy decisions |
+| **Notification** | Delivery of attention, including follow-up alerts | The record that attention was delivered |
+| **Integration** | Connectivity to external systems | The audit record of integration actions |
+
+## Hard Boundary
+
+The Audit / Provenance Engine owns the platform's history: what happened, who or what caused it, what changed, and whether the record can be trusted. It does not own meaning. It records the owner's choice without judging it, a professional's determination without endorsing it, and a business fact without becoming its source of truth.
+
+**Audit records history. It does not own the systems it observes, and it does not grant access merely because it records that access once existed.** Decision Record preserves the owner's reasoning, Evidence Ledger preserves research provenance, Communication preserves actual conversation, Consent & Access preserves current authorization, Transaction / Orchestration preserves current execution state, and Workflow preserves execution mechanics. Audit preserves the historical chain connecting all of them.
+
+---
+
+# 74. The Platform's History Stack
 
 We now have a particularly strong distinction among the major historical records:
 
