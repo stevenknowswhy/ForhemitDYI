@@ -1464,7 +1464,37 @@ That is exactly the separation we want.
 
 ---
 
-# 42. What We Should Lock In
+# 42. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Consent & Access** | Who may see which resource, for what purpose, and for how long — actors, resources, permissions, access scopes, grants, expiration, revocation, and the explainability of every authorization decision | The resource itself, the identity of the actor, or the rules that make a request eligible |
+| **Identity & Access** | Who a party is and what they may do on the platform | Whether a specific disclosure is permitted for a specific purpose |
+| **Policy / Compliance** | The rules used to determine whether an access request should be allowed | The access decision itself |
+| **Local Vault** | File storage, encryption, local indexing, and local document retrieval | Who may receive a document |
+| **Document Intelligence** | OCR, extraction, classification, and document interpretation | Who may see an extracted fact |
+| **Business Reality** | Current business facts and financial statements | Which facts a given actor may see |
+| **Evidence Ledger** | Research-source provenance | Disclosure of research evidence |
+| **Review Package** | Determining what belongs in a professional package | Who the package may be shared with |
+| **Professional Review** | Managing professional assignments and determinations | The access a professional holds |
+| **Document Readiness** | Document status, completeness, and outstanding requests | Whether an outstanding document may be disclosed |
+| **Marketplace** | Professional discovery and matching | A professional's access to transaction information |
+| **Audit / Provenance** | Platform-wide historical logging | Current authorization |
+| **Transaction / Orchestration** | Transaction stages and current execution state | Who may observe them |
+| **Workflow** | Tasks, dependencies, and execution mechanics | Whether an assignee may see the underlying document |
+| **Communication** | Conversations and messages | Who may take part in a conversation |
+| **Notification** | Delivery of attention, including follow-up alerts | What the recipient is permitted to see |
+| **Stakeholder / Relationship** | Who participates in the transaction and what they may see | The authorization decision that permits it |
+
+## Hard Boundary
+
+The Consent & Access Engine owns the authorization decision: who may see which resource, for what purpose, and for how long. It does not own the resource, the identity of the actor, or the rules that make a request eligible.
+
+**Storage and permission are separate. Local possession never implies external access, and no engine is allowed to silently broaden another engine's permissions.** Every external access grant carries a purpose and an expiration, every authorization decision is explainable, and revocation stops controlled access without falsely promising retrieval of copies already disclosed.
+
+---
+
+# 43. What We Should Lock In
 
 The following should be treated as architectural requirements:
 
