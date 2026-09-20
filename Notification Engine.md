@@ -1850,7 +1850,36 @@ That is much more powerful than treating notifications as glorified email.
 
 ---
 
-# 80. The Design Philosophy
+# 80. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Notification** | Notification definitions and instances, recipients, channels, delivery timing and preferences, priority, quiet hours, digests, reminders, escalation delivery, read/unread and delivery status, retry handling, suppression, duplicate prevention, and notification history | The underlying business logic, or the authority to act |
+| **Workflow** | Tasks, dependencies, scheduling, and execution mechanics | Whether the user is notified about them |
+| **Communication** | Conversations and messages | Delivery of attention about them |
+| **Transaction / Orchestration** | Transaction milestones and current execution state | Which milestones warrant attention |
+| **Professional Review** | Professional determinations and their attribution | Notification that a determination is ready |
+| **Document Readiness** | Document status, completeness, and outstanding requests | The reminder that a document is outstanding |
+| **Confidence** | Goal-alignment and evidence signals | Notification when confidence changes |
+| **Consent & Access** | Who may see which resource, for what purpose, and for how long | Delivery of attention to that person |
+| **Identity & Access** | Who a party is and what they may do on the platform | Their notification preferences |
+| **Local Vault** | Private source documents, storage, encryption, and versioning | Notification that a document exists |
+| **Audit / Provenance** | The historical record of what happened | The delivery record itself |
+| **Integration** | Connectivity to external systems and delivery providers | Which notifications are sent |
+| **Policy / Compliance** | The rules governing how engines may operate | The delivery decision |
+| **Billing / Commercial** | Subscription entitlements and billing state | Notification of billing events |
+| **Closing** | Closing execution and its requirements | Notification of closing deadlines |
+| **Ownership Lifecycle** | Post-transaction ownership state | Notification of lifecycle events |
+
+## Hard Boundary
+
+The Notification Engine owns attention: what deserves to interrupt someone, on which channel, at what time, and whether it actually arrived. It does not own the underlying work, and it never reinterprets what another engine has determined — it reports it.
+
+**Notification never grants permission and never exposes information the recipient is not authorized to see.** Consent & Access owns authorization, so sensitive content is minimized on external channels. Failed delivery is never represented as successful, and every notification is explainable: what happened, why the user received it, and what action is available.
+
+---
+
+# 81. The Design Philosophy
 
 The platform should ultimately behave less like:
 
