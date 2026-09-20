@@ -242,6 +242,28 @@ LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
 # which would otherwise let the layer check skip that engine in silence.
 LAYERLESS = frozenset({"Blog", "WordPress"})
 
+# Documents that deliberately hold more than one engine. Both carry N self-rows
+# in their boundary table, exactly as the recipe prescribes, so the corpus has
+# decided this -- but the decision had nowhere to live, and an unexplained
+# multi-engine document is indistinguishable from two engines accidentally
+# pointed at the same file. That is the identical shape LAYERLESS fixes for
+# layers: without an explicit register, a settled question reads as an open one
+# forever. Check 0 validates the register is not stale.
+#
+# Each entry records what would reverse it, so the exemption is a decision with
+# a stated expiry condition rather than a permanent pass.
+MULTI_ENGINE_DOCS: "OrderedDict[str, str]" = OrderedDict([
+    ("Expanded Reality Architecture - Document Intelligence and Fact Verification.md",
+     "one pipeline in two halves: Document Intelligence extracts the facts, "
+     "Fact Verification checks them against each other and against the stated "
+     "reality. Split only if either engine ever gains a home document of its "
+     "own."),
+    ("Goal-to-Reality Confidence Research Engine.md",
+     "one specification in three parts: Research gathers, Evidence Ledger "
+     "records provenance (section 12), Confidence scores. Split only if any of "
+     "the three ever gains a home document of its own."),
+])
+
 # Which DOCUMENT-INDEX groups map onto which architectural layer.
 # Groups 1-5 are organized by design phase, and groups 7, 10 and 11 hold
 # principle/overview documents rather than engines, so all of those are
@@ -735,24 +757,32 @@ def run_checks(docs):
     for k, v in ENGINE_HOME.items():
         if v:
             home_to_keys[v].append(k)
+    # Only UNREGISTERED multi-engine documents are ambiguous. A registered one
+    # is a decision the corpus already made and recorded in MULTI_ENGINE_DOCS,
+    # not a question still waiting for an answer -- reporting it forever would
+    # make this check a standing complaint rather than a detector.
     collapsed = [
         f"{', '.join(sorted(ks))} -> one document ({h})"
-        for h, ks in sorted(home_to_keys.items()) if len(ks) > 1
+        for h, ks in sorted(home_to_keys.items())
+        if len(ks) > 1 and h not in MULTI_ENGINE_DOCS
     ]
     if "__ProfessionalDetermination__" in flow and "Professional Determination" not in ENGINE_HOME:
         collapsed.append(
             "Professional Determination is a node in the section-20 flow "
             "diagram, between Professional Review and Document Readiness, but "
             "it is not listed as an engine in any layer roster")
-    collapsed.append(
-        "Stakeholder maps to 'Stakeholder Document & Visibility "
-        "Architecture.md', but that document is about document visibility; "
-        "section 7 describes a Stakeholder / Relationship engine that owns "
-        "who participates and why")
-    collapsed.append(
-        "Journey maps to 'Journey Builder Architecture & Employee Ownership "
-        "Journey.md' out of three candidate journey documents")
     findings["structural-ambiguity"] = collapsed
+    # Supersession questions (which journey document is current; whether the
+    # Stakeholder relationship layer gets its own document) used to be hardcoded
+    # here. No document edit could ever clear them, so they were a to-do list
+    # living inside a detector. They are decisions for a human, and now live in
+    # analysis/REMAINING-WORK.md under Track C3.
+    findings["accepted-multi-engine"] = [
+        f"{h} — {', '.join(sorted(ks))}: {why}"
+        for h, ks in sorted(home_to_keys.items())
+        if len(ks) > 1 and h in MULTI_ENGINE_DOCS
+        for why in [MULTI_ENGINE_DOCS[h]]
+    ]
 
     # a boundary table naming something that is not a declared engine: the
     # document claims a relationship with an engine that has no home in the
@@ -792,6 +822,17 @@ def run_checks(docs):
         elif placed.get(k):
             decl.append(f"“{k}” is in LAYERLESS but also declared in "
                         f"{placed[k][0]}")
+    # A register entry that no longer describes reality would suppress a real
+    # finding, so validate it the same way: an exemption set nobody checks is
+    # just a way to hide things.
+    for doc in sorted(MULTI_ENGINE_DOCS):
+        keys = sorted(k for k, v in ENGINE_HOME.items() if v == doc)
+        if not keys:
+            decl.append(f"MULTI_ENGINE_DOCS names “{doc}”, which is no "
+                        f"engine's home document")
+        elif len(keys) < 2:
+            decl.append(f"MULTI_ENGINE_DOCS names “{doc}”, but only one engine "
+                        f"({keys[0]}) has it as home — no longer multi-engine")
     findings["declaration-consistency"] = decl
 
     # README's prose roster is the fourth view of the same roster, and the
@@ -1109,6 +1150,14 @@ def render_report(findings, stats, boundary, flow, ring):
     section("6", "Structural ambiguity",
             "structural-ambiguity",
             "None.")
+
+    accepted = findings.get("accepted-multi-engine", [])
+    if accepted:
+        A("Multi-engine documents on record — decided, so not counted above:")
+        A("")
+        for it in accepted:
+            A(f"* {it}")
+        A("")
 
     section("7", "Boundaries with engines that are not declared anywhere",
             "undeclared-reference",
