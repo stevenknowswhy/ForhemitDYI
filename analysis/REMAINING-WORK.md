@@ -22,16 +22,16 @@ track that has not been worked.
 
 ## Progress snapshot
 
-| Metric | 2026-09-19 19:30 | Target |
+| Metric | 2026-09-20 10:40 | Target |
 | --- | --- | --- |
-| `boundary-tier-none` — docs with no boundary section | 2 | 0 |
+| `boundary-tier-none` — docs with no boundary section | **0** ✅ | 0 |
 | `boundary-tier-prose` — boundary in prose only | **0** ✅ | 0 |
-| boundary tables | **32** | 34 |
+| boundary tables | **34** | 34 |
 | `never-named` — engine named by no boundary table | **0** ✅ | 0 |
 | `naming-drift` — one engine, several raw names | **0** ✅ | 0 |
 | `structural-ambiguity` | 4 | decisions made (not necessarily 0) |
 | `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
-| boundary edges | **473** | — |
+| boundary edges | **495** | — |
 
 Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **34**, which is
 the total number of engine documents. That is where the target of 34 comes from.
@@ -58,7 +58,7 @@ six was checked for explicit ownership language (`does not own`, `not responsibl
 
 **Correction.** Both were classified "boundary undecided". Checking what the corpus already says about them shows the **boundary is decided in both cases** — it is the **document that is unsettled**. That is a smaller and different problem, and it moves the blocker from C1 to C3.
 
-- [ ] `Stakeholder Document & Visibility Architecture.md` — the boundary is already assigned consistently by three tables and by the engine's own name (`Stakeholder / Relationship`):
+- [x] `Stakeholder Document & Visibility Architecture.md` — **DONE 2026-09-20** (10 rows): self-row `**Stakeholder / Relationship**` owns who participates and what each stakeholder may see; `## Hard Boundary` locks it against Consent & Access (authorization) and Identity & Access (identities). The §7 relationship-layer-vs-visibility-layer question is unchanged — it is documentation scope (Track C3), not boundary.
   - `Identity & Access Engine.md` (pre-existing): *"Why a person or organization participates in a transaction"*
   - `Consent & Access Engine.md`: *"Who participates in the transaction and what they may see"*
   - `Communication Engine.md` §337: *"Participants should be references to the **Stakeholder / Relationship Engine** rather than duplicate identity records."*
@@ -67,13 +67,15 @@ six was checked for explicit ownership language (`does not own`, `not responsibl
 
   **So the open question is documentation scope, not architecture:** does the relationship layer get its own document, or is it folded into the visibility document? The boundary table can be written either way — it is the same boundary. The visibility layer's claim that its three levels *"are data-permission policies"* does overlap Consent & Access; the three tables above already resolve it — **Stakeholder owns who participates and what they may see; Consent & Access owns the authorization decision that permits it.**
 
-- [ ] `Journey Builder Architecture & Employee Ownership Journey.md` — the boundary is likewise decided:
+- [x] `Journey Builder Architecture & Employee Ownership Journey.md` — **DONE 2026-09-20** (12 rows): self-row `**Journey**` owns the conversation that discovers the owner's intent and the journey framework; `## Hard Boundary` locks it against Destination (the intent), Transaction / Orchestration (the execution system layered onto the same framework), and Professional Determination (the conclusions). The boundary was likewise already decided:
   - `Document Readiness & Checklist Engine v1.0.md` and `Professional Review Engine v1.0.md`, identically: *"The evolving ownership journey and its stages"*
   - `Destination Engine v1.0.md` §48: *"the Destination Engine owns the owner's intent, while the Journey Engine owns the conversation that discovers it."*
 
   **The real blocker is supersession, not identity.** The current home document is headed `## Version 0.1` while `Employee Ownership Journey v0.2 - Optimized Guided Journey.md` exists, and **four** journey-named documents sit in the corpus. That is Track C3.
 
 **Revised conclusion: A1b's blocker is document identity and supersession (Track C3), not engine identity (Track C1).** That is a smaller decision — *which document is current, and retire the rest* — and C3 already recommends it. C1 stays open for `Professional Determination` (the genuinely undecided item) and for the two multi-engine register entries.
+
+**UPDATE 2026-09-20 — both A1b boundary tables are now written.** The tables were never blocked on the boundary: it was decided in both cases. What remains is the C3 question the tables do not answer — which journey document is current (four candidates; the current home is headed `## Version 0.1`), and whether the Stakeholder relationship layer gets its own document. **Track A (boundary coverage) is now COMPLETE: `boundary-tier-none` = 0.**
 
 **The correlation worth remembering: the A1 documents that need authoring are precisely the
 ones `structural-ambiguity` already flags.** When a mechanical track stalls, check whether the
