@@ -995,7 +995,38 @@ Not:
 
 ---
 
-# 36. FINAL PRODUCT MODEL
+# 36. ARCHITECTURAL BOUNDARY SUMMARY
+
+The Stakeholder / Relationship Engine owns who participates in the transaction and what each
+stakeholder may see. Its three visibility levels — Summary, Detailed, Comprehensive — are not
+document lengths but **data-permission policies**: the owner controls disclosure explicitly, and
+every stakeholder package is generated from the Destination and Owner Master Record as the single
+source of truth.
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Stakeholder / Relationship** | Who participates in the transaction and what each stakeholder may see — the three visibility levels (Summary / Detailed / Comprehensive) expressed as data-permission policies | The authorization decision that permits access (Consent & Access); the identities themselves (Identity & Access); the source content it translates |
+| **Consent & Access** | The authorization decision that permits a stakeholder to see specific data | The visibility levels Stakeholder defines as policies |
+| **Identity & Access** | Who a stakeholder is and their authentication / session | What each stakeholder may see once admitted |
+| **Destination** | The owner's stated intent that stakeholder documents translate | The stakeholder-facing views Stakeholder generates |
+| **Professional Review** | Review of a stakeholder package before it is shared | The package content Stakeholder assembles |
+| **Professional Determination** | The professional's conclusion surfaced to stakeholders | The stakeholder views Stakeholder presents |
+| **Communication** | Delivery of stakeholder documents to the right people | Which people may see what — Stakeholder / Relationship defines that |
+| **Document Readiness** | Whether documents are complete and ready to share | The visibility policy that gates sharing |
+| **Transaction / Orchestration** | The transaction the stakeholders participate in | The stakeholder relationships within it (Stakeholder owns those) |
+| **Audit / Provenance** | The record of who saw what and when | The visibility decision Stakeholder / Relationship defines |
+
+## Hard Boundary
+
+> The Stakeholder / Relationship Engine owns **who participates and what they may see**. It does
+> not own the authorization decision (Consent & Access), the identities (Identity & Access), or
+> the source content it translates from the Destination and Owner Master Record. The three
+> visibility levels are data-permission policies, not document lengths — the owner controls
+> disclosure explicitly.
+
+---
+
+# 37. FINAL PRODUCT MODEL
 
 The platform now has another clean chain:
 
