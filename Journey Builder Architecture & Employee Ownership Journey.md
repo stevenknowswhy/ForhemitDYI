@@ -1,7 +1,5 @@
 # Journey Builder Architecture & Employee Ownership Journey
 
-## Version 0.1
-
 ## 1. Product Architecture
 
 The platform should be built around a configurable **Journey Engine**.
