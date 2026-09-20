@@ -1967,7 +1967,39 @@ These should now be treated as requirements:
 
 ---
 
-# 73. The Architecture We Have Now
+# 73. Architectural Boundary Summary
+
+| Engine | Owns | Does Not Own |
+| --- | --- | --- |
+| **Workflow** | Events and subscriptions, triggers, workflow definitions and instances, tasks and task templates, dependencies, scheduling, recurring actions, escalations, retries, completion and failure handling, idempotency, execution state, and execution telemetry | Domain meaning, or the data a workflow operates on |
+| **Transaction / Orchestration** | Transaction plans, stages, milestones, and transaction-specific meaning | The execution mechanics that carry them out |
+| **Professional Review** | Professional determinations and their attribution | The workflow that requests or routes them |
+| **Business Reality** | Current business facts and financial statements | The work performed on them |
+| **Financial Modeling** | Calculations, cash flows, debt schedules, and projections | The workflow that schedules them |
+| **Document Readiness** | Document status, completeness, and outstanding requests | The task that requests a document |
+| **Review Package** | Purpose-built packages assembled for a named recipient | The workflow that assembles them |
+| **Closing** | Closing execution and its requirements | The workflow steps that satisfy them |
+| **Ownership Lifecycle** | Post-transaction ownership state | The workflows that maintain it |
+| **Decision Record** | The owner's recorded reasoning and rationale | The workflow a decision triggers |
+| **Communication** | Conversations and messages | Task state and execution mechanics |
+| **Notification** | Delivery of attention, including follow-up alerts | The workflow event that prompts an alert |
+| **Consent & Access** | Who may see which resource, for what purpose, and for how long | Whether a protected action may proceed |
+| **Identity & Access** | Who a party is and what they may do on the platform | Task assignment mechanics |
+| **Local Vault** | Private source documents, storage, encryption, and versioning | Workflow state |
+| **Audit / Provenance** | The historical record of what happened | Current execution state |
+| **Policy / Compliance** | The rules governing how engines may operate | Execution mechanics |
+| **Integration** | Connectivity to external systems | Workflow orchestration |
+| **Billing / Commercial** | Subscription entitlements and billing state | Recurring workflow execution |
+
+## Hard Boundary
+
+The Workflow Engine owns execution mechanics: events and subscriptions, triggers, workflow definitions and instances, tasks and dependencies, scheduling, recurring actions, escalations, retries, failure handling, idempotency, execution state, and telemetry. It does not own domain meaning. It can invoke other engines or react to their events; it does not absorb their responsibilities.
+
+**Workflow does not own domain meaning and does not duplicate entire domain records.** Other engines remain authoritative over their own data and decisions, protected actions require the appropriate authorization engine, and Transaction / Orchestration uses Workflow infrastructure while remaining responsible for transaction-specific meaning. Workflow coordinates engines through structured contracts and events rather than hidden direct dependencies.
+
+---
+
+# 74. The Architecture We Have Now
 
 The distinction among the three layers is particularly clean:
 
