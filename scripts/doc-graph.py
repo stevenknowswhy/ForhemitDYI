@@ -18,6 +18,7 @@ Edge syntax it understands (in descending order of authority):
 
 Checks it runs:
 
+  declaration-consistency  ENGINE_HOME, LAYERS and LAYERLESS disagreeing
   no-dangling          an engine named in the architecture with no backing doc
   stale-absence        a document claiming a built component is absent
   no-orphans           a document no other document declares a boundary with
@@ -128,6 +129,7 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Marketplace",            "Marketplace Engine v1.0.md"),
     # --- transaction engines ---
     ("Capital",                "Capital - Financing Engine v1.0.md"),
+    ("Underwriting",           "Underwriting Engine.md"),
     ("Seller Note Liquidity",  "Seller-Note Liquidity Engine v1.0.md"),
     ("Professional Review",    "Professional Review Engine v1.0.md"),
     ("Document Readiness",     "Document Readiness & Checklist Engine v1.0.md"),
@@ -216,16 +218,27 @@ LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
         "Scenario", "Financial Modeling", "Valuation", "Marketplace",
     ]),
     ("Transaction", [
-        "Capital", "Seller Note Liquidity", "Professional Review",
+        "Capital", "Underwriting", "Seller Note Liquidity", "Professional Review",
         "Document Readiness", "Review Package", "Transaction", "Stakeholder",
         "Workflow", "Communication", "Closing", "Ownership Lifecycle",
     ]),
     ("Infrastructure", [
         "Local Vault", "Identity & Access", "Consent & Access", "Policy",
         "Audit", "Decision Record", "Notification", "Integration",
-        "Vendor Administration", "Billing", "Security",
+        "Vendor Administration", "Billing",
+        # "Security" is NOT listed here. It is a cross-cutting property, not a
+        # layer member -- see CROSS_CUTTING above. The section-20 ring and the
+        # README roster used to name it as infrastructure, which is what made
+        # it look like a missing engine; both have been reconciled.
     ]),
 ])
+
+# Engines that are declared in ENGINE_HOME but deliberately belong to no
+# layer: the publishing surfaces sit outside the three-layer model. Naming
+# them explicitly is what lets check 0 tell "deliberately layerless" apart
+# from "someone added an engine to ENGINE_HOME and forgot to place it",
+# which would otherwise let the layer check skip that engine in silence.
+LAYERLESS = frozenset({"Blog", "WordPress"})
 
 # Which DOCUMENT-INDEX groups map onto which architectural layer.
 # Groups 1-5 are organized by design phase, and groups 7, 10 and 11 hold
@@ -260,6 +273,9 @@ ALIASES = {
     "capital": "Capital",
     "capital / financing": "Capital",
     "financing": "Capital",
+    "underwriting": "Underwriting",
+    "loan underwriting": "Underwriting",
+    "underwriting packet": "Underwriting",
     "seller note liquidity": "Seller Note Liquidity",
     "seller-note liquidity": "Seller Note Liquidity",
     "seller note": "Seller Note Liquidity",
@@ -597,13 +613,19 @@ def run_checks(docs):
     findings["no-dangling"] = dangling
 
     # ---- check 2: no-orphans -------------------------------------------
+    # A boundary table's own row describes what THIS engine owns. It is a
+    # self-loop, not a relationship, so it must not count as an inbound edge.
+    # Twelve engine docs open their boundary table with such a row; counting
+    # them would let a document satisfy its own no-orphans and never-named
+    # checks, which is the same self-reference bug fixed in stale-absence.
     inbound_boundary = defaultdict(set)
     outbound_boundary = defaultdict(set)
     for (src, eng) in boundary:
         home = ENGINE_HOME.get(eng)
         if home and home in all_docs:
-            inbound_boundary[home].add(src)
             outbound_boundary[src].add(home)
+            if home != src:
+                inbound_boundary[home].add(src)
 
     inbound_links = defaultdict(set)
     for (src, dst) in links:
@@ -667,6 +689,36 @@ def run_checks(docs):
 
     # a document still telling the reader that a built component is absent
     findings["stale-absence"] = check_stale_absence(docs)
+
+    # ---- check 0: declaration-consistency -------------------------------
+    # ENGINE_HOME, LAYERS and LAYERLESS are three hand-maintained views of the
+    # same roster. If they disagree, the layer check below fails OPEN: an
+    # engine with no layer entry yields declared=None and is skipped, so a
+    # forgotten placement looks exactly like a passing check. Assert the
+    # invariant here so the roster cannot drift quietly.
+    decl = []
+    placed = defaultdict(list)
+    for layer, keys in LAYERS.items():
+        for k in keys:
+            placed[k].append(layer)
+    for k in sorted(placed):
+        if k not in ENGINE_HOME:
+            decl.append(f"LAYERS declares “{k}” in {placed[k][0]}, but "
+                        f"ENGINE_HOME has no such engine")
+        elif len(placed[k]) > 1:
+            decl.append(f"“{k}” is declared in {len(placed[k])} layers: "
+                        f"{', '.join(placed[k])}")
+    for k in ENGINE_HOME:
+        if not placed.get(k) and k not in LAYERLESS:
+            decl.append(f"“{k}” is in ENGINE_HOME but in no layer, and is not "
+                        f"listed in LAYERLESS -- either place it or exempt it")
+    for k in sorted(LAYERLESS):
+        if k not in ENGINE_HOME:
+            decl.append(f"LAYERLESS names “{k}”, which is not an engine")
+        elif placed.get(k):
+            decl.append(f"“{k}” is in LAYERLESS but also declared in "
+                        f"{placed[k][0]}")
+    findings["declaration-consistency"] = decl
 
     # ---- check 3: no-layer-violation -----------------------------------
     violations = []
@@ -911,6 +963,7 @@ def render_report(findings, stats, boundary, flow, ring):
     A("| # | Check | Count | Severity |")
     A("| --- | --- | --- | --- |")
     sev = {
+        "declaration-consistency": "High",
         "no-dangling": "High",
         "stale-absence": "High",
         "boundary-tier-none": "High",
@@ -924,17 +977,18 @@ def render_report(findings, stats, boundary, flow, ring):
         "coverage": "Low",
     }
     order = [
-        ("1", "no-dangling", "Dangling engines — declared, no document"),
-        ("2", "stale-absence", "Documents claiming a built component is absent"),
-        ("3", "boundary-tier-none", "Engine docs with no boundary section"),
-        ("4", "structural-ambiguity", "Structural ambiguity"),
-        ("5", "undeclared-reference", "Boundaries with undeclared engines"),
-        ("6", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
-        ("7", "never-named", "Engines no boundary table mentions"),
-        ("8", "naming-drift", "Naming drift"),
-        ("9", "no-orphans", "Orphan documents"),
-        ("10", "no-layer-violation", "Layer violations"),
-        ("11", "coverage", "Coverage and count mismatches"),
+        ("1", "declaration-consistency", "Roster views that disagree with each other"),
+        ("2", "no-dangling", "Dangling engines — declared, no document"),
+        ("3", "stale-absence", "Documents claiming a built component is absent"),
+        ("4", "boundary-tier-none", "Engine docs with no boundary section"),
+        ("5", "structural-ambiguity", "Structural ambiguity"),
+        ("6", "undeclared-reference", "Boundaries with undeclared engines"),
+        ("7", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
+        ("8", "never-named", "Engines no boundary table mentions"),
+        ("9", "naming-drift", "Naming drift"),
+        ("10", "no-orphans", "Orphan documents"),
+        ("11", "no-layer-violation", "Layer violations"),
+        ("12", "coverage", "Coverage and count mismatches"),
     ]
     for num, key, label in order:
         n = len(findings.get(key, []))
@@ -952,52 +1006,56 @@ def render_report(findings, stats, boundary, flow, ring):
                 A(f"* {it}")
         A("")
 
-    section("1", "Dangling engines — declared in the architecture, no document",
+    section("1", "Roster views that disagree with each other",
+            "declaration-consistency",
+            "None — ENGINE_HOME, LAYERS and LAYERLESS agree.")
+
+    section("2", "Dangling engines — declared in the architecture, no document",
             "no-dangling",
             "None — every declared engine resolves to a document.")
 
-    section("2", "Documents claiming a built component is absent",
+    section("3", "Documents claiming a built component is absent",
             "stale-absence",
             "None — no document still presents a built component as missing.")
 
-    section("3", "Engine docs with no boundary section at all",
+    section("4", "Engine docs with no boundary section at all",
             "boundary-tier-none",
             "None.")
 
-    section("4", "Structural ambiguity",
+    section("5", "Structural ambiguity",
             "structural-ambiguity",
             "None.")
 
-    section("5", "Boundaries with engines that are not declared anywhere",
+    section("6", "Boundaries with engines that are not declared anywhere",
             "undeclared-reference",
             "None — every boundary names a declared engine.")
 
-    section("6", "Boundary declared in prose only (not machine-readable)",
+    section("7", "Boundary declared in prose only (not machine-readable)",
             "boundary-tier-prose",
             "None — every boundary is expressed as a table.")
 
-    section("7", "Engines that no boundary table anywhere mentions",
+    section("8", "Engines that no boundary table anywhere mentions",
             "never-named",
             "None — every engine is named by at least one boundary table.")
 
-    section("8", "Naming drift — one engine, several names",
+    section("9", "Naming drift — one engine, several names",
             "naming-drift",
             "None — engine names are used consistently.")
 
-    section("9", "Orphan documents", "no-orphans",
+    section("10", "Orphan documents", "no-orphans",
             "None — every document is referenced by at least one other.")
 
-    section("10", "Layer violations", "no-layer-violation",
+    section("11", "Layer violations", "no-layer-violation",
             "None — every layer-organized group agrees with its declared layer.")
 
-    section("11", "Coverage and count mismatches", "coverage",
+    section("12", "Coverage and count mismatches", "coverage",
             "None — roster, README table, and disk all agree.")
 
-    A("## 12. Cross-cutting properties — deliberately not engines")
+    A("## 13. Cross-cutting properties — deliberately not engines")
     A("")
     A("These names appear in the architecture but are properties every engine")
     A("must have, rather than components with their own boundary. They are")
-    A("excluded from check 1 on purpose: the finding \"this has no document\"")
+    A("excluded from check 2 on purpose: the finding \"this has no document\"")
     A("was correct, and the answer was \"it should not have one\".")
     A("")
     if not CROSS_CUTTING:
@@ -1009,11 +1067,11 @@ def render_report(findings, stats, boundary, flow, ring):
             A(f"  * Out of scope: {out_of_scope}")
     A("")
 
-    A("## 13. Declared pipeline topology")
+    A("## 14. Declared pipeline topology")
     A("")
     A(mermaid_topology())
     A("")
-    A("## 14. Declared boundary graph")
+    A("## 15. Declared boundary graph")
     A("")
     A(mermaid_boundaries(boundary))
     A("")
@@ -1086,10 +1144,10 @@ def main():
     print(f"documents:      {stats['docs_total']}")
     print(f"boundary edges: {stats['boundary_edges']}")
     print(f"link edges:     {stats['link_edges']}")
-    for key in ("no-dangling", "stale-absence", "boundary-tier-none",
-                "structural-ambiguity", "undeclared-reference",
-                "boundary-tier-prose", "never-named", "naming-drift",
-                "no-orphans", "no-layer-violation", "coverage"):
+    for key in ("declaration-consistency", "no-dangling", "stale-absence",
+                "boundary-tier-none", "structural-ambiguity",
+                "undeclared-reference", "boundary-tier-prose", "never-named",
+                "naming-drift", "no-orphans", "no-layer-violation", "coverage"):
         print(f"{key:22s} {len(findings.get(key, []))}")
     if changed:
         for p in changed:
