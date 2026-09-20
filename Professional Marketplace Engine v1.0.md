@@ -1,3 +1,5 @@
+> **Superseded.** Replaced by two documents: [Marketplace Engine v1.0](Marketplace%20Engine%20v1.0.md) owns discovery, matching and presentation, and [Vendor Administration - Vetting Engine v1.0](Vendor%20Administration%20-%20Vetting%20Engine%20v1.0.md) owns eligibility, vetting and governance. Section 37 below bundles exactly that pair into a single engine, which is why this draft is no longer current. Kept for provenance.
+
 I like this direction. It gives the marketplace a very different identity from a lead-generation directory.
 
 The principle becomes:
