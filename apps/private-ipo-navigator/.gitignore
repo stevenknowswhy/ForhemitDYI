@@ -1,0 +1,4 @@
+navigator.db
+navigator.db-*
+__pycache__/
+*.pyc

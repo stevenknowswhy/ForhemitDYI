@@ -105,10 +105,26 @@ Independently operating engines, communicating through versioned contracts, orga
 
 ---
 
+## Reference Application
+
+The repository now includes a runnable first implementation at
+[`apps/private-ipo-navigator`](apps/private-ipo-navigator/README.md). It turns
+the Employee Ownership design into a seven-step owner journey covering the
+destination, business reality, financial preferences, scenario exploration,
+decision dashboard, controlled document locker, and professional handoff.
+
+The reference application is intentionally simple and dependency-light so the
+interaction model can be tested before it is connected to the eventual
+production services and engine contracts.
+
 ## Status
 
-Early-stage design. No application code yet — these documents are the conceptual architecture that precedes it.
+Early-stage design with a working reference application. The Markdown documents
+remain the conceptual architecture and source of product constraints; the
+navigator is the first executable vertical slice.
 
-The first published journey will be **Employee Ownership**, with the first MVP release scoped to stop at *Professional Review* rather than attempting to automate closing.
+The first published journey is **Employee Ownership**, with the first MVP
+release scoped to stop at *Professional Review* rather than attempting to
+automate closing.
 
 The documents deliberately contain open questions requiring professional legal, tax, securities, lending, and fiduciary review. Nothing here constitutes legal, tax, investment, valuation, or financing advice.
