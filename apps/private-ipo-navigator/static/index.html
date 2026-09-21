@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#101c19" />
+  <title>Private IPO Navigator</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">P</div>
+        <div><strong>Private IPO</strong><span>Navigator</span></div>
+      </div>
+      <div class="owner-badge">
+        <span class="pulse"></span>
+        <div><small>YOUR DESTINATION</small><strong>100% employee-owned</strong></div>
+      </div>
+      <nav id="journeyNav"></nav>
+      <div class="sidebar-bottom">
+        <button class="ghost full" id="principlesBtn">How this works</button>
+        <div class="privacy"><span>◈</span><div><strong>Private by design</strong><small>Your progress is saved securely.</small></div></div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <div class="eyebrow" id="stepEyebrow">OWNER JOURNEY</div>
+          <h1 id="pageTitle">Build your destination</h1>
+        </div>
+        <div class="top-actions">
+          <span id="saveStatus" class="save-status">Saved</span>
+          <button class="ghost" id="printBtn">Export brief</button>
+        </div>
+      </header>
+
+      <div id="content"></div>
+
+      <footer class="actionbar">
+        <button class="ghost" id="backBtn">← Back</button>
+        <div class="actionbar-center"><span id="progressLabel"></span><div class="mini-progress"><i id="progressBar"></i></div></div>
+        <button class="primary" id="nextBtn">Continue <span>→</span></button>
+      </footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="principlesModal">
+    <div class="modal">
+      <button class="modal-close" id="closeModal">×</button>
+      <div class="eyebrow">DECISION INTEGRITY</div>
+      <h2>Three layers. Never blurred.</h2>
+      <p>This navigator helps you clarify what you want and explore what might work. Qualified professionals determine what should actually be done.</p>
+      <div class="layer-list">
+        <div class="layer owner"><b>1</b><div><strong>Owner objective</strong><span>What you want to accomplish.</span></div></div>
+        <div class="layer platform"><b>2</b><div><strong>Platform scenarios</strong><span>Exploratory paths under stated assumptions.</span></div></div>
+        <div class="layer pro"><b>3</b><div><strong>Professional determination</strong><span>What your legal, tax, valuation and financing advisors conclude.</span></div></div>
+      </div>
+      <div class="notice">This application does not provide legal, tax, investment, valuation, lending, fiduciary or other professional advice.</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Progress saved</div>
+  <script src="/app.js"></script>
+</body>
+</html>
