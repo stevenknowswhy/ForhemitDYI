@@ -1,8 +1,8 @@
 # Release 0 local API
 
 The Release 0 API is a thin HTTP adapter over the deterministic workflow core.
-It exists to exercise the complete manual California ESOP exploration path
-before a user interface is added.
+It serves the same-origin owner UI and exercises the complete manual
+California ESOP exploration path.
 
 > **Development only.** The server binds to loopback. `X-Forhemit-Actor-ID`
 > is an explicit testing seam, not authentication. Do not expose this server
@@ -16,8 +16,10 @@ python -m app.api \
   --collaboration-db .forhemit/collaboration.sqlite
 ```
 
-The default address is `http://127.0.0.1:8765`. Only `127.0.0.1` and
-`localhost` are accepted; every other bind is rejected.
+The default address is `http://127.0.0.1:8765`; open it to use the owner UI.
+Only `127.0.0.1` and `localhost` are accepted as bind and Host values; every
+other value is rejected. Static responses use a restrictive CSP and other
+browser hardening headers.
 
 ## Request rules
 
@@ -118,6 +120,9 @@ Expected status classes:
 - `422` deterministic or contract invariant failure.
 
 ## Production prerequisites
+
+See [Production identity and session design](IDENTITY-AND-SESSIONS.md) for
+the concrete authentication target.
 
 Before any networked or real-data deployment:
 

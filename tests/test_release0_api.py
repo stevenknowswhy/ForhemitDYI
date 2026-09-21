@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import http.client
 import json
 import tempfile
 import threading
@@ -80,6 +81,19 @@ class Release0ApiTest(unittest.TestCase):
                 )
             finally:
                 error.close()
+
+    def request_bytes(
+        self, method: str, path: str
+    ) -> tuple[int, bytes, dict[str, str]]:
+        request = urllib.request.Request(
+            f"{self.base}{path}", method=method
+        )
+        with urllib.request.urlopen(request, timeout=5) as response:
+            return (
+                response.status,
+                response.read(),
+                dict(response.headers.items()),
+            )
 
     @staticmethod
     def reference(
@@ -179,6 +193,39 @@ class Release0ApiTest(unittest.TestCase):
                 host="0.0.0.0",
                 port=0,
             )
+
+    def test_owner_ui_and_assets_are_same_origin_and_hardened(self):
+        status, html, headers = self.request_bytes("GET", "/")
+        self.assertEqual(status, 200)
+        self.assertIn(b"<title>Forhemit", html)
+        self.assertIn(b"Development identity is not authentication", html)
+        self.assertIn(b'id="stage-list"', html)
+        self.assertEqual(headers["X-Frame-Options"], "DENY")
+        self.assertEqual(headers["X-Content-Type-Options"], "nosniff")
+        self.assertIn("default-src 'self'", headers["Content-Security-Policy"])
+
+        for path, content_type in (
+            ("/app.css", "text/css; charset=utf-8"),
+            ("/app.js", "text/javascript; charset=utf-8"),
+        ):
+            asset_status, content, asset_headers = self.request_bytes(
+                "GET", path
+            )
+            self.assertEqual(asset_status, 200)
+            self.assertTrue(content)
+            self.assertEqual(asset_headers["Content-Type"], content_type)
+
+    def test_invalid_host_header_is_rejected(self):
+        host, port = self.server.server_address
+        connection = http.client.HTTPConnection(host, port, timeout=5)
+        try:
+            connection.request("GET", "/health", headers={"Host": "evil.test"})
+            response = connection.getresponse()
+            payload = json.loads(response.read())
+        finally:
+            connection.close()
+        self.assertEqual(response.status, 400)
+        self.assertEqual(payload["error"]["code"], "invalid_host")
 
     def test_actor_and_idempotency_headers_are_required(self):
         status, payload, _ = self.request(

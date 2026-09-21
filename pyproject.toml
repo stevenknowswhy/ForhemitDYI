@@ -17,5 +17,8 @@ forhemit-release0-api = "app.api:main"
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+[tool.setuptools.package-data]
+app = ["static/*", "*.md"]
+
 [tool.unittest]
 start-directory = "tests"

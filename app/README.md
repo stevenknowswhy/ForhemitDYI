@@ -25,11 +25,13 @@ Implemented:
   transaction handoff;
 - a loopback-only [development HTTP API](API.md) with explicit idempotency,
   transport errors, development worker controls, and a guided five-stage owner
-  status view.
+  status view;
+- a responsive same-origin owner UI that exercises the complete manual path;
+- a documented [production identity/session target](IDENTITY-AND-SESSIONS.md).
 
 Not yet implemented:
 
-- production authentication or a user interface;
+- production authentication, professional invitation portal, or networked deployment;
 - encryption/key management;
 - authentication and credential verification;
 - background outbox workers;
@@ -50,8 +52,15 @@ Start the development API with:
 python -m app.api
 ```
 
-It binds to `127.0.0.1:8765`. The actor header is not authentication; see the
-[API documentation](API.md) before use.
+It binds to `127.0.0.1:8765`; open that URL for the owner UI. The actor header
+is not authentication; see the [API documentation](API.md) and
+[identity/session design](IDENTITY-AND-SESSIONS.md) before use.
+
+Run the optional real-browser smoke test with:
+
+```bash
+uv run tests/browser_owner_ui_smoke.py
+```
 
 The runtime depends on `jsonschema` so every persisted domain object is checked
 against the canonical repository contracts.

@@ -29,6 +29,14 @@ MAX_BODY_BYTES = 1_048_576
 ACTOR_HEADER = "X-Forhemit-Actor-ID"
 IDEMPOTENCY_HEADER = "Idempotency-Key"
 DEV_SYSTEM_ACTOR = "local-system"
+STATIC_DIR = Path(__file__).with_name("static")
+STATIC_ROUTES = {
+    "/": ("index.html", "text/html; charset=utf-8"),
+    "/index.html": ("index.html", "text/html; charset=utf-8"),
+    "/app.css": ("app.css", "text/css; charset=utf-8"),
+    "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+    "/favicon.svg": ("favicon.svg", "image/svg+xml"),
+}
 
 
 class ApiProblem(Exception):
@@ -115,7 +123,9 @@ class Release0Api:
         actor = self._actor(headers)
 
         status_match = re.fullmatch(
-            r"/v1/owners/([^/]+)/businesses/([^/]+)/status", path
+            r"/v1/owners/([A-Za-z0-9][A-Za-z0-9._-]{0,127})"
+            r"/businesses/([A-Za-z0-9][A-Za-z0-9._-]{0,127})/status",
+            path,
         )
         if method == "GET" and status_match:
             owner_id, business_id = status_match.groups()
@@ -320,16 +330,33 @@ class Release0Api:
 
 class Release0RequestHandler(BaseHTTPRequestHandler):
     server_version = "ForhemitRelease0/0.2"
-    protocol_version = "HTTP/1.1"
+    # Close each development response so the serialized server cannot be held by
+    # one browser keep-alive connection while CSS, JavaScript, or API requests wait.
+    protocol_version = "HTTP/1.0"
 
     def do_GET(self) -> None:  # noqa: N802
-        self._handle()
+        try:
+            self._validate_host()
+            path = urlparse(self.path).path
+            static = STATIC_ROUTES.get(path)
+            if static:
+                filename, content_type = static
+                self._send_bytes(
+                    HTTPStatus.OK,
+                    (STATIC_DIR / filename).read_bytes(),
+                    content_type,
+                )
+                return
+            self._handle()
+        except ApiProblem as error:
+            self._send_problem(error.status, error.code, error.message)
 
     def do_POST(self) -> None:  # noqa: N802
         self._handle()
 
     def _handle(self) -> None:
         try:
+            self._validate_host()
             path = urlparse(self.path).path
             body = self._read_json() if self.command == "POST" else None
             status, payload = self.server.api.dispatch(  # type: ignore[attr-defined]
@@ -405,6 +432,16 @@ class Release0RequestHandler(BaseHTTPRequestHandler):
             )
         return value
 
+    def _validate_host(self) -> None:
+        host = self.headers.get("Host", "")
+        hostname = host.rsplit(":", 1)[0].lower()
+        if hostname not in {"127.0.0.1", "localhost"}:
+            raise ApiProblem(
+                HTTPStatus.BAD_REQUEST,
+                "invalid_host",
+                "development server accepts only loopback Host headers",
+            )
+
     def _send_problem(self, status: int, code: str, message: str) -> None:
         self._send_json(
             status,
@@ -420,16 +457,33 @@ class Release0RequestHandler(BaseHTTPRequestHandler):
         encoded = json.dumps(
             payload, separators=(",", ":"), ensure_ascii=False
         ).encode()
+        self._send_bytes(
+            status, encoded, "application/json; charset=utf-8"
+        )
+
+    def _send_bytes(
+        self, status: int, content: bytes, content_type: str
+    ) -> None:
         self.send_response(int(status))
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(encoded)))
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(content)))
         self.send_header(
             "X-Forhemit-Auth-Mode",
             "development-header-not-authentication",
         )
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self'; style-src 'self'; "
+            "connect-src 'self'; img-src 'self'; font-src 'self'; "
+            "base-uri 'none'; form-action 'self'; frame-ancestors 'none'; "
+            "object-src 'none'",
+        )
         self.end_headers()
-        self.wfile.write(encoded)
+        self.wfile.write(content)
 
     def log_message(self, format: str, *args: Any) -> None:
         return

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#17352d">
+  <title>Forhemit — ESOP exploration</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workflow</a>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      <div>
+        <strong>Forhemit</strong>
+        <span>Release 0 workspace</span>
+      </div>
+    </div>
+    <div class="environment-badge">
+      <span aria-hidden="true"></span>
+      Local development
+    </div>
+  </header>
+
+  <div class="safety-banner" role="note">
+    <strong>Private prototype—not professional advice.</strong>
+    This local workflow helps organize ESOP exploration for qualified review.
+    It does not provide legal, tax, valuation, lending, investment, or
+    fiduciary determinations. Development identity is not authentication.
+  </div>
+
+  <main id="workspace" class="shell">
+    <aside class="rail" aria-label="Workflow progress">
+      <p class="eyebrow">California · 1–3 years</p>
+      <h1>Explore employee ownership with clear boundaries.</h1>
+      <p class="lede">
+        Move from owner intent to an attributed professional response without
+        turning exploration into a transaction decision.
+      </p>
+
+      <ol id="stage-list" class="stage-list">
+        <li data-stage="destination">
+          <span>1</span><div><strong>Destination</strong><small>Owner intent</small></div>
+        </li>
+        <li data-stage="business_snapshot">
+          <span>2</span><div><strong>Business snapshot</strong><small>Minimum facts</small></div>
+        </li>
+        <li data-stage="esop_scenario_exploration">
+          <span>3</span><div><strong>ESOP exploration</strong><small>Scenario, not advice</small></div>
+        </li>
+        <li data-stage="professional_review_package">
+          <span>4</span><div><strong>Review package</strong><small>Consent before sharing</small></div>
+        </li>
+        <li data-stage="professional_review">
+          <span>5</span><div><strong>Professional review</strong><small>Attributed feedback</small></div>
+        </li>
+      </ol>
+
+      <div class="boundary-card">
+        <strong>Release 0 stops here</strong>
+        <p>Owner acknowledgment creates no agreement, implementation, closing,
+          or transaction handoff.</p>
+      </div>
+    </aside>
+
+    <section class="main-column">
+      <section class="identity-card card" aria-labelledby="workspace-title">
+        <div>
+          <p class="eyebrow">Development workspace</p>
+          <h2 id="workspace-title">Choose your local record</h2>
+          <p>These identifiers select local SQLite records. They are not a sign-in.</p>
+        </div>
+        <form id="identity-form" class="identity-grid">
+          <label>
+            Owner ID
+            <input id="owner-id" name="owner_id" value="owner-001" required autocomplete="off" pattern="[A-Za-z0-9][A-Za-z0-9._-]{0,127}" title="Use 1–128 letters, numbers, dots, underscores, or hyphens.">
+          </label>
+          <label>
+            Business ID
+            <input id="business-id" name="business_id" value="business-001" required autocomplete="off" pattern="[A-Za-z0-9][A-Za-z0-9._-]{0,127}" title="Use 1–128 letters, numbers, dots, underscores, or hyphens.">
+          </label>
+          <button class="button secondary" type="submit">Load workspace</button>
+        </form>
+      </section>
+
+      <section id="next-action" class="next-action" aria-live="polite">
+        <div class="pulse" aria-hidden="true"></div>
+        <div>
+          <span>Next action</span>
+          <strong>Load your local workspace to begin.</strong>
+        </div>
+      </section>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="card stage-panel" data-panel="destination">
+        <header class="panel-header">
+          <div><span class="step-number">01</span><h2>Define the destination</h2></div>
+          <span class="status-pill">Not started</span>
+        </header>
+        <p class="panel-intro">Capture owner-stated intent. Forhemit will not infer
+          objectives or silently resolve contradictions.</p>
+        <form id="destination-form" class="form-grid">
+          <label>
+            Transition horizon
+            <select name="transition_horizon">
+              <option value="1_to_3_years">1–3 years</option>
+              <option value="within_1_year">Within 1 year</option>
+              <option value="3_to_5_years">3–5 years</option>
+              <option value="flexible">Flexible</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            Employee ownership intent
+            <select name="employee_ownership_intent">
+              <option value="explore">Explore</option>
+              <option value="very_important">Very important</option>
+              <option value="essential">Essential</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            Owner involvement
+            <select name="owner_involvement">
+              <option value="transition_period">Transition period</option>
+              <option value="exit">Exit</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <label class="wide">
+            Primary objective
+            <textarea name="objective" rows="2" required>Explore meaningful employee ownership while preserving business continuity.</textarea>
+          </label>
+          <label class="wide">
+            Nonnegotiable
+            <textarea name="nonnegotiable" rows="2" required>No path may proceed without qualified professional review.</textarea>
+          </label>
+          <button class="button primary" type="submit">Confirm owner intent</button>
+        </form>
+      </section>
+
+      <section class="card stage-panel" data-panel="business_snapshot">
+        <header class="panel-header">
+          <div><span class="step-number">02</span><h2>Confirm the business snapshot</h2></div>
+          <span class="status-pill">Not started</span>
+        </header>
+        <p class="panel-intro">Enter minimum owner-stated facts. Unknown values stay
+          unknown—they do not become zero.</p>
+        <form id="snapshot-form" class="form-grid">
+          <label class="wide">Business name<input name="business_name" required></label>
+          <label>Entity type<input name="entity_type" placeholder="corporation" required></label>
+          <label>Employee count<input name="employee_count" type="number" min="0" required></label>
+          <fieldset class="range-field">
+            <legend>Annual revenue range</legend>
+            <label>Minimum<input name="revenue_min" type="number" min="0" required></label>
+            <label>Maximum<input name="revenue_max" type="number" min="0" required></label>
+          </fieldset>
+          <fieldset class="range-field">
+            <legend>Operating cash flow range</legend>
+            <label>Minimum<input name="cashflow_min" type="number" required></label>
+            <label>Maximum<input name="cashflow_max" type="number" required></label>
+          </fieldset>
+          <label class="wide">Ownership summary<textarea name="ownership_summary" rows="2" required></textarea></label>
+          <label class="wide">Management summary<textarea name="management_summary" rows="2" required></textarea></label>
+          <label class="checkbox wide">
+            <input name="debt_unknown" type="checkbox" checked>
+            Debt range is currently unknown
+          </label>
+          <button class="button primary" type="submit">Confirm snapshot</button>
+        </form>
+      </section>
+
+      <section class="card stage-panel" data-panel="esop_scenario_exploration">
+        <header class="panel-header">
+          <div><span class="step-number">03</span><h2>Build the exploratory scenario</h2></div>
+          <span class="status-pill">Not started</span>
+        </header>
+        <p class="panel-intro">This scenario organizes assumptions and questions. It
+          does not calculate value or determine ESOP feasibility.</p>
+        <form id="scenario-form" class="form-grid">
+          <label class="wide">Assumption<textarea name="assumption" rows="2" required>Employee ownership remains an exploration goal.</textarea></label>
+          <label class="wide">Known unknown<textarea name="unknown" rows="2" required>Independent valuation and transaction feasibility.</textarea></label>
+          <label class="wide">Question for the professional<textarea name="question" rows="3" required>What additional facts and qualified analyses are required to assess ESOP feasibility?</textarea></label>
+          <button class="button primary" type="submit">Create exploratory scenario</button>
+        </form>
+      </section>
+
+      <section class="card stage-panel" data-panel="professional_review_package">
+        <header class="panel-header">
+          <div><span class="step-number">04</span><h2>Authorize professional review</h2></div>
+          <span class="status-pill">Not started</span>
+        </header>
+        <p class="panel-intro">Consent is bound to one named recipient, purpose,
+          scenario version, and expiration. Disclosure is recorded before delivery.</p>
+        <form id="package-form" class="form-grid">
+          <label>Professional ID<input name="professional_id" value="professional-001" required></label>
+          <label>Professional role<input name="professional_role" value="ESOP attorney" required></label>
+          <label>Consent duration
+            <select name="duration_days">
+              <option value="7">7 days</option>
+              <option value="30" selected>30 days</option>
+              <option value="90">90 days</option>
+            </select>
+          </label>
+          <div class="sharing-summary wide">
+            <strong>Included</strong>
+            <span>Destination · Business snapshot · Exploratory scenario · Professional questions</span>
+            <strong>Excluded</strong>
+            <span>Raw documents · External-AI records</span>
+          </div>
+          <label class="checkbox consent-check wide">
+            <input name="consent_confirmed" type="checkbox" required>
+            I authorize this purpose-limited disclosure to the named professional.
+          </label>
+          <button class="button primary" type="submit">Grant consent &amp; authorize package</button>
+          <button id="revoke-consent" class="button danger" type="button">Revoke consent</button>
+        </form>
+      </section>
+
+      <section class="card stage-panel" data-panel="professional_review">
+        <header class="panel-header">
+          <div><span class="step-number">05</span><h2>Review attributed feedback</h2></div>
+          <span class="status-pill">Not started</span>
+        </header>
+        <p class="panel-intro">Only the assigned professional can author the response.
+          Owner acknowledgment does not imply agreement.</p>
+
+        <details class="dev-tools">
+          <summary>Development-only professional simulator</summary>
+          <p>This replaces neither professional identity verification nor a professional portal.</p>
+          <form id="professional-form" class="form-grid">
+            <label>Professional ID<input name="professional_id" value="professional-001" required></label>
+            <label>Role<input name="professional_role" value="ESOP attorney" required></label>
+            <label class="wide">Attributed response<textarea name="response_text" rows="4" required>Qualified valuation and further feasibility analysis are required before any transaction decision.</textarea></label>
+            <button class="button secondary" type="submit">Simulate professional response</button>
+          </form>
+        </details>
+
+        <div id="determination-card" class="determination" hidden>
+          <span>Professional feedback received</span>
+          <p id="determination-summary">An attributed response is ready.</p>
+          <form id="acknowledgment-form">
+            <label class="checkbox">
+              <input name="acknowledge" type="checkbox" required>
+              I acknowledge receipt. I understand this does not select or initiate a transaction.
+            </label>
+            <button class="button primary" type="submit">Acknowledge feedback</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="completion-card" class="completion-card" hidden>
+        <span aria-hidden="true">✓</span>
+        <div>
+          <p class="eyebrow">Release 0 complete</p>
+          <h2>Exploration stopped at the intended boundary.</h2>
+          <p>Your acknowledgment was recorded. No agreement was inferred and no
+            transaction, implementation, or closing workflow was created.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <span>Local-first exploration workspace</span>
+    <span>Jev runtime: off</span>
+    <span>No automatic transaction handoff</span>
+  </footer>
+</body>
+</html>

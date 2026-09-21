@@ -175,12 +175,13 @@ Implemented in the current foundation:
 - transactional audit/outbox writes, inbox deduplication, command idempotency, and hash-linked audit events;
 - exact professional attribution and owner acknowledgment without inferred agreement or automatic transaction handoff;
 - runtime validation of persisted domain objects against the canonical JSON Schema definitions;
-- a loopback-only development HTTP API and guided five-stage owner status view;
-- 23 workflow and HTTP tests, plus the existing adversarial contract and repository validation suites.
+- a responsive, loopback-only owner UI over the development API, with the complete five-stage manual path;
+- a production [identity and session design](app/IDENTITY-AND-SESSIONS.md) that keeps the current actor header explicitly development-only;
+- 25 workflow and HTTP tests plus a real-browser five-stage smoke test, alongside the existing adversarial contract and repository validation suites.
 
-This is **not yet a user-facing or production-ready product**. Production authentication, a user interface, encryption and key management, the document vault, background workers, retention/deletion, backup/recovery, production observability, threat modeling, incident response, and independent security testing remain outstanding.
+This is **not yet a production-ready product**. The local UI uses synthetic/development identities only. Production authentication, encryption and key management, the document vault, background workers, retention/deletion, backup/recovery, production observability, threat modeling, incident response, and independent security testing remain outstanding.
 
-The deterministic core is now exposed through a loopback-only [development API](app/API.md) with a guided five-stage status view. This is not production authentication or a user interface. The next milestone is an owner-facing local UI plus real identity/session design, without exposing the service beyond loopback. Jev follows in shadow mode only after the complete manual path and operational controls are ready for evaluation.
+The deterministic core is exposed through a loopback-only [development API and owner UI](app/API.md), with the future production boundary specified in the [identity and session design](app/IDENTITY-AND-SESSIONS.md). The next milestone is replacing development identity scaffolding with a tested server-side session implementation while retaining loopback-only operation. Jev follows in shadow mode only after the complete manual path and operational controls are ready for evaluation.
 
 The broader documents remain the long-range architecture. They should not be read as implemented features or as a commitment to build every engine before validating the first slice.
 
