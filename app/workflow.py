@@ -50,6 +50,11 @@ def parse_time(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def command_request(**values: Any) -> dict[str, Any]:
+    """Deep-copy caller-controlled command fields for idempotency binding."""
+    return copy.deepcopy(values)
+
+
 class Release0Workflow:
     """Coordinates the private workspace and professional collaboration stores."""
 
@@ -149,10 +154,26 @@ class Release0Workflow:
         }:
             raise InvariantError("invalid owner-involvement value")
 
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            business_id=business_id,
+            destination_id=destination_id,
+            transition_horizon=transition_horizon,
+            employee_ownership_intent=employee_ownership_intent,
+            owner_involvement=owner_involvement,
+            objectives=objectives,
+            nonnegotiables=nonnegotiables,
+            preferences=preferences,
+            unknowns=unknowns,
+            contradictions=contradictions,
+        )
         now = self.clock()
         scope = "destination.confirm"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             version = self.workspace.next_version(
@@ -220,7 +241,7 @@ class Release0Workflow:
             )
             self.workspace.append_event(conn, event)
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, result, now
+                conn, scope, idempotency_key, request, result, now
             )
             return result
 
@@ -266,10 +287,20 @@ class Release0Workflow:
                     f"material fact {fact.get('fact_id')} requires provenance"
                 )
 
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            business_id=business_id,
+            current_state_id=current_state_id,
+            primary_jurisdiction=primary_jurisdiction,
+            facts=facts,
+        )
         now = self.clock()
         scope = "business_snapshot.confirm"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             version = self.workspace.next_version(
@@ -312,7 +343,7 @@ class Release0Workflow:
             )
             self.workspace.append_event(conn, event)
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, result, now
+                conn, scope, idempotency_key, request, result, now
             )
             return result
 
@@ -366,10 +397,23 @@ class Release0Workflow:
                 "unresolved hard conflicts prevent professional-review readiness"
             )
 
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            scenario_id=scenario_id,
+            destination_reference=destination_reference,
+            current_state_reference=current_state_reference,
+            assumptions=assumptions,
+            unknowns=unknowns,
+            conflicts=conflicts,
+            professional_questions=professional_questions,
+        )
         now = self.clock()
         scope = "scenario.create"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             version = self.workspace.next_version(
@@ -442,7 +486,7 @@ class Release0Workflow:
             self.workspace.append_event(conn, event)
             result = {"scenario": scenario, "readiness": readiness}
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, result, now
+                conn, scope, idempotency_key, request, result, now
             )
             return result
 
@@ -478,9 +522,21 @@ class Release0Workflow:
                 resource["version"],
             )
 
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            consent_id=consent_id,
+            recipient_id=recipient_id,
+            purpose=purpose,
+            resource_references=resource_references,
+            permissions=permissions,
+            expires_at=expires_at,
+        )
         scope = "professional_consent.grant"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             version = self.workspace.next_version(
@@ -520,7 +576,7 @@ class Release0Workflow:
             )
             self.workspace.append_event(conn, event)
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, result, now
+                conn, scope, idempotency_key, request, result, now
             )
             return result
 
@@ -539,10 +595,17 @@ class Release0Workflow:
         if current["recipient_type"] != "professional":
             raise InvariantError("only professional-sharing consent is handled here")
 
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            consent_id=consent_id,
+        )
         now = self.clock()
         scope = "professional_consent.revoke"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             live = self.workspace.get_version(
@@ -580,7 +643,7 @@ class Release0Workflow:
             )
             self.workspace.append_event(conn, event)
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, revoked, now
+                conn, scope, idempotency_key, request, revoked, now
             )
             return revoked
 
@@ -675,9 +738,26 @@ class Release0Workflow:
         if not set(consent["permissions"]) & {"full_view", "download"}:
             raise InvariantError("consent does not permit package disclosure")
 
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            business_id=business_id,
+            package_id=package_id,
+            recipient_id=recipient_id,
+            professional_role=professional_role,
+            purpose=purpose,
+            destination_reference=destination_reference,
+            current_state_reference=current_state_reference,
+            scenario_reference=scenario_reference,
+            consent_reference=consent_reference,
+            included_categories=included_categories,
+            excluded_categories=excluded_categories,
+        )
         scope = "review_package.authorize"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             version = self.workspace.next_version(
@@ -785,7 +865,7 @@ class Release0Workflow:
                 "message_id": message_id,
             }
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, result, now
+                conn, scope, idempotency_key, request, result, now
             )
             return result
 
@@ -847,6 +927,14 @@ class Release0Workflow:
             )
         if not response_text.strip():
             raise InvariantError("professional response text is required")
+        request = command_request(
+            actor_id=actor_id,
+            package_id=package_id,
+            package_version=package_version,
+            professional_role=professional_role,
+            response_text=response_text,
+            category=category,
+        )
         now = self.clock()
         response = {
             "schema_version": "1.1.0",
@@ -865,7 +953,7 @@ class Release0Workflow:
             "idempotency_key": idempotency_key,
         }
         return self.collaboration.submit_response(
-            response, new_id("message"), now
+            request, response, new_id("message"), now
         )
 
     def import_professional_responses(self) -> int:
@@ -935,6 +1023,205 @@ class Release0Workflow:
             self.collaboration.mark_delivered(message["message_id"], now)
         return imported
 
+    def get_owner_workflow_status(
+        self,
+        *,
+        actor_id: str,
+        owner_id: str,
+        business_id: str,
+    ) -> dict[str, Any]:
+        """Return a guided, read-only view of the five-stage manual workflow."""
+        self._require_owner(actor_id, owner_id)
+
+        destinations = [
+            value
+            for value in self.workspace.current_objects("DesiredOutcome")
+            if value["owner_id"] == owner_id
+            and value["business_id"] == business_id
+        ]
+        destination = destinations[-1] if destinations else None
+        snapshots = (
+            [
+                value
+                for value in self.workspace.current_objects(
+                    "BusinessCurrentState"
+                )
+                if value["business_id"] == business_id
+            ]
+            if destination
+            else []
+        )
+        snapshot = snapshots[-1] if snapshots else None
+
+        scenarios = []
+        if destination and snapshot:
+            expected_destination = reference(
+                "DesiredOutcome",
+                destination["destination_id"],
+                destination["version"],
+            )
+            expected_snapshot = reference(
+                "BusinessCurrentState",
+                snapshot["current_state_id"],
+                snapshot["version"],
+            )
+            scenarios = [
+                value
+                for value in self.workspace.current_objects("ScenarioVersion")
+                if value["destination_reference"] == expected_destination
+                and value["current_state_reference"] == expected_snapshot
+                and not self.workspace.is_invalidated(
+                    "ScenarioVersion",
+                    value["scenario_id"],
+                    value["version"],
+                )
+            ]
+        scenario = scenarios[-1] if scenarios else None
+
+        packages = [
+            value
+            for value in self.workspace.current_objects(
+                "ProfessionalReviewPackage"
+            )
+            if value["owner_id"] == owner_id
+            and value["business_id"] == business_id
+            and not self.workspace.is_invalidated(
+                "ProfessionalReviewPackage",
+                value["package_id"],
+                value["version"],
+            )
+        ]
+        package = packages[-1] if packages else None
+
+        determinations = []
+        if scenario:
+            scenario_ref = reference(
+                "ScenarioVersion",
+                scenario["scenario_id"],
+                scenario["version"],
+            )
+            determinations = [
+                value
+                for value in self.workspace.current_objects(
+                    "ProfessionalDetermination"
+                )
+                if value["scenario_reference"] == scenario_ref
+            ]
+        acknowledged = self.workspace.acknowledged_determination_ids(owner_id)
+        acknowledged_determinations = [
+            value
+            for value in determinations
+            if value["determination_id"] in acknowledged
+        ]
+
+        stages = [
+            self._stage(
+                "destination",
+                destination is not None,
+                destination,
+                "Confirm the owner's transition destination.",
+            ),
+            self._stage(
+                "business_snapshot",
+                snapshot is not None,
+                snapshot,
+                "Confirm the minimum California business snapshot.",
+            ),
+            self._stage(
+                "esop_scenario_exploration",
+                scenario is not None,
+                scenario,
+                "Create the exploratory ESOP scenario.",
+            ),
+            self._stage(
+                "professional_review_package",
+                package is not None,
+                package,
+                "Grant purpose-limited consent and authorize a review package.",
+            ),
+            {
+                "stage": "professional_review",
+                "status": (
+                    "complete"
+                    if acknowledged_determinations
+                    else "in_progress"
+                    if determinations
+                    else "not_started"
+                ),
+                "object_reference": (
+                    reference(
+                        "ProfessionalDetermination",
+                        determinations[-1]["determination_id"],
+                        1,
+                    )
+                    if determinations
+                    else None
+                ),
+                "next_action": (
+                    "Release 0 is complete. No transaction handoff was created."
+                    if acknowledged_determinations
+                    else "Acknowledge the attributed professional response."
+                    if determinations
+                    else "Wait for or import the assigned professional response."
+                ),
+            },
+        ]
+        first_incomplete = next(
+            (stage for stage in stages if stage["status"] != "complete"),
+            None,
+        )
+        return {
+            "owner_id": owner_id,
+            "business_id": business_id,
+            "workflow": "california_esop_exploration_release_0",
+            "jev_runtime_enabled": False,
+            "auth_mode": "development_header_not_authentication",
+            "stages": stages,
+            "next_action": (
+                first_incomplete["next_action"]
+                if first_incomplete
+                else "Release 0 complete; stop after owner acknowledgment."
+            ),
+            "automatic_transaction_handoff_created": False,
+        }
+
+    @staticmethod
+    def _stage(
+        stage: str,
+        complete: bool,
+        value: dict[str, Any] | None,
+        next_action: str,
+    ) -> dict[str, Any]:
+        object_reference = None
+        if value:
+            id_fields = {
+                "destination": ("DesiredOutcome", "destination_id"),
+                "business_snapshot": (
+                    "BusinessCurrentState",
+                    "current_state_id",
+                ),
+                "esop_scenario_exploration": (
+                    "ScenarioVersion",
+                    "scenario_id",
+                ),
+                "professional_review_package": (
+                    "ProfessionalReviewPackage",
+                    "package_id",
+                ),
+            }
+            object_type, id_field = id_fields[stage]
+            object_reference = reference(
+                object_type, value[id_field], value["version"]
+            )
+        return {
+            "stage": stage,
+            "status": "complete" if complete else "not_started",
+            "object_reference": object_reference,
+            "next_action": (
+                "Stage complete." if complete else next_action
+            ),
+        }
+
     def acknowledge_professional_response(
         self,
         *,
@@ -948,10 +1235,18 @@ class Release0Workflow:
         determination = self.workspace.get_version(
             "ProfessionalDetermination", determination_id, 1
         )
+        request = command_request(
+            actor_id=actor_id,
+            owner_id=owner_id,
+            determination_id=determination_id,
+            statement=statement,
+        )
         now = self.clock()
         scope = "professional_response.acknowledge"
         with self.workspace.transaction() as conn:
-            cached = self.workspace.get_idempotent(conn, scope, idempotency_key)
+            cached = self.workspace.get_idempotent(
+                conn, scope, idempotency_key, request
+            )
             if cached:
                 return cached
             acknowledgment = {
@@ -995,6 +1290,6 @@ class Release0Workflow:
             )
             self.workspace.append_event(conn, event)
             self.workspace.save_idempotent(
-                conn, scope, idempotency_key, acknowledgment, now
+                conn, scope, idempotency_key, request, acknowledgment, now
             )
             return acknowledgment

@@ -17,16 +17,19 @@ Implemented:
 - separate SQLite files for the private workspace and professional
   collaboration boundary;
 - transactional audit/outbox writes;
-- inbox deduplication and command idempotency;
+- inbox deduplication and payload-bound command idempotency;
 - source-version dependency invalidation;
 - hash-linked append-only audit events;
 - exact professional attribution;
 - owner acknowledgment that does not imply agreement or create an automatic
-  transaction handoff.
+  transaction handoff;
+- a loopback-only [development HTTP API](API.md) with explicit idempotency,
+  transport errors, development worker controls, and a guided five-stage owner
+  status view.
 
 Not yet implemented:
 
-- user-facing API or UI;
+- production authentication or a user interface;
 - encryption/key management;
 - authentication and credential verification;
 - background outbox workers;
@@ -41,9 +44,17 @@ Not yet implemented:
 python -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
-The runtime implementation uses only the Python standard library. Existing
-repository schema validators continue to use `jsonschema` from
-`requirements-dev.txt`.
+Start the development API with:
+
+```bash
+python -m app.api
+```
+
+It binds to `127.0.0.1:8765`. The actor header is not authentication; see the
+[API documentation](API.md) before use.
+
+The runtime depends on `jsonschema` so every persisted domain object is checked
+against the canonical repository contracts.
 
 ## Persistence boundaries
 

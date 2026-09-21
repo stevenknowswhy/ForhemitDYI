@@ -25,7 +25,7 @@ class WorkspaceStore:
 
     def __init__(self, path: str | Path):
         self.path = str(path)
-        self.connection = sqlite3.connect(self.path)
+        self.connection = sqlite3.connect(self.path, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.connection.execute("PRAGMA journal_mode = WAL")
@@ -100,6 +100,7 @@ class WorkspaceStore:
             CREATE TABLE IF NOT EXISTS idempotency_results (
                 scope TEXT NOT NULL,
                 idempotency_key TEXT NOT NULL,
+                request_hash TEXT,
                 result_json TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 PRIMARY KEY (scope, idempotency_key)
@@ -124,6 +125,16 @@ class WorkspaceStore:
             );
             """
         )
+        columns = {
+            row["name"]
+            for row in self.connection.execute(
+                "PRAGMA table_info(idempotency_results)"
+            ).fetchall()
+        }
+        if "request_hash" not in columns:
+            self.connection.execute(
+                "ALTER TABLE idempotency_results ADD COLUMN request_hash TEXT"
+            )
         self.connection.commit()
 
     @contextlib.contextmanager
@@ -138,33 +149,55 @@ class WorkspaceStore:
         else:
             conn.commit()
 
+    @staticmethod
+    def request_hash(request: dict[str, Any]) -> str:
+        return hashlib.sha256(canonical_json(request).encode()).hexdigest()
+
     def get_idempotent(
-        self, conn: sqlite3.Connection, scope: str, key: str
+        self,
+        conn: sqlite3.Connection,
+        scope: str,
+        key: str,
+        request: dict[str, Any],
     ) -> dict[str, Any] | None:
         row = conn.execute(
             """
-            SELECT result_json FROM idempotency_results
+            SELECT request_hash, result_json FROM idempotency_results
             WHERE scope = ? AND idempotency_key = ?
             """,
             (scope, key),
         ).fetchone()
-        return json.loads(row["result_json"]) if row else None
+        if not row:
+            return None
+        expected = self.request_hash(request)
+        if row["request_hash"] is None or row["request_hash"] != expected:
+            raise ConflictError(
+                "idempotency key was already used with a different command"
+            )
+        return json.loads(row["result_json"])
 
     def save_idempotent(
         self,
         conn: sqlite3.Connection,
         scope: str,
         key: str,
+        request: dict[str, Any],
         result: dict[str, Any],
         created_at: str,
     ) -> None:
         conn.execute(
             """
             INSERT INTO idempotency_results
-                (scope, idempotency_key, result_json, created_at)
-            VALUES (?, ?, ?, ?)
+                (scope, idempotency_key, request_hash, result_json, created_at)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (scope, key, canonical_json(result), created_at),
+            (
+                scope,
+                key,
+                self.request_hash(request),
+                canonical_json(result),
+                created_at,
+            ),
         )
 
     def next_version(
@@ -420,6 +453,32 @@ class WorkspaceStore:
                 (message_id,),
             )
 
+    def current_objects(self, object_type: str) -> list[dict[str, Any]]:
+        rows = self.connection.execute(
+            """
+            SELECT a.data_json
+            FROM aggregate_versions a
+            JOIN current_versions c
+              ON c.object_type = a.object_type
+             AND c.object_id = a.object_id
+             AND c.version = a.version
+            WHERE a.object_type = ?
+            ORDER BY a.object_id
+            """,
+            (object_type,),
+        ).fetchall()
+        return [json.loads(row["data_json"]) for row in rows]
+
+    def acknowledged_determination_ids(self, owner_id: str) -> set[str]:
+        rows = self.connection.execute(
+            """
+            SELECT determination_id FROM acknowledgments
+            WHERE owner_id = ?
+            """,
+            (owner_id,),
+        ).fetchall()
+        return {row["determination_id"] for row in rows}
+
     def event_count(self, event_type: str | None = None) -> int:
         if event_type:
             row = self.connection.execute(
@@ -438,7 +497,7 @@ class CollaborationStore:
 
     def __init__(self, path: str | Path):
         self.path = str(path)
-        self.connection = sqlite3.connect(self.path)
+        self.connection = sqlite3.connect(self.path, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.connection.execute("PRAGMA journal_mode = WAL")
@@ -481,6 +540,7 @@ class CollaborationStore:
             CREATE TABLE IF NOT EXISTS idempotency_results (
                 scope TEXT NOT NULL,
                 idempotency_key TEXT NOT NULL,
+                request_hash TEXT,
                 result_json TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 PRIMARY KEY (scope, idempotency_key)
@@ -496,6 +556,16 @@ class CollaborationStore:
             );
             """
         )
+        columns = {
+            row["name"]
+            for row in self.connection.execute(
+                "PRAGMA table_info(idempotency_results)"
+            ).fetchall()
+        }
+        if "request_hash" not in columns:
+            self.connection.execute(
+                "ALTER TABLE idempotency_results ADD COLUMN request_hash TEXT"
+            )
         self.connection.commit()
 
     @contextlib.contextmanager
@@ -560,6 +630,7 @@ class CollaborationStore:
 
     def submit_response(
         self,
+        request: dict[str, Any],
         response: dict[str, Any],
         message_id: str,
         created_at: str,
@@ -569,12 +640,20 @@ class CollaborationStore:
         with self.transaction() as conn:
             cached = conn.execute(
                 """
-                SELECT result_json FROM idempotency_results
+                SELECT request_hash, result_json FROM idempotency_results
                 WHERE scope = ? AND idempotency_key = ?
                 """,
                 (scope, key),
             ).fetchone()
             if cached:
+                expected = WorkspaceStore.request_hash(request)
+                if (
+                    cached["request_hash"] is None
+                    or cached["request_hash"] != expected
+                ):
+                    raise ConflictError(
+                        "idempotency key was already used with a different command"
+                    )
                 return json.loads(cached["result_json"])
             conn.execute(
                 """
@@ -605,10 +684,19 @@ class CollaborationStore:
             conn.execute(
                 """
                 INSERT INTO idempotency_results
-                    (scope, idempotency_key, result_json, created_at)
-                VALUES (?, ?, ?, ?)
+                    (
+                        scope, idempotency_key, request_hash,
+                        result_json, created_at
+                    )
+                VALUES (?, ?, ?, ?, ?)
                 """,
-                (scope, key, canonical_json(response), created_at),
+                (
+                    scope,
+                    key,
+                    WorkspaceStore.request_hash(request),
+                    canonical_json(response),
+                    created_at,
+                ),
             )
             return response
 

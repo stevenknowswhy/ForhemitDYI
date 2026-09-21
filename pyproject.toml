@@ -11,6 +11,9 @@ dependencies = [
   "jsonschema==4.25.1",
 ]
 
+[project.scripts]
+forhemit-release0-api = "app.api:main"
+
 [tool.setuptools.packages.find]
 include = ["app*"]
 

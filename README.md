@@ -175,11 +175,12 @@ Implemented in the current foundation:
 - transactional audit/outbox writes, inbox deduplication, command idempotency, and hash-linked audit events;
 - exact professional attribution and owner acknowledgment without inferred agreement or automatic transaction handoff;
 - runtime validation of persisted domain objects against the canonical JSON Schema definitions;
-- 15 workflow tests, plus the existing adversarial contract and repository validation suites.
+- a loopback-only development HTTP API and guided five-stage owner status view;
+- 23 workflow and HTTP tests, plus the existing adversarial contract and repository validation suites.
 
-This is **not yet a user-facing or production-ready product**. Authentication, a UI/API, encryption and key management, the document vault, background workers, retention/deletion, backup/recovery, production observability, threat modeling, incident response, and independent security testing remain outstanding.
+This is **not yet a user-facing or production-ready product**. Production authentication, a user interface, encryption and key management, the document vault, background workers, retention/deletion, backup/recovery, production observability, threat modeling, incident response, and independent security testing remain outstanding.
 
-The next implementation milestone is to expose the deterministic core through a thin local API and owner-facing flow while preserving the tested boundaries. Jev follows in shadow mode only after the complete manual path and operational controls are ready for evaluation.
+The deterministic core is now exposed through a loopback-only [development API](app/API.md) with a guided five-stage status view. This is not production authentication or a user interface. The next milestone is an owner-facing local UI plus real identity/session design, without exposing the service beyond loopback. Jev follows in shadow mode only after the complete manual path and operational controls are ready for evaluation.
 
 The broader documents remain the long-range architecture. They should not be read as implemented features or as a commitment to build every engine before validating the first slice.
 
