@@ -8,3 +8,11 @@ analysis/engine-graph.mmd
 
 # macOS
 .DS_Store
+
+# Python runtime and test artifacts
+__pycache__/
+*.py[cod]
+.venv/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

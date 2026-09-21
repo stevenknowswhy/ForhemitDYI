@@ -118,6 +118,8 @@ Four reading paths, depending on what you need.
 
 **Building with Jev** — start with [Jev Decision Layer Architecture](Jev%20Decision%20Layer%20Architecture.md), implement the [California ESOP Exploration Vertical Slice](California%20ESOP%20Exploration%20Vertical%20Slice.md) using its [Implementation Architecture](California%20ESOP%20Vertical%20Slice%20Implementation%20Architecture.md), then use the [Jev Repository Migration Checklist](Jev%20Repository%20Migration%20Checklist.md) and executable contracts in [`jev/`](jev/README.md) and [`contracts/`](contracts/README.md).
 
+**Running Release 0** — see the [deterministic workflow core](app/README.md) and run `python -m unittest discover -s tests -p 'test_*.py' -v`.
+
 ---
 
 ## Architecture at a Glance
@@ -162,15 +164,22 @@ Independently operating engines, communicating through versioned contracts, orga
 
 ## Status
 
-**Specification and executable-contract stage.** There is not yet a runnable product. The repository now includes:
+**Release 0 implementation foundation.** The repository now contains a runnable, tested Python/SQLite workflow core in [`app/`](app/README.md), in addition to the design specifications and executable contracts.
 
-- a locked California ESOP exploration vertical slice;
-- a modular-monolith implementation architecture;
-- versioned domain contracts and semantic workflow validation;
-- versioned Jev question, threshold-policy, minimization, disclosure, and evaluation-record contracts;
-- adversarial contract cases and repository validation tooling.
+Implemented in the current foundation:
 
-The next milestone is **Release 0: the deterministic vertical slice without Jev**. Jev follows in shadow mode only after the manual workflow, authority enforcement, consent, minimization, disclosure, invalidation, audit, and fallback paths work end to end.
+- immutable versions for destination, business snapshot, scenario/readiness, professional consent, review package, disclosure, and professional response;
+- deterministic owner and assigned-professional authority checks with no Jev runtime dependency;
+- separate private-workspace and professional-collaboration SQLite boundaries;
+- disclosure-before-delivery, current-consent enforcement, revocation-safe delivery, and source-version invalidation;
+- transactional audit/outbox writes, inbox deduplication, command idempotency, and hash-linked audit events;
+- exact professional attribution and owner acknowledgment without inferred agreement or automatic transaction handoff;
+- runtime validation of persisted domain objects against the canonical JSON Schema definitions;
+- 15 workflow tests, plus the existing adversarial contract and repository validation suites.
+
+This is **not yet a user-facing or production-ready product**. Authentication, a UI/API, encryption and key management, the document vault, background workers, retention/deletion, backup/recovery, production observability, threat modeling, incident response, and independent security testing remain outstanding.
+
+The next implementation milestone is to expose the deterministic core through a thin local API and owner-facing flow while preserving the tested boundaries. Jev follows in shadow mode only after the complete manual path and operational controls are ready for evaluation.
 
 The broader documents remain the long-range architecture. They should not be read as implemented features or as a commitment to build every engine before validating the first slice.
 
