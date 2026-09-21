@@ -14,34 +14,48 @@ compacted, read this file and run the analyzer — that is enough to resume.
 ## How to check progress
 
 ```bash
-/Users/stephenstokes/.workbuddy-ai/binaries/python/versions/3.13.12/bin/python3 scripts/doc-graph.py
+/Users/stephenstokes/.workbuddy-ai/binaries/python/versions/3.13.12/bin/python3 scripts/doc-graph.py --check
 ```
+
+Use `--check`. It is read-only and exits non-zero when any guard fires, so it can be
+piped into anything.
+
+Do **not** use the bare `scripts/doc-graph.py` for this. Its job is to *publish*: it
+rewrites `analysis/GAP-ANALYSIS.md` and archives the outgoing copy under
+`analysis/archive/`. Running it to "see where things stand" therefore overwrites the
+report you would have compared against, and litters the archive with a version that
+differs only by clock. (The pre-commit hook calls it deliberately — that is the one
+place publishing is wanted.)
 
 Compare the output against the snapshot below. A metric that has not moved is a
 track that has not been worked.
 
 ## Progress snapshot
 
-| Metric | 2026-09-20 10:40 | Target |
-| --- | --- | --- |
-| `boundary-tier-none` — docs with no boundary section | **0** ✅ | 0 |
-| `boundary-tier-prose` — boundary in prose only | **0** ✅ | 0 |
-| boundary tables | **34** | 34 |
-| `never-named` — engine named by no boundary table | **0** ✅ | 0 |
-| `naming-drift` — one engine, several raw names | **0** ✅ | 0 |
-| `structural-ambiguity` | **0** ✅ | decisions made (not necessarily 0) |
-| `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 |
-| boundary edges | **495** | — |
-| link edges | **91** | — |
-| DOCUMENT-INDEX groups | **12** | — |
+| Metric | 2026-09-20 10:40 | 2026-09-21 12:20 | Target |
+| --- | --- | --- | --- |
+| `boundary-tier-none` — docs with no boundary section | **0** ✅ | **0** ✅ | 0 |
+| `boundary-tier-prose` — boundary in prose only | **0** ✅ | **0** ✅ | 0 |
+| boundary tables | **34** | **35** | 35 |
+| `never-named` — engine named by no boundary table | **0** ✅ | **0** ✅ | 0 |
+| `naming-drift` — one engine, several raw names | **0** ✅ | **0** ✅ | 0 |
+| `structural-ambiguity` | **0** ✅ | **0** ✅ | decisions made (not necessarily 0) |
+| `declaration-consistency`, `readme-roster`, `no-dangling`, `stale-absence`, `undeclared-reference`, `no-orphans`, `no-layer-violation`, `coverage` | 0 | 0 | 0 |
+| boundary edges | **495** | **512** | — |
+| link edges | **91** | **96** | — |
+| documents on disk | **58** | **59** | — |
+| DOCUMENT-INDEX groups | **12** | **12** | — |
+
+The 2026-09-21 column is the Stakeholder split into two engines — see C3 below. Every
+guard is 0 on both columns; the moved metrics are the cost of the split, not drift.
 
 `coverage` is the check to watch on any roster edit: it cross-checks DOCUMENT-INDEX group
 counts against the README group table **per group, by exact title**, and against the file count
 on disk. A new group must be added to both files in the same commit, and the README prose
 ("organized into N groups") updated with it.
 
-Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **34**, which is
-the total number of engine documents. That is where the target of 34 comes from.
+Note `boundary-tier-none` + `boundary-tier-prose` + boundary tables = **35**, which is
+the total number of engine documents. That is where the target of 35 comes from.
 
 ---
 
@@ -223,14 +237,38 @@ Two piles were **never put to Stefano, so neither was touched**:
   superseded, so it reads as a point-in-time proposal like `Complete Architecture` — which is
   exactly the document class that must never be cited as a status report.
 
-- [ ] **Stakeholder / Relationship — DECIDED: build its own document.** Stefano chose to build
-  the relationship layer rather than fold it into the visibility document. **Blocked on one
-  structural question before authoring:** `ENGINE_HOME` maps one engine to one document, so a
-  second Stakeholder document is either **(a) a split into two engines** — the relationship layer
-  takes `Stakeholder` and the visibility layer becomes a second engine — which rewrites the
-  existing 10-row table's self-row `**Stakeholder / Relationship**` and every document naming it;
-  or **(b) a second document under one engine**, which reproduces exactly the C2 defect this
-  track just closed. **Decide (a) or (b) before writing.**
+- [x] **Stakeholder — RESOLVED 2026-09-21: split into two engines (option a).** The relationship
+  layer takes `Stakeholder / Relationship` and a new home document; the visibility layer becomes
+  **`Stakeholder Disclosure`** and keeps `Stakeholder Document & Visibility Architecture.md`.
+
+  **Why (a) and not (b).** `ENGINE_HOME`'s one-engine-one-document invariant is stated in the
+  source (*"Each must resolve to exactly one document"*), and `MULTI_ENGINE_DOCS` already covers
+  the **inverse** — one document, N engines. Nothing covers one engine across N documents, so (b)
+  would have needed a register whose only job was to encode the ambiguity the invariant exists to
+  prevent. Supporting evidence: two of the six boundary rows (`Identity & Access`, `Vendor
+  Administration / Vetting`) *already* described the engine as the relationship layer alone, and
+  the name ends in *Relationship*, not *Visibility*.
+
+  **The document's own §31/§32 two-engine proposal was rejected as the wrong split.** §32's
+  "Stakeholder Profile Engine" maps 1:1 onto `StakeholderProfile` in Professional Review Package
+  Engine §8 — Role, Purpose, information categories, questions, Default visibility, Allowed data,
+  Restricted data, Typical documents, output structure — and its per-role examples are that
+  document's §35 defaults table verbatim. §31's "Stakeholder Document Engine" is owned by Review
+  Package §52 (assembly, Disclosure/Exclusion Manifests, versioning, sharing record), Consent &
+  Access (revocation, expiration, permissions) and Policy §5 *Sharing Policy*. Both are **labels,
+  not gaps**; both are now annotated in place rather than rewritten, matching how `Complete
+  Architecture` annotates its proposals.
+
+  **What the new document actually covers:** who participates and why — `StakeholderRelationship`,
+  `ParticipantReference`, roles that are per-transaction and may compose, the organization/contact
+  hierarchy, the relationship lifecycle, and the rule that participation is never a grant of access.
+
+  **Cost paid:** 4 boundary rows split (Communication, Marketplace, Consent & Access, and the
+  existing doc's self-row, which also gained a `Stakeholder / Relationship` row); `ENGINE_HOME` /
+  `LAYERS` / `ALIASES` +1 engine; README roster + group count; DOCUMENT-INDEX group 8 +1 row.
+  **Result:** documents 58 → 59, boundary edges 495 → **512** (+17 = 13 new rows + 4 splits),
+  link edges 91 → 96, all 13 checks 0. `naming-drift` caught one real regression on the way — a row
+  written `**Vendor Administration**` against the dominant `**Vendor Administration / Vetting**`.
 
 **Version markers, reported not renamed** (the brief asked for the report, not a silent rename):
 15 filenames carry `v1.0`/`v0.2`; **only one heading in the corpus ever did**, and it is now
@@ -260,9 +298,26 @@ them as supersession.
 - [x] **A2 — the eight prose-only boundary summaries** (2026-09-19): `Audit / Provenance` (15 rows), `Communication` (15), `Consent & Access` (17), `Decision Record` (15), `Local Vault / Workspace` (15), `Notification` (16), `Transaction / Orchestration` (19), `Workflow` (19). Tables 19 → 27, boundary edges 272 → 403, **`boundary-tier-prose` 8 → 0**. Commits `0effe66`, `660f557`, `cc2ea91`, `8199702`, `e9fba92`, `a8a9249`, `2b7fbde`, `d4b5b7c`.
 - [x] **B2 — `never-named` cleared** (2026-09-19): the new Notification table names `Billing / Commercial`. 1 → 0. A free consequence of A2, not separately targeted.
 - [x] **A1a — the four remaining boundary summaries** (2026-09-19): `Destination` (9 rows), `Marketplace` (11 rows), `Vendor Administration / Vetting` (15 rows), `Business Reality` (14 rows). Each was transcription from the document's own "does not own" / "Architectural Lock" / NORTH STAR, not authoring. Tables 27 → 31, edges 403 → 452 (+49, exactly the row count), `boundary-tier-none` 6 → 2. Commits `c9ab3ef`, `51338d5`, `2d6c04b`, `3a753f9`.
+- [x] **`--check`: a read-only mode, and the repo's only gate** (2026-09-21): the analyzer had no way
+  to run the checks without publishing, so verifying meant either publishing (which overwrites the
+  report you would diff against) or using an ad-hoc `/tmp` helper. The helper is what found this:
+  it iterated *every* key in `findings` and flagged any non-empty bucket, so it reported
+  `accepted-multi-engine` (2) and `boundary-tier-table` (35) as failures on a clean corpus. Those
+  two are **registers, not guards** — both are non-empty when healthy. The guard list was also
+  written out twice (the report's `order` and `main()`'s literal tuple), so the two copies could
+  disagree silently. Both are now one `GUARDS` constant, and `--check` prints it, publishes
+  nothing, and **exits 1 when any guard is non-zero**. Probed three ways: clean → 0; a dangling
+  engine → 1 (`no-dangling`, `never-named`, `coverage`); a broken table header → 1
+  (`boundary-tier-prose`). `--staged-files` and default output are unchanged.
+- [x] **`no-dangling` was unreachable in the one case it exists for** (2026-09-21): pointing an
+  `ENGINE_HOME` entry at a missing file computed the High-severity finding at line 712 and then
+  crashed 30 lines later — `tiers[boundary_tier(docs[d])]` raised `KeyError`, so the traceback
+  discarded the finding. Found while probing the guards after the Stakeholder split; fixed by
+  skipping homes that are not on disk. Confirmed by probe: the mutation now reports
+  `Stakeholder -> No Such Document.md (file missing)` instead of crashing.
 - [x] **C1 — `structural-ambiguity` cleared** (2026-09-20): added the `MULTI_ENGINE_DOCS` register (analogous to `LAYERLESS`) for the two deliberately multi-engine documents, deleted the two hardcoded Stakeholder/Journey strings — which no document edit could ever clear — and extended `declaration-consistency` to validate the register so a stale entry surfaces. Registered docs are still printed in report section 6 as "decided, so not counted above". Three regression probes confirm the detectors still fire. **4 → 0, and every check in the analyzer is now 0.**
-- [x] **B1 — naming-drift resolved** (2026-09-19): `**Vendor Vetting**` → `**Vendor Administration / Vetting**` (Billing table) and `**Blog Engine**` → `**Blog / Publishing**` (WordPress Management table). `naming-drift` 2 → 0. Commits `79309ad`, `e7aebf4`. Note: a stray untracked archive (`1905.md`) was created by a manual `scripts/doc-graph.py` run used to confirm the fix; it was committed separately (`e875d84`) — lesson reinforced: verify with `/tmp/verify.py` (parser-only), never the publisher, to avoid orphan archives.
-- [x] **C2 + the supersession policy** (2026-09-20): both C2 documents proved to be superseded drafts, not missing engines (see C2 above), so C2 **dissolved into C3's policy** instead of needing a decision of its own. Adopted *one current document per concept — banner and keep indexed*; applied to 3 documents (`Professional Marketplace Engine v1.0.md`, `Journey-Builder Rules and Journey Definition Engine.md`, `GOAL-DRIVEN TRANSACTION JOURNEY.md`), dropped the corpus's only `## Version 0.1` heading from the Journey home document, and added DOCUMENT-INDEX group 12 *Superseded*. Commits `45a41b3`, `56ff724`, `5790424`, `4d05cc8`, `f8b0d6f`. **Verified with the parser, not the publisher** — `/tmp/verify_roster.py`, a new full-check wrapper alongside `/tmp/verify.py`, calls `run_checks()` directly so nothing is published or archived: all 13 checks 0, boundary edges unchanged at **495** (no boundary row touched), link edges **86 → 91** (exactly the 5 links the banners added), documents **58**, index and README agreeing at **12 groups / 56 documents**.
+- [x] **B1 — naming-drift resolved** (2026-09-19): `**Vendor Vetting**` → `**Vendor Administration / Vetting**` (Billing table) and `**Blog Engine**` → `**Blog / Publishing**` (WordPress Management table). `naming-drift` 2 → 0. Commits `79309ad`, `e7aebf4`. Note: a stray untracked archive (`1905.md`) was created by a manual `scripts/doc-graph.py` run used to confirm the fix; it was committed separately (`e875d84`) — lesson reinforced: verify read-only (now `scripts/doc-graph.py --check`), never with the publisher, to avoid orphan archives.
+- [x] **C2 + the supersession policy** (2026-09-20): both C2 documents proved to be superseded drafts, not missing engines (see C2 above), so C2 **dissolved into C3's policy** instead of needing a decision of its own. Adopted *one current document per concept — banner and keep indexed*; applied to 3 documents (`Professional Marketplace Engine v1.0.md`, `Journey-Builder Rules and Journey Definition Engine.md`, `GOAL-DRIVEN TRANSACTION JOURNEY.md`), dropped the corpus's only `## Version 0.1` heading from the Journey home document, and added DOCUMENT-INDEX group 12 *Superseded*. Commits `45a41b3`, `56ff724`, `5790424`, `4d05cc8`, `f8b0d6f`. **Verified with the parser, not the publisher** — via `/tmp/verify_roster.py` (since superseded by the built-in `--check`; the `/tmp` wrapper called `run_checks()` directly so nothing was published or archived): all 13 checks 0, boundary edges unchanged at **495** (no boundary row touched), link edges **86 → 91** (exactly the 5 links the banners added), documents **58**, index and README agreeing at **12 groups / 56 documents**.
 
 ---
 

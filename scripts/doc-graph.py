@@ -41,10 +41,16 @@ is left completely alone.
 Usage:
     python3 scripts/doc-graph.py                # write reports into analysis/
     python3 scripts/doc-graph.py --stdout       # print the report, write nothing
+    python3 scripts/doc-graph.py --check        # run checks, write nothing, gate
     python3 scripts/doc-graph.py --staged-files # print paths that changed
 
 --staged-files is the interface the pre-commit hook uses: it regenerates as a
 side effect and prints one path per line, empty when the report is current.
+
+--check is the read-only counterpart, and the only mode with a meaningful exit
+status: 0 when every guard in GUARDS is zero, 1 when any is not. It publishes
+nothing. Use it to verify the corpus; do not use the default mode for that,
+because publishing overwrites the very report you would compare against.
 """
 
 from __future__ import annotations
@@ -78,6 +84,37 @@ ARCHIVE_DIR = "archive"
 GENERATED_LINE_RE = re.compile(r"^\* generated: .*$", re.M)
 STAMP_RE = re.compile(r"^\* generated: (\d{4}-\d{2}-\d{2}) (\d{2}):(\d{2})",
                       re.M)
+
+# The checks that are GUARDS: a non-empty result is a defect, and the corpus is
+# expected to score zero on all of them. This tuple is the single source of
+# truth for three consumers -- the report's summary table, the console summary,
+# and `--check`'s exit status. It used to be written out twice (once as the
+# report's `order` list, once as main()'s literal tuple), which is precisely the
+# hand-maintained-view bug these checks exist to catch: add a guard to one copy
+# and the other keeps silently reporting on the old set.
+#
+# `boundary-tier-table` and `accepted-multi-engine` are deliberately NOT guards.
+# They are REGISTERS, and both are non-empty on a healthy corpus:
+# `boundary-tier-table` counts documents using the machine-readable form (more
+# is better), and `accepted-multi-engine` lists decisions already taken. A
+# verifier that flags any non-empty bucket calls those two failures and reports
+# a clean corpus as broken -- a false alarm that trains you to ignore the real
+# ones. Only `boundary-tier-none` (no boundary section at all) is a guard.
+GUARDS = (
+    ("1",  "declaration-consistency", "Roster views that disagree with each other",       "High"),
+    ("2",  "readme-roster",           "README's prose roster disagreeing with the layers", "High"),
+    ("3",  "no-dangling",             "Dangling engines — declared, no document",         "High"),
+    ("4",  "stale-absence",           "Documents claiming a built component is absent",   "High"),
+    ("5",  "boundary-tier-none",      "Engine docs with no boundary section",             "High"),
+    ("6",  "structural-ambiguity",    "Structural ambiguity",                             "Medium"),
+    ("7",  "undeclared-reference",    "Boundaries with undeclared engines",               "Medium"),
+    ("8",  "boundary-tier-prose",     "Boundary in prose, not machine-readable",          "Medium"),
+    ("9",  "never-named",             "Engines no boundary table mentions",               "Medium"),
+    ("10", "naming-drift",            "Naming drift",                                     "Low"),
+    ("11", "no-orphans",              "Orphan documents",                                  "Low"),
+    ("12", "no-layer-violation",      "Layer violations",                                  "Low"),
+    ("13", "coverage",                "Coverage and count mismatches",                     "Low"),
+)
 
 
 def normalize(text: str) -> str:
@@ -137,7 +174,8 @@ ENGINE_HOME: "OrderedDict[str, str | None]" = OrderedDict([
     ("Document Readiness",     "Document Readiness & Checklist Engine v1.0.md"),
     ("Review Package",         "Professional Review Package Engine v1.0.md"),
     ("Transaction",            "Transaction - Orchestration Engine.md"),
-    ("Stakeholder",            "Stakeholder Document & Visibility Architecture.md"),
+    ("Stakeholder",            "Stakeholder - Relationship Engine.md"),
+    ("Stakeholder Disclosure", "Stakeholder Document & Visibility Architecture.md"),
     ("Workflow",               "Workflow Engine.md"),
     ("Communication",          "Communication Engine.md"),
     ("Closing",                "Closing Engine v1.0.md"),
@@ -222,7 +260,7 @@ LAYERS: "OrderedDict[str, list[str]]" = OrderedDict([
     ("Transaction", [
         "Capital", "Underwriting", "Seller Note Liquidity", "Professional Review",
         "Professional Determination", "Document Readiness", "Review Package", "Transaction", "Stakeholder",
-        "Workflow", "Communication", "Closing", "Ownership Lifecycle",
+        "Stakeholder Disclosure", "Workflow", "Communication", "Closing", "Ownership Lifecycle",
     ]),
     ("Infrastructure", [
         "Local Vault", "Identity & Access", "Consent & Access", "Policy",
@@ -315,6 +353,8 @@ ALIASES = {
     "stakeholder": "Stakeholder",
     "stakeholder / relationship": "Stakeholder",
     "stakeholder / relationship engine": "Stakeholder",
+    "stakeholder disclosure": "Stakeholder Disclosure",
+    "stakeholder disclosure engine": "Stakeholder Disclosure",
     "workflow": "Workflow",
     "communication": "Communication",
     "closing": "Closing",
@@ -734,7 +774,11 @@ def run_checks(docs):
     findings["no-orphans"] = orphans
 
     # boundary-lock coverage, in three tiers
-    engine_docs = {v for v in ENGINE_HOME.values() if v}
+    # Skip a home that is not on disk. no-dangling has already reported it as a
+    # High-severity finding (check 1, above); without this guard `docs[d]`
+    # raises KeyError and the traceback discards that finding -- so the one
+    # input this check exists to catch was the one input that crashed the run.
+    engine_docs = {v for v in ENGINE_HOME.values() if v and v in docs}
     tiers = defaultdict(list)
     for d in sorted(engine_docs):
         tiers[boundary_tier(docs[d])].append(d)
@@ -1081,39 +1125,9 @@ def render_report(findings, stats, boundary, flow, ring):
     A("")
     A("| # | Check | Count | Severity |")
     A("| --- | --- | --- | --- |")
-    sev = {
-        "declaration-consistency": "High",
-        "readme-roster": "High",
-        "no-dangling": "High",
-        "stale-absence": "High",
-        "boundary-tier-none": "High",
-        "structural-ambiguity": "Medium",
-        "undeclared-reference": "Medium",
-        "boundary-tier-prose": "Medium",
-        "never-named": "Medium",
-        "naming-drift": "Low",
-        "no-orphans": "Low",
-        "no-layer-violation": "Low",
-        "coverage": "Low",
-    }
-    order = [
-        ("1", "declaration-consistency", "Roster views that disagree with each other"),
-        ("2", "readme-roster", "README's prose roster disagreeing with the layers"),
-        ("3", "no-dangling", "Dangling engines — declared, no document"),
-        ("4", "stale-absence", "Documents claiming a built component is absent"),
-        ("5", "boundary-tier-none", "Engine docs with no boundary section"),
-        ("6", "structural-ambiguity", "Structural ambiguity"),
-        ("7", "undeclared-reference", "Boundaries with undeclared engines"),
-        ("8", "boundary-tier-prose", "Boundary in prose, not machine-readable"),
-        ("9", "never-named", "Engines no boundary table mentions"),
-        ("10", "naming-drift", "Naming drift"),
-        ("11", "no-orphans", "Orphan documents"),
-        ("12", "no-layer-violation", "Layer violations"),
-        ("13", "coverage", "Coverage and count mismatches"),
-    ]
-    for num, key, label in order:
+    for num, key, label, sev in GUARDS:
         n = len(findings.get(key, []))
-        A(f"| {num} | {label} | {n} | {sev.get(key,'-')} |")
+        A(f"| {num} | {label} | {n} | {sev} |")
     A("")
 
     def section(num, title, key, empty_msg):
@@ -1254,6 +1268,35 @@ def main():
         print(report)
         return
 
+    if "--check" in sys.argv:
+        # Read-only pre-flight: run the checks, report, publish NOTHING. The exit
+        # status is the point. The default mode's job is to *publish* the report
+        # -- it rewrites analysis/GAP-ANALYSIS.md and archives the outgoing copy
+        # -- so it is the wrong thing to reach for when all you want to know is
+        # whether the corpus is clean. Verifying by publishing also destroys the
+        # evidence you were verifying against, since the previous report is what
+        # you would diff against.
+        #
+        # Exit 0 = every guard zero. Exit 1 = at least one guard reported
+        # findings. This is the primitive a CI job or a pre-commit gate needs;
+        # refresh-analysis.sh refreshes the report but deliberately never gates
+        # on it, so nothing else in the repo turns a finding into a failure.
+        print(f"documents:      {stats['docs_total']}")
+        print(f"boundary edges: {stats['boundary_edges']}")
+        print(f"link edges:     {stats['link_edges']}")
+        print()
+        failed = 0
+        for _num, key, label, _sev in GUARDS:
+            n = len(findings.get(key, []))
+            failed += 1 if n else 0
+            print(f"{'FAIL' if n else 'ok  '}  {key:22s} {n:4d}  {label}")
+        print()
+        if failed:
+            print(f"{failed} of {len(GUARDS)} checks reported findings.")
+            return 1
+        print(f"all {len(GUARDS)} checks clean.")
+        return 0
+
     os.makedirs(OUTDIR, exist_ok=True)
     changed = publish_report(report)
     with open(os.path.join(OUTDIR, "engine-graph.mmd"), "w", encoding="utf-8") as fh:
@@ -1277,10 +1320,7 @@ def main():
     print(f"documents:      {stats['docs_total']}")
     print(f"boundary edges: {stats['boundary_edges']}")
     print(f"link edges:     {stats['link_edges']}")
-    for key in ("declaration-consistency", "readme-roster", "no-dangling",
-                "stale-absence", "boundary-tier-none", "structural-ambiguity",
-                "undeclared-reference", "boundary-tier-prose", "never-named",
-                "naming-drift", "no-orphans", "no-layer-violation", "coverage"):
+    for _num, key, _label, _sev in GUARDS:
         print(f"{key:22s} {len(findings.get(key, []))}")
     if changed:
         for p in changed:
@@ -1290,4 +1330,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

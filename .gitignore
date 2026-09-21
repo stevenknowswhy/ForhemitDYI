@@ -6,5 +6,10 @@
 analysis/graph.json
 analysis/engine-graph.mmd
 
+# Python bytecode — appears whenever scripts/doc-graph.py is imported rather
+# than run directly (e.g. by a verification helper). Never project content.
+__pycache__/
+*.pyc
+
 # macOS
 .DS_Store

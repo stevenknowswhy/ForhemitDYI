@@ -1609,7 +1609,8 @@ The Marketplace Engine is the curated discovery and matching system that connect
 | **Capital / Financing** | Financing decisions and the capital plan | Which providers are presented |
 | **Valuation** | Business value determination | Marketplace matching or provider ranking |
 | **Scenario** | The transaction paths that connect reality to destination | Provider selection |
-| **Stakeholder / Relationship** | Who participates in the transaction and what they may see, once a provider is added | The curation or matching of providers |
+| **Stakeholder / Relationship** | Who participates in the transaction, once a provider is added | What each participant may see, or the curation and matching of providers |
+| **Stakeholder Disclosure** | What each participant may see, as data-permission policies | Who participates, or the curation and matching of providers |
 | **Journey** | The ownership journey whose needs drive matching | The marketplace matching itself |
 | **Transaction / Orchestration** | Coordinating the engagement once a provider is chosen | Discovery or provider selection |
 | **Policy / Compliance** | The curation rules, including non-pay-to-play governance | Individual matching decisions |

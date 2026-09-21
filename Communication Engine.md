@@ -1651,7 +1651,8 @@ These should now be treated as requirements:
 | **Scenario** | Potential transaction paths and their assumptions | Conversation about which path to take |
 | **Marketplace** | Professional profiles, discovery, and curation | Conversation with a professional |
 | **Identity & Access** | Who a party is and what they may do on the platform | Conversation participation and visibility |
-| **Stakeholder / Relationship** | Who participates in the transaction and what they may see | The conversations they take part in |
+| **Stakeholder / Relationship** | Who participates in the transaction | What each participant may see, or the conversations they take part in |
+| **Stakeholder Disclosure** | What each participant may see, as data-permission policies | Who participates, or the conversations they take part in |
 | **Audit / Provenance** | The historical record of what happened | The conversation content itself |
 
 ## Hard Boundary

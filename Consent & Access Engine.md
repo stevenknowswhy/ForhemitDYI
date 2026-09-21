@@ -1484,7 +1484,8 @@ That is exactly the separation we want.
 | **Workflow** | Tasks, dependencies, and execution mechanics | Whether an assignee may see the underlying document |
 | **Communication** | Conversations and messages | Who may take part in a conversation |
 | **Notification** | Delivery of attention, including follow-up alerts | What the recipient is permitted to see |
-| **Stakeholder / Relationship** | Who participates in the transaction and what they may see | The authorization decision that permits it |
+| **Stakeholder / Relationship** | Who participates in the transaction | What each participant may see, or the authorization decision that permits it |
+| **Stakeholder Disclosure** | What each participant may see, as data-permission policies | Who participates, or the authorization decision that permits it |
 
 ## Hard Boundary
 

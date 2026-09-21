@@ -878,6 +878,15 @@ This suggests another standalone engine:
 
 # Stakeholder Document Engine
 
+> **Not a separate engine — and not this document's half.** The generation work described below is
+> already owned: package assembly, the Disclosure and Exclusion Manifests, versioning and the
+> sharing record belong to [Professional Review Package Engine](Professional%20Review%20Package%20Engine%20v1.0.md)
+> §52; revocation, expiration and recipient / document / field permissions belong to
+> [Consent & Access Engine](Consent%20&%20Access%20Engine.md); disclosure rules belong to
+> [Policy / Compliance Engine](Policy%20-%20Compliance%20Engine.md) §5 *Sharing Policy*. What
+> remains here — and what this document now owns as **Stakeholder Disclosure** — is the disclosure
+> policy itself: the three visibility levels as data-permission policies. See §36.
+
 Its job is to:
 
 1. Identify recipient role.
@@ -900,6 +909,13 @@ The engine should be independent from the Journey Engine and Scenario Engine.
 We should also have a separate:
 
 # Stakeholder Profile Engine
+
+> **Not a separate engine — the object already exists.** Every attribute listed below is already
+> defined as `StakeholderProfile` in [Professional Review Package Engine](Professional%20Review%20Package%20Engine%20v1.0.md)
+> §8 — Role, Purpose, relevant information categories, relevant questions, Default visibility,
+> Allowed data, Restricted data, Typical documents, Typical output structure — and the per-role
+> defaults in the examples below are that document's §35 *Stakeholder-Specific Defaults* table
+> verbatim. This is a label for a concept that already has an owner, not a gap.
 
 Each stakeholder type has:
 
@@ -997,32 +1013,35 @@ Not:
 
 # 36. ARCHITECTURAL BOUNDARY SUMMARY
 
-The Stakeholder / Relationship Engine owns who participates in the transaction and what each
-stakeholder may see. Its three visibility levels — Summary, Detailed, Comprehensive — are not
-document lengths but **data-permission policies**: the owner controls disclosure explicitly, and
-every stakeholder package is generated from the Destination and Owner Master Record as the single
-source of truth.
+The Stakeholder Disclosure Engine owns **what each stakeholder may see**. Its three visibility
+levels — Summary, Detailed, Comprehensive — are not document lengths but **data-permission
+policies**: the owner controls disclosure explicitly, and every stakeholder package is generated
+from the Destination and Owner Master Record as the single source of truth.
+
+It does **not** own who the stakeholders are. That is the Stakeholder / Relationship Engine's half
+of the pair — see [Stakeholder / Relationship Engine](Stakeholder%20-%20Relationship%20Engine.md).
 
 | Engine | Owns | Does Not Own |
 | --- | --- | --- |
-| **Stakeholder / Relationship** | Who participates in the transaction and what each stakeholder may see — the three visibility levels (Summary / Detailed / Comprehensive) expressed as data-permission policies | The authorization decision that permits access (Consent & Access); the identities themselves (Identity & Access); the source content it translates |
-| **Consent & Access** | The authorization decision that permits a stakeholder to see specific data | The visibility levels Stakeholder defines as policies |
+| **Stakeholder Disclosure** | What each stakeholder may see — the three visibility levels (Summary / Detailed / Comprehensive) expressed as data-permission policies | The authorization decision that permits access (Consent & Access); who participates (Stakeholder / Relationship); the identities themselves (Identity & Access); the source content it translates |
+| **Stakeholder / Relationship** | Who participates in the transaction, and why | What each participant may see |
+| **Consent & Access** | The authorization decision that permits a stakeholder to see specific data | The visibility levels Stakeholder Disclosure defines as policies |
 | **Identity & Access** | Who a stakeholder is and their authentication / session | What each stakeholder may see once admitted |
-| **Destination** | The owner's stated intent that stakeholder documents translate | The stakeholder-facing views Stakeholder generates |
-| **Professional Review** | Review of a stakeholder package before it is shared | The package content Stakeholder assembles |
-| **Professional Determination** | The professional's conclusion surfaced to stakeholders | The stakeholder views Stakeholder presents |
-| **Communication** | Delivery of stakeholder documents to the right people | Which people may see what — Stakeholder / Relationship defines that |
+| **Destination** | The owner's stated intent that stakeholder documents translate | The stakeholder-facing views Stakeholder Disclosure generates |
+| **Professional Review** | Review of a stakeholder package before it is shared | The package content Review Package assembles |
+| **Professional Determination** | The professional's conclusion surfaced to stakeholders | The stakeholder views Stakeholder Disclosure presents |
+| **Communication** | Delivery of stakeholder documents to the right people | Which people may see what — the levels are Stakeholder Disclosure's, the participants Stakeholder / Relationship's |
 | **Document Readiness** | Whether documents are complete and ready to share | The visibility policy that gates sharing |
-| **Transaction / Orchestration** | The transaction the stakeholders participate in | The stakeholder relationships within it (Stakeholder owns those) |
-| **Audit / Provenance** | The record of who saw what and when | The visibility decision Stakeholder / Relationship defines |
+| **Transaction / Orchestration** | The transaction the stakeholders participate in | The stakeholder relationships within it (Stakeholder / Relationship owns those) |
+| **Audit / Provenance** | The record of who saw what and when | The visibility decision Stakeholder Disclosure defines |
 
 ## Hard Boundary
 
-> The Stakeholder / Relationship Engine owns **who participates and what they may see**. It does
-> not own the authorization decision (Consent & Access), the identities (Identity & Access), or
-> the source content it translates from the Destination and Owner Master Record. The three
-> visibility levels are data-permission policies, not document lengths — the owner controls
-> disclosure explicitly.
+> The Stakeholder Disclosure Engine owns **what each stakeholder may see**. It does not own the
+> authorization decision (Consent & Access), who participates (Stakeholder / Relationship), the
+> identities (Identity & Access), or the source content it translates from the Destination and
+> Owner Master Record. The three visibility levels are data-permission policies, not document
+> lengths — the owner controls disclosure explicitly.
 
 ---
 
