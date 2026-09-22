@@ -22,7 +22,7 @@ assert_single_path_commit() {
   local revision="$1"
   local expected="$2"
   local actual
-  actual="$(git show --pretty='' --name-only "$revision" | sed '/^$/d' | paste -sd '|')"
+  actual="$(git show --pretty='' --name-only "$revision" | sed '/^$/d' | paste -sd '|' -)"
   test "$actual" = "$expected" || {
     printf 'Expected %s to contain %s; got %s\n' "$revision" "$expected" "$actual" >&2
     exit 1
@@ -105,7 +105,7 @@ fi
 HOOK
 chmod +x .git/hooks/pre-commit
 bash sync-docs.sh --yes >/dev/null
-generated_commit_paths="$(git show --pretty='' --name-only HEAD | sed '/^$/d' | sort | paste -sd '|')"
+generated_commit_paths="$(git show --pretty='' --name-only HEAD | sed '/^$/d' | sort | paste -sd '|' -)"
 test "$generated_commit_paths" = "analysis.md|source.md" || {
   printf 'Unexpected hook-generated commit paths: %s\n' "$generated_commit_paths" >&2
   exit 1
