@@ -18,14 +18,15 @@ Edge syntax it understands (in descending order of authority):
 
 Checks it runs:
 
-  declaration-consistency  ENGINE_HOME, LAYERS and LAYERLESS disagreeing
-  readme-roster        README's prose roster disagreeing with those layers
-  no-dangling          an engine named in the architecture with no backing doc
-  stale-absence        a document claiming a built component is absent
-  no-orphans           a document no other document declares a boundary with
-  no-layer-violation   a layer-organized group's doc contradicting that layer
-  coverage             roster counts vs README table vs actual files
-  naming-drift         one engine referred to by several different names
+The authoritative list is GUARDS below -- it is the single source of truth for
+the report's summary table, the console summary and `--check`'s exit status. The
+thirteen fall into four families:
+
+  roster agreement     declaration-consistency, readme-roster, coverage
+  declared-but-absent  no-dangling, stale-absence
+  boundary quality     boundary-tier-none, boundary-tier-prose, undeclared-reference,
+                       never-named, structural-ambiguity
+  housekeeping         naming-drift, no-orphans, no-layer-violation
 
 Not everything in the architecture is an engine. The section-20 ring names
 "Security", which is a cross-cutting property rather than a component: see
@@ -39,18 +40,25 @@ carried, and the new one takes its place. If nothing changed, the working tree
 is left completely alone.
 
 Usage:
-    python3 scripts/doc-graph.py                # write reports into analysis/
-    python3 scripts/doc-graph.py --stdout       # print the report, write nothing
-    python3 scripts/doc-graph.py --check        # run checks, write nothing, gate
-    python3 scripts/doc-graph.py --staged-files # print paths that changed
+    python3 scripts/doc-graph.py                 # write reports into analysis/
+    python3 scripts/doc-graph.py --stdout        # print the report, write nothing
+    python3 scripts/doc-graph.py --check         # run checks, write nothing, gate
+    python3 scripts/doc-graph.py --check-report  # is the committed report current?
+    python3 scripts/doc-graph.py --staged-files  # print paths that changed
 
 --staged-files is the interface the pre-commit hook uses: it regenerates as a
 side effect and prints one path per line, empty when the report is current.
 
---check is the read-only counterpart, and the only mode with a meaningful exit
-status: 0 when every guard in GUARDS is zero, 1 when any is not. It publishes
-nothing. Use it to verify the corpus; do not use the default mode for that,
-because publishing overwrites the very report you would compare against.
+--check and --check-report are the two read-only gates, and the only modes with a
+meaningful exit status (0 pass, 1 fail). Neither publishes anything.
+
+    --check         every guard in GUARDS is zero -- the corpus is clean.
+    --check-report  the committed report matches the corpus -- no drift.
+
+They fail independently and both matter: a clean corpus with a stale report is
+still a false statement sitting on disk. Use them to verify; do not use the
+default mode for that, because publishing overwrites the very report you would
+compare against.
 """
 
 from __future__ import annotations
@@ -1267,6 +1275,41 @@ def main():
     if "--stdout" in sys.argv:
         print(report)
         return
+
+    if "--check-report" in sys.argv:
+        # Staleness gate for the *committed* report -- the counterpart to
+        # --check, and a different question. --check asks "is the corpus clean?"
+        # This asks "does the versioned report still describe it?" A clean corpus
+        # with a stale report is still a false statement sitting on disk, so both
+        # gates have to pass for the tree to be internally consistent.
+        #
+        # This is the half the pre-commit hook structurally cannot provide. The
+        # hook REGENERATES the report, so it can never have cause to fail: it
+        # silently repairs drift rather than reporting it. That is the right
+        # behaviour at commit time and useless in CI, where the question is
+        # whether the state you pushed was self-consistent. Nothing else in the
+        # repo turns report drift into a non-zero exit.
+        #
+        # Ported from the Jev stack, which already had both flags; main had only
+        # --check. Comparison is normalised, so a difference of clock alone is
+        # not drift (see normalize()).
+        report_path = os.path.join(OUTDIR, REPORT)
+        rel = os.path.relpath(report_path, ROOT)
+        try:
+            with open(report_path, encoding="utf-8") as fh:
+                committed = fh.read()
+        except OSError as exc:
+            print(f"versioned report is unavailable: {exc}", file=sys.stderr)
+            return 1
+        if normalize(committed) != normalize(report):
+            print(
+                f"{rel} is stale; run python3 scripts/doc-graph.py and commit "
+                f"the result",
+                file=sys.stderr,
+            )
+            return 1
+        print(f"{rel} is current")
+        return 0
 
     if "--check" in sys.argv:
         # Read-only pre-flight: run the checks, report, publish NOTHING. The exit
