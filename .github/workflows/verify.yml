@@ -1,0 +1,45 @@
+name: verify
+
+# Runs the same command set the local developer runs, so a green check means
+# the tree satisfies every gate — not a different, weaker one. The Jev stack
+# owns these scripts; this workflow only exists on branches that carry them.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install development dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-dev.txt
+
+      - name: Install shellcheck
+        # Not preinstalled on ubuntu-latest; the local command list shells out to it.
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run verification suite
+        run: |
+          set -euo pipefail
+          python3 scripts/doc-graph.py --check
+          python3 scripts/doc-graph.py --check-report
+          python3 scripts/check-markdown-links.py
+          python3 scripts/check-jev-contracts.py
+          python3 scripts/check-domain-contracts.py
+          python3 -m pytest tests/
+          shellcheck scripts/*.sh tests/*.sh
+          bash tests/test-doc-graph-roster.sh
+          bash tests/test-sync-docs.sh
