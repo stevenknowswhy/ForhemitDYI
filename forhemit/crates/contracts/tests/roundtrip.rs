@@ -6,8 +6,8 @@
 use forhemit_contracts::{
     ActionOrigination, ActorClassification, ActorId, ActorKind, ActorRecord, AuditEvent,
     AuditEventDraft, AuditEventType, CausationId, CorrelationId, DecisionLayer, DestinationId,
-    EngineId, EventId, NonnegotiableState, ObjectId, PayloadRef, Provenance, Sha256Hex,
-    TransactionId, Verification, WorkspaceId,
+    EngineId, EventId, FactId, FactVersionId, NonnegotiableState, ObjectId, PayloadRef, Provenance,
+    Sha256Hex, TransactionId, Verification, WorkspaceId,
 };
 
 /// Serializes to JSON and back, asserting the value survives unchanged.
@@ -54,6 +54,8 @@ fn every_id_type_roundtrips() {
     id_case!(DestinationId, "dest_1");
     id_case!(TransactionId, "txn_1");
     id_case!(ActorId, "owner_stefano");
+    id_case!(FactId, "fact_1");
+    id_case!(FactVersionId, "factver_1");
 }
 
 #[test]
@@ -312,6 +314,14 @@ fn audit_event_type_covers_all_variants() {
         (
             AuditEventType::CorrectionRecorded,
             "\"correction_recorded\"",
+        ),
+        (
+            AuditEventType::RealityFactRecorded,
+            "\"reality_fact_recorded\"",
+        ),
+        (
+            AuditEventType::RealityFactRevised,
+            "\"reality_fact_revised\"",
         ),
     ];
     for (variant, wire) in all {

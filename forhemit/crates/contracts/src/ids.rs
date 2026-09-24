@@ -118,3 +118,18 @@ define_id!(
     /// what did it.
     ActorId
 );
+
+define_id!(
+    /// Identifies one Business Reality fact — the stable identity that
+    /// survives revisions (Business Reality doc §25: "Historical snapshots
+    /// remain available" — versions change, the fact's identity does not).
+    /// Scenario assumptions reference facts through this id.
+    FactId
+);
+
+define_id!(
+    /// Identifies one immutable fact version (Business Reality doc §25;
+    /// Expanded Reality §11 "Version History"). A revision creates a new
+    /// version id and never edits the version it supersedes.
+    FactVersionId
+);

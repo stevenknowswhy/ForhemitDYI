@@ -45,6 +45,13 @@ pub enum AuditEventType {
     /// integrity rule 13: "Corrections create additional events rather
     /// than rewriting history".
     CorrectionRecorded,
+    /// The Business Reality engine recorded a new fact or the first
+    /// version of one (crate `reality`).
+    RealityFactRecorded,
+    /// A Business Reality fact was revised — a new fact version
+    /// superseding the previous one; the previous version is retained,
+    /// never edited (Business Reality doc §25).
+    RealityFactRevised,
 }
 
 /// The audit event contract (Audit doc §63 field set; implementation-spec

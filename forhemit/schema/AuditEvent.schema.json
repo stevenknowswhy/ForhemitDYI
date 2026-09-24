@@ -284,6 +284,16 @@
           "description": "A correction created a new event referencing the original —\nintegrity rule 13: \"Corrections create additional events rather\nthan rewriting history\".",
           "type": "string",
           "const": "correction_recorded"
+        },
+        {
+          "description": "The Business Reality engine recorded a new fact or the first\nversion of one (crate `reality`).",
+          "type": "string",
+          "const": "reality_fact_recorded"
+        },
+        {
+          "description": "A Business Reality fact was revised — a new fact version\nsuperseding the previous one; the previous version is retained,\nnever edited (Business Reality doc §25).",
+          "type": "string",
+          "const": "reality_fact_revised"
         }
       ]
     },

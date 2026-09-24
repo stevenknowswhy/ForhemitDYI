@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FactVersionId",
+  "description": "Identifies one immutable fact version (Business Reality doc §25;\nExpanded Reality §11 \"Version History\"). A revision creates a new\nversion id and never edits the version it supersedes.",
+  "type": "string"
+}
