@@ -1490,6 +1490,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "forhemit-journey"
+version = "0.1.0"
+dependencies = [
+ "forhemit-contracts",
+ "forhemit-enginekit",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "time",
+ "ulid",
+]
+
+[[package]]
 name = "forhemit-reality"
 version = "0.1.0"
 dependencies = [
