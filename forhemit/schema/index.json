@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "forhemit-contracts",
+  "types": [
+    "ActionOrigination",
+    "ActorKind",
+    "CausationId",
+    "CorrelationId",
+    "DecisionLayer",
+    "DestinationId",
+    "EngineId",
+    "EventId",
+    "NonnegotiableState",
+    "ObjectId",
+    "PayloadRef",
+    "Provenance",
+    "Sha256Hex",
+    "Verification",
+    "WorkspaceId"
+  ]
+}

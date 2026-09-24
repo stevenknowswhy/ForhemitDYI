@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActorKind",
+  "description": "Who or what performed an action. Variants are the Audit doc §7 list,\nverbatim.",
+  "oneOf": [
+    {
+      "description": "The business owner.",
+      "type": "string",
+      "const": "owner"
+    },
+    {
+      "description": "A co-owner of the business.",
+      "type": "string",
+      "const": "co_owner"
+    },
+    {
+      "description": "An engaged professional (CPA, attorney, valuation, …).",
+      "type": "string",
+      "const": "professional"
+    },
+    {
+      "description": "An employee of the business.",
+      "type": "string",
+      "const": "employee"
+    },
+    {
+      "description": "A lender.",
+      "type": "string",
+      "const": "lender"
+    },
+    {
+      "description": "A trustee.",
+      "type": "string",
+      "const": "trustee"
+    },
+    {
+      "description": "An external buyer.",
+      "type": "string",
+      "const": "buyer"
+    },
+    {
+      "description": "A platform administrator.",
+      "type": "string",
+      "const": "platform_administrator"
+    },
+    {
+      "description": "A service account.",
+      "type": "string",
+      "const": "service_account"
+    },
+    {
+      "description": "An automated workflow.",
+      "type": "string",
+      "const": "automation"
+    },
+    {
+      "description": "An AI agent.",
+      "type": "string",
+      "const": "ai_agent"
+    },
+    {
+      "description": "An external integration.",
+      "type": "string",
+      "const": "integration"
+    },
+    {
+      "description": "A system process.",
+      "type": "string",
+      "const": "system_process"
+    }
+  ]
+}

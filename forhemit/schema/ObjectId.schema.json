@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ObjectId",
+  "description": "Identifies the source object an event is about (Audit doc §6: \"Source\nobject\"); version lineage per Audit doc §21.",
+  "type": "string"
+}

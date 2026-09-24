@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NonnegotiableState",
+  "description": "How strongly an owner's answer is held. Defaults to\n[`NonnegotiableState::Unspecified`].",
+  "oneOf": [
+    {
+      "description": "No designation — the doc's default unless the owner explicitly\nindicates a level of importance.",
+      "type": "string",
+      "const": "unspecified"
+    },
+    {
+      "description": "\"I would like this\" — 🟢 desirable but negotiable.",
+      "type": "string",
+      "const": "preference"
+    },
+    {
+      "description": "\"This is very important to me\" — 🟠 very important, but potentially\nchangeable.",
+      "type": "string",
+      "const": "strong_preference"
+    },
+    {
+      "description": "\"I do not want to proceed with a path that does not satisfy this\" —\n🔴 must-have; a hard constraint for the scenario engine (doc §3).",
+      "type": "string",
+      "const": "nonnegotiable"
+    }
+  ]
+}

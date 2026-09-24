@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PayloadRef",
+  "description": "Hash-addressed reference to bulk data (Audit doc §63 field\n`payload_reference`; spec: \"hash-addressed, never inline bulk data\").\n\nPayloads live behind their digest — that is what keeps audit events small\nand history verifiable.",
+  "type": "object",
+  "properties": {
+    "digest": {
+      "description": "Digest of the referenced payload bytes.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Sha256Hex"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "digest"
+  ],
+  "definitions": {
+    "Sha256Hex": {
+      "description": "A lowercase hex-encoded SHA-256 digest (exactly 64 hex characters).\n\nValidation runs on construction *and* on deserialization, so a value read\nfrom disk can never hold a malformed digest.",
+      "type": "string"
+    }
+  }
+}

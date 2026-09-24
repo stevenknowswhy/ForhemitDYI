@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Provenance",
+  "description": "How a value entered the system. Variants are the schema doc's canonical\nprovenance list, verbatim (snake_case of the SCREAMING_CASE names).",
+  "oneOf": [
+    {
+      "description": "Reported by the owner.",
+      "type": "string",
+      "const": "owner_reported"
+    },
+    {
+      "description": "Supported by an imported document.",
+      "type": "string",
+      "const": "document_supported"
+    },
+    {
+      "description": "Supported by research.",
+      "type": "string",
+      "const": "research_supported"
+    },
+    {
+      "description": "Supplied by a professional.",
+      "type": "string",
+      "const": "professionally_supplied"
+    },
+    {
+      "description": "Assumed for exploratory modeling.",
+      "type": "string",
+      "const": "scenario_assumed"
+    },
+    {
+      "description": "Derived by the system from other data.",
+      "type": "string",
+      "const": "system_derived"
+    },
+    {
+      "description": "Derived by a model run.",
+      "type": "string",
+      "const": "model_derived"
+    }
+  ]
+}
