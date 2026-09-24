@@ -1502,6 +1502,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "forhemit-scenario"
+version = "0.1.0"
+dependencies = [
+ "forhemit-contracts",
+ "forhemit-enginekit",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "time",
+ "ulid",
+]
+
+[[package]]
 name = "forhemit-vault"
 version = "0.1.0"
 dependencies = [

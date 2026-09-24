@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScenarioVersionId",
+  "description": "Identifies one ScenarioVersion — the primary historical object\n(Scenario Engine Data Model doc §4). A version is immutable once\nfinalized; a material change creates a new version id.",
+  "type": "string"
+}

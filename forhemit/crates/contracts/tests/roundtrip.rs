@@ -4,10 +4,14 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)] // test code: malformed input must fail the test loudly
 
 use forhemit_contracts::{
-    ActionOrigination, ActorClassification, ActorId, ActorKind, ActorRecord, AuditEvent,
-    AuditEventDraft, AuditEventType, CausationId, CorrelationId, DecisionLayer, DestinationId,
-    EngineId, EventId, FactId, FactVersionId, NonnegotiableState, ObjectId, PayloadRef, Provenance,
-    Sha256Hex, TransactionId, Verification, WorkspaceId,
+    ActionOrigination, ActorClassification, ActorId, ActorKind, ActorRecord, AssumptionId,
+    AuditEvent, AuditEventDraft, AuditEventType, BranchId, BusinessRealityVersionId, CausationId,
+    ComparisonDimensionId, ComparisonId, ComparisonResultId, ConflictId, ConstraintId,
+    CorrelationId, DecisionLayer, DestinationId, EngineId, EventId, FactId, FactVersionId,
+    FinancialModelVersionId, NonnegotiableId, NonnegotiableState, ObjectId, PayloadRef,
+    ProfessionalReviewId, ProfessionalReviewReferenceId, Provenance, ScenarioFamilyId,
+    ScenarioImpactId, ScenarioVersionId, Sha256Hex, SnapshotId, TransactionId, UnknownId,
+    Verification, WorkspaceId,
 };
 
 /// Serializes to JSON and back, asserting the value survives unchanged.
@@ -56,6 +60,23 @@ fn every_id_type_roundtrips() {
     id_case!(ActorId, "owner_stefano");
     id_case!(FactId, "fact_1");
     id_case!(FactVersionId, "factver_1");
+    id_case!(ScenarioFamilyId, "fam_1");
+    id_case!(ScenarioVersionId, "sv_1");
+    id_case!(SnapshotId, "snap_1");
+    id_case!(AssumptionId, "asm_1");
+    id_case!(ConstraintId, "con_1");
+    id_case!(UnknownId, "unk_1");
+    id_case!(ConflictId, "cnf_1");
+    id_case!(BranchId, "brn_1");
+    id_case!(ComparisonId, "cmp_1");
+    id_case!(BusinessRealityVersionId, "brv_abc123");
+    id_case!(FinancialModelVersionId, "fmver_1");
+    id_case!(ProfessionalReviewId, "pr_1");
+    id_case!(NonnegotiableId, "nn_1");
+    id_case!(ComparisonDimensionId, "dim_1");
+    id_case!(ComparisonResultId, "res_1");
+    id_case!(ProfessionalReviewReferenceId, "ref_1");
+    id_case!(ScenarioImpactId, "imp_1");
 }
 
 #[test]
@@ -322,6 +343,47 @@ fn audit_event_type_covers_all_variants() {
         (
             AuditEventType::RealityFactRevised,
             "\"reality_fact_revised\"",
+        ),
+        (AuditEventType::ScenarioCreated, "\"scenario_created\""),
+        (
+            AuditEventType::ScenarioDraftUpdated,
+            "\"scenario_draft_updated\"",
+        ),
+        (
+            AuditEventType::ScenarioVersionFinalized,
+            "\"scenario_version_finalized\"",
+        ),
+        (
+            AuditEventType::ScenarioConflictDetected,
+            "\"scenario_conflict_detected\"",
+        ),
+        (
+            AuditEventType::ScenarioConflictResolved,
+            "\"scenario_conflict_resolved\"",
+        ),
+        (
+            AuditEventType::ScenarioWhatIfCreated,
+            "\"scenario_what_if_created\"",
+        ),
+        (
+            AuditEventType::ScenarioAffectedByRealityChange,
+            "\"scenario_affected_by_reality_change\"",
+        ),
+        (
+            AuditEventType::ScenarioComparisonRecorded,
+            "\"scenario_comparison_recorded\"",
+        ),
+        (
+            AuditEventType::ScenarioProfessionalReviewRecorded,
+            "\"scenario_professional_review_recorded\"",
+        ),
+        (
+            AuditEventType::ScenarioReadinessChanged,
+            "\"scenario_readiness_changed\"",
+        ),
+        (
+            AuditEventType::ScenarioFamilyArchived,
+            "\"scenario_family_archived\"",
         ),
     ];
     for (variant, wire) in all {

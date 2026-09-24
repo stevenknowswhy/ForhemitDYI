@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConstraintId",
+  "description": "Identifies one ScenarioConstraint (Scenario Engine Data Model doc §12).",
+  "type": "string"
+}

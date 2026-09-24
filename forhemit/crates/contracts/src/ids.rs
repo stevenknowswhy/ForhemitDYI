@@ -174,3 +174,99 @@ define_id!(
     /// "LocalAnalysis": "analysis_id, inputs, model/tool…").
     AnalysisId
 );
+
+define_id!(
+    /// Identifies a ScenarioFamily — one conceptual path through its entire
+    /// history (Scenario Engine Data Model doc §3).
+    ScenarioFamilyId
+);
+define_id!(
+    /// Identifies one ScenarioVersion — the primary historical object
+    /// (Scenario Engine Data Model doc §4). A version is immutable once
+    /// finalized; a material change creates a new version id.
+    ScenarioVersionId
+);
+define_id!(
+    /// Identifies a ScenarioSnapshot — the pinned reference set ("what did
+    /// we actually know when we made this scenario?", Scenario Engine Data
+    /// Model doc §6, §51).
+    SnapshotId
+);
+define_id!(
+    /// Identifies one ScenarioAssumption — a typed, provenance-stamped
+    /// value a scenario is built on (Scenario Engine Data Model doc §7).
+    AssumptionId
+);
+define_id!(
+    /// Identifies one ScenarioConstraint (Scenario Engine Data Model doc §12).
+    ConstraintId
+);
+define_id!(
+    /// Identifies one ScenarioUnknown — first-class missing information
+    /// (Scenario Engine Data Model doc §15), never a blank zero.
+    UnknownId
+);
+define_id!(
+    /// Identifies one ScenarioConflict — severity describes the condition,
+    /// never a score (Scenario Engine Data Model doc §16–17).
+    ConflictId
+);
+define_id!(
+    /// Identifies a ScenarioBranch — explicit what-if lineage whose
+    /// parent scenario version is always identified (Scenario Engine Data
+    /// Model doc §30, integrity rule 7).
+    BranchId
+);
+define_id!(
+    /// Identifies a durable ScenarioComparison — captures what was
+    /// compared, never which scenario won (Scenario Engine Data Model doc
+    /// §32, integrity rule 10).
+    ComparisonId
+);
+define_id!(
+    /// Identifies the Business Reality version a scenario was built
+    /// against (Scenario Engine Data Model doc §4, integrity rule 2).
+    /// Derived as a content address of the pinned fact-version set by the
+    /// scenario engine, not minted: same facts → same id, any revision →
+    /// a different id.
+    BusinessRealityVersionId
+);
+define_id!(
+    /// Identifies a Financial Model version (Scenario Engine Data Model
+    /// doc §24, integrity rule 3: "Every material financial output
+    /// references a Financial Model version"). Reserved for the financial
+    /// modeling engine; carried opaquely in v1 so the reference cannot
+    /// exist without a version.
+    FinancialModelVersionId
+);
+define_id!(
+    /// Identifies a professional review (Scenario Engine Data Model doc
+    /// §27). Reserved for the professional review engine; carried
+    /// opaquely in v1.
+    ProfessionalReviewId
+);
+define_id!(
+    /// Identifies a `ScenarioNonnegotiable` — the destination nonnegotiable
+    /// a scenario version is testing (Scenario Engine Data Model doc §13).
+    NonnegotiableId
+);
+define_id!(
+    /// Identifies a comparison dimension (Scenario Engine Data Model doc
+    /// §33). Display order is presentation, never ranking.
+    ComparisonDimensionId
+);
+define_id!(
+    /// Identifies one comparison result cell (Scenario Engine Data Model
+    /// doc §34) — a factual reading, never a rank.
+    ComparisonResultId
+);
+define_id!(
+    /// Identifies a professional review reference row (Scenario Engine
+    /// Data Model doc §27; SCHEMA.md §2.17a).
+    ProfessionalReviewReferenceId
+);
+define_id!(
+    /// Identifies a recorded upstream-change impact (Scenario Engine Data
+    /// Model doc §35; SCHEMA.md §2.15).
+    ScenarioImpactId
+);

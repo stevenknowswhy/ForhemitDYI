@@ -17,6 +17,7 @@ members = [
     "crates/enginekit",
     "crates/reality",
     "crates/vault",
+    "crates/scenario",
 ]
 
 [workspace.package]

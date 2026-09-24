@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SnapshotId",
+  "description": "Identifies a ScenarioSnapshot — the pinned reference set (\"what did\nwe actually know when we made this scenario?\", Scenario Engine Data\nModel doc §6, §51).",
+  "type": "string"
+}

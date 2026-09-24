@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ComparisonDimensionId",
+  "description": "Identifies a comparison dimension (Scenario Engine Data Model doc\n§33). Display order is presentation, never ranking.",
+  "type": "string"
+}

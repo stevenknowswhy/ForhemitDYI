@@ -82,6 +82,52 @@ pub enum AuditEventType {
     /// "Backup completed"; §35: "The Vault should support encrypted
     /// backups").
     BackupCompleted,
+    /// A scenario family was created — the birth of one conceptual path,
+    /// whether by the owner's explorer or by a what-if branch (Scenario
+    /// Engine Data Model doc §3; event contract §3.1).
+    ScenarioCreated,
+    /// A scenario draft mutation — the draft's creation or one of its
+    /// audited edits while mutable (Scenario Engine Data Model doc §46;
+    /// event contract §3.2). The payload preserves previous values.
+    ScenarioDraftUpdated,
+    /// A draft was finalized into history — the version became immutable;
+    /// further material change creates a successor version (Scenario
+    /// Engine Data Model doc §46, integrity rule 6; event contract §3.3).
+    ScenarioVersionFinalized,
+    /// A conflict was recorded against a scenario version — including
+    /// structured nonnegotiable conflicts, which carry the destination
+    /// back-reference instead of a warning flag (Scenario Engine Data
+    /// Model doc §16; event contract §3.4).
+    ScenarioConflictDetected,
+    /// A conflict's resolution was recorded — for nonnegotiable
+    /// conflicts, the owner's decision (keep / explore another path /
+    /// change the requirement), never an engine decision (NONNEGOTIABLE
+    /// doc §5; event contract §3.5).
+    ScenarioConflictResolved,
+    /// A what-if branch was created from a parent scenario version; the
+    /// parent is untouched (Scenario Engine Data Model doc §30–31; event
+    /// contract §3.6).
+    ScenarioWhatIfCreated,
+    /// A scenario version was found pinned to Business Reality or
+    /// destination state that has since moved; the version itself is not
+    /// modified (Scenario Engine Data Model doc §35; event contract §3.7).
+    ScenarioAffectedByRealityChange,
+    /// A durable comparison was recorded — what was compared, never which
+    /// scenario won (Scenario Engine Data Model doc §32, integrity rule
+    /// 10; event contract §3.8).
+    ScenarioComparisonRecorded,
+    /// A professional review reference was recorded — always attributed
+    /// to a role and identity; it never marks the scenario approved
+    /// (Scenario Engine Data Model doc §27, §29; event contract §3.9).
+    ScenarioProfessionalReviewRecorded,
+    /// A finalized version's readiness status changed, with the previous
+    /// and new values preserved (Scenario Engine Data Model doc §36, §40;
+    /// event contract §3.10).
+    ScenarioReadinessChanged,
+    /// A scenario family was archived — retention, not deletion; every
+    /// version and its history remain readable (Scenario Engine Data
+    /// Model doc §3; event contract §3.11).
+    ScenarioFamilyArchived,
 }
 
 /// The audit event contract (Audit doc §63 field set; implementation-spec

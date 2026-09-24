@@ -1,0 +1,47 @@
+{
+  "template_id": "management_buyout",
+  "name": "Management buyout path",
+  "scenario_type": "management_buyout",
+  "description": "The existing management team buys the business. Structured per Employee Ownership Journey v0.2's management-buyout path; seeded values are starting points to confirm or replace.",
+  "seed_assumptions": [
+    {
+      "category": "buyer",
+      "name": "Management team has buyout capacity",
+      "description": "The working assumption that the current management team can organize financing and wants to buy.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "owner_reported",
+      "verification": "unverified"
+    },
+    {
+      "category": "financing",
+      "name": "Outside debt covers most of the price",
+      "description": "The share of the purchase price the working assumption expects a lender to provide.",
+      "value": { "value_type": "percentage", "value": "60" },
+      "provenance": "scenario_assumed",
+      "verification": "unknown"
+    },
+    {
+      "category": "governance",
+      "name": "Owner stays involved during transition",
+      "description": "The owner's working assumption about staying involved in an advisory capacity while management takes over.",
+      "value": { "value_type": "duration_months", "value": 24 },
+      "provenance": "owner_reported",
+      "verification": "unverified"
+    }
+  ],
+  "seed_unknowns": [
+    {
+      "category": "buyer",
+      "description": "Which members of management are actual prospective buyers, with what ownership split, is unnamed.",
+      "importance": "critical",
+      "required_action": "Identify the specific managers who would join the buyout and their intended roles.",
+      "source_dependency": "management_exploration"
+    },
+    {
+      "category": "financial",
+      "description": "Management's financing commitments (equity, debt, seller note) are not documented.",
+      "importance": "important",
+      "source_dependency": "financing_exploration"
+    }
+  ]
+}

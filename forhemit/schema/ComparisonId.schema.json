@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ComparisonId",
+  "description": "Identifies a durable ScenarioComparison — captures what was\ncompared, never which scenario won (Scenario Engine Data Model doc\n§32, integrity rule 10).",
+  "type": "string"
+}

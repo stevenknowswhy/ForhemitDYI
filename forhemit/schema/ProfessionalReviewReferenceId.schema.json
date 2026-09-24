@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProfessionalReviewReferenceId",
+  "description": "Identifies a professional review reference row (Scenario Engine\nData Model doc §27; SCHEMA.md §2.17a).",
+  "type": "string"
+}

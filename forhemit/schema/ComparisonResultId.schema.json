@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ComparisonResultId",
+  "description": "Identifies one comparison result cell (Scenario Engine Data Model\ndoc §34) — a factual reading, never a rank.",
+  "type": "string"
+}
