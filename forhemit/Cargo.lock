@@ -904,6 +904,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "forhemit-destination"
+version = "0.1.0"
+dependencies = [
+ "forhemit-contracts",
+ "forhemit-enginekit",
+ "serde",
+ "serde_json",
+ "time",
+ "ulid",
+]
+
+[[package]]
 name = "forhemit-enginekit"
 version = "0.1.0"
 dependencies = [

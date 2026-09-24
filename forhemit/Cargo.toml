@@ -13,6 +13,7 @@ members = [
     "app/src-tauri",
     "crates/audit",
     "crates/contracts",
+    "crates/destination",
     "crates/enginekit",
     "crates/reality",
 ]

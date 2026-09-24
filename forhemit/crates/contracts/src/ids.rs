@@ -107,6 +107,22 @@ define_id!(
 );
 
 define_id!(
+    /// Identifies one immutable version in a destination's history
+    /// (Destination Engine doc §26: "Every material change creates a new
+    /// version… The previous version remains accessible").
+    DestinationVersionId
+);
+
+define_id!(
+    /// Identifies one objective within a destination. Stable across
+    /// destination versions, so downstream engines can back-reference the
+    /// same objective in later versions (spec: nonnegotiable constraints
+    /// "expose reference IDs so later scenario conflicts can
+    /// back-reference them").
+    ObjectiveId
+);
+
+define_id!(
     /// Identifies the transaction (multi-event unit of work) an event
     /// belongs to — Audit doc §63 field `transaction_id`.
     TransactionId
