@@ -12,7 +12,7 @@ resolver = "2"
 members = [
     "app/src-tauri",
     "crates/contracts",
-    # Next: "crates/enginekit" (ids, time, audit event-emission trait)
+    "crates/enginekit",
 ]
 
 [workspace.package]

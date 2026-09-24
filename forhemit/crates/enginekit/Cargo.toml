@@ -1,0 +1,13 @@
+[package]
+name = "forhemit-enginekit"
+description = "Shared engine plumbing: the audit emission interface and injectable time"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+time = { workspace = true }
+
+[lints]
+workspace = true
