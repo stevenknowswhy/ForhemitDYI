@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuditEventType",
+  "description": "The kind of material change an event records.\n\nVariant names are engine-namespaced by prefix, per the spec sample\n(`ScenarioConflictDetected` belongs to the scenario engine). New\nvariants join as additive cases as engines land; reorganizing existing\nvariants is a new [`AuditEvent`] contract version, never an edit of\nstored values (Audit doc integrity rule 12).",
+  "oneOf": [
+    {
+      "description": "An owner decision was recorded (Audit doc §17 example event).",
+      "type": "string",
+      "const": "owner_decision_recorded"
+    },
+    {
+      "description": "A scenario changed (Audit doc §17 example event).",
+      "type": "string",
+      "const": "scenario_changed"
+    },
+    {
+      "description": "A correction created a new event referencing the original —\nintegrity rule 13: \"Corrections create additional events rather\nthan rewriting history\".",
+      "type": "string",
+      "const": "correction_recorded"
+    }
+  ]
+}

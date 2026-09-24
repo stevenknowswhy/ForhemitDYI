@@ -3,7 +3,12 @@
   "title": "forhemit-contracts",
   "types": [
     "ActionOrigination",
+    "ActorClassification",
+    "ActorId",
     "ActorKind",
+    "ActorRecord",
+    "AuditEvent",
+    "AuditEventType",
     "CausationId",
     "CorrelationId",
     "DecisionLayer",
@@ -15,6 +20,7 @@
     "PayloadRef",
     "Provenance",
     "Sha256Hex",
+    "TransactionId",
     "Verification",
     "WorkspaceId"
   ]

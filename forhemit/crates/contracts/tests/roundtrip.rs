@@ -4,9 +4,10 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)] // test code: malformed input must fail the test loudly
 
 use forhemit_contracts::{
-    ActionOrigination, ActorKind, CausationId, CorrelationId, DecisionLayer, DestinationId,
+    ActionOrigination, ActorClassification, ActorId, ActorKind, ActorRecord, AuditEvent,
+    AuditEventDraft, AuditEventType, CausationId, CorrelationId, DecisionLayer, DestinationId,
     EngineId, EventId, NonnegotiableState, ObjectId, PayloadRef, Provenance, Sha256Hex,
-    Verification, WorkspaceId,
+    TransactionId, Verification, WorkspaceId,
 };
 
 /// Serializes to JSON and back, asserting the value survives unchanged.
@@ -51,6 +52,8 @@ fn every_id_type_roundtrips() {
     id_case!(WorkspaceId, "ws_main");
     id_case!(ObjectId, "obj_dest_1");
     id_case!(DestinationId, "dest_1");
+    id_case!(TransactionId, "txn_1");
+    id_case!(ActorId, "owner_stefano");
 }
 
 #[test]
@@ -247,4 +250,128 @@ fn versioned_tag_pattern_roundtrips() {
     let json = serde_json::to_string(&value).unwrap();
     assert_eq!(json, r#"{"contract_version":"v1","object_id":"obj_1"}"#);
     assert_eq!(roundtrip(value.clone()), value);
+}
+
+// --- Audit event contract (contracts/src/audit.rs) ---
+
+/// A fully-detailed actor record for fixtures.
+fn sample_actor() -> ActorRecord {
+    ActorRecord {
+        actor_id: ActorId::new("owner_stefano").unwrap(),
+        classification: ActorClassification::Human,
+        kind: Some(ActorKind::Owner),
+        origination: Some(ActionOrigination::HumanInitiated),
+    }
+}
+
+/// A minimal-but-complete V1 audit event for fixtures.
+fn sample_event() -> AuditEvent {
+    AuditEvent::V1 {
+        event_id: EventId::new("01JD1WS9S4XQ8V7S9G2H6XJ1WV").unwrap(),
+        event_type: AuditEventType::OwnerDecisionRecorded,
+        source_engine: EngineId::Destination,
+        source_object: ObjectId::new("obj_dest_1").unwrap(),
+        actor: sample_actor(),
+        timestamp: time::OffsetDateTime::from_unix_timestamp(1_700_000_000).unwrap(),
+        workspace_id: WorkspaceId::new("ws_main").unwrap(),
+        transaction_id: None,
+        correlation_id: CorrelationId::new("COR-882").unwrap(),
+        causation_id: None,
+        payload_reference: PayloadRef {
+            digest: Sha256Hex::parse(HEX).unwrap(),
+        },
+        previous_event_hash: Sha256Hex::parse(HEX).unwrap(),
+    }
+}
+
+#[test]
+fn actor_record_roundtrips_with_full_detail() {
+    let actor = sample_actor();
+    assert_eq!(roundtrip(actor.clone()), actor);
+    assert_eq!(
+        serde_json::to_string(&actor.classification).unwrap(),
+        "\"human\""
+    );
+}
+
+#[test]
+fn actor_record_rejects_unknown_fields() {
+    let json = r#"{"actor_id":"a_1","classification":"human","sneaky":true}"#;
+    let result = serde_json::from_str::<ActorRecord>(json);
+    assert!(result.is_err(), "unknown fields must be rejected");
+}
+
+#[test]
+fn audit_event_type_covers_all_variants() {
+    let all = [
+        (
+            AuditEventType::OwnerDecisionRecorded,
+            "\"owner_decision_recorded\"",
+        ),
+        (AuditEventType::ScenarioChanged, "\"scenario_changed\""),
+        (
+            AuditEventType::CorrectionRecorded,
+            "\"correction_recorded\"",
+        ),
+    ];
+    for (variant, wire) in all {
+        assert_eq!(serde_json::to_string(&variant).unwrap(), wire);
+        assert_eq!(roundtrip(variant.clone()), variant);
+    }
+}
+
+#[test]
+fn audit_event_v1_roundtrips_with_version_tag() {
+    let event = sample_event();
+    let json = serde_json::to_string(&event).unwrap();
+    assert!(
+        json.contains(r#""event_version":"v1""#),
+        "wire form must carry the version tag: {json}"
+    );
+    assert_eq!(roundtrip(event.clone()), event);
+}
+
+#[test]
+fn audit_event_rejects_unknown_or_missing_version_tag() {
+    // Unknown version: an older reader must refuse rather than reinterpret.
+    let event = sample_event();
+    let mut json = serde_json::to_value(&event).unwrap();
+    json["event_version"] = serde_json::json!("v999");
+    let result = serde_json::from_value::<AuditEvent>(json);
+    assert!(result.is_err(), "unknown event_version must be rejected");
+
+    // Missing version tag cannot identify the contract version.
+    let event = sample_event();
+    let mut json = serde_json::to_value(&event).unwrap();
+    json.as_object_mut().unwrap().remove("event_version");
+    let result = serde_json::from_value::<AuditEvent>(json);
+    assert!(result.is_err(), "missing event_version must be rejected");
+}
+
+#[test]
+fn audit_event_draft_roundtrips_and_rejects_unknown_fields() {
+    let draft = AuditEventDraft {
+        event_type: AuditEventType::ScenarioChanged,
+        source_engine: EngineId::Scenario,
+        source_object: ObjectId::new("obj_scn_1").unwrap(),
+        actor: ActorRecord {
+            actor_id: ActorId::new("svc_journey").unwrap(),
+            classification: ActorClassification::Service,
+            kind: Some(ActorKind::ServiceAccount),
+            origination: Some(ActionOrigination::SystemGenerated),
+        },
+        workspace_id: WorkspaceId::new("ws_main").unwrap(),
+        transaction_id: Some(TransactionId::new("txn_1").unwrap()),
+        correlation_id: CorrelationId::new("COR-882").unwrap(),
+        causation_id: None,
+        payload: serde_json::json!({ "previous_value": 1, "new_value": 2 }),
+    };
+    assert_eq!(roundtrip(draft.clone()), draft);
+
+    let mut json = serde_json::to_value(&draft).unwrap();
+    json.as_object_mut()
+        .unwrap()
+        .insert("sneaky".to_owned(), serde_json::json!(true));
+    let result = serde_json::from_value::<AuditEventDraft>(json);
+    assert!(result.is_err(), "unknown fields must be rejected");
 }
