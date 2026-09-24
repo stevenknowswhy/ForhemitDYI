@@ -95,6 +95,15 @@ pub enum AuditEvent {
 /// trait bound. The schema is pinned by hand instead — one `oneOf` arm per
 /// contract version, with `subschema_for` keeping member references in
 /// step with the generator's settings.
+impl AuditEvent {
+    /// The event's identifier, under any contract version.
+    pub fn event_id(&self) -> &EventId {
+        match self {
+            Self::V1 { event_id, .. } => event_id,
+        }
+    }
+}
+
 impl schemars::JsonSchema for AuditEvent {
     fn schema_name() -> std::borrow::Cow<'static, str> {
         "AuditEvent".into()
