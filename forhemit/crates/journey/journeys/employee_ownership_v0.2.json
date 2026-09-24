@@ -1,0 +1,592 @@
+{
+  "journey_id": "employee_ownership",
+  "title": "Employee Ownership Journey",
+  "version": "0.2",
+  "description": "Explore employee ownership for your business: clarify what you want from a transition, explore potential paths, and prepare a plan to discuss with qualified professional advisors. Transcribed verbatim from the pinned journey truth (Employee Ownership Journey v0.2 - Optimized Guided Journey.md); stages 14-19 scenario and team screens are content nodes whose detail the scenario engine and review-package export own.",
+  "source": "Employee Ownership Journey v0.2 - Optimized Guided Journey.md",
+  "start_node": "welcome",
+  "nodes": [
+    {
+      "node_id": "welcome",
+      "stage": "welcome",
+      "kind": "screen",
+      "title": "Explore Employee Ownership for Your Business",
+      "body": "This guided journey will help you clarify what you want from a business transition, explore potential paths, and prepare a plan to discuss with qualified professional advisors.\n\nImportant: The platform does not provide legal, tax, investment, valuation, lending, or other professional advice. Your results are exploratory and are designed to help you communicate your goals and have more productive conversations with your professional advisors."
+    },
+    {
+      "node_id": "primary_objective",
+      "stage": "primary_objective",
+      "kind": "question",
+      "title": "What are you hoping to accomplish?",
+      "question": {
+        "text": "What are you hoping to accomplish?",
+        "why_we_ask": "Your selection establishes the initial Owner Objective. The journey does not ask about ESOPs or other structures yet.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "substantial_cash_at_closing", "label": "Get substantial cash at closing" },
+          { "value": "income_over_time", "label": "Create income over time" },
+          { "value": "employees_own_the_company", "label": "Have my employees own the company" },
+          { "value": "not_sure_help_me_explore", "label": "I'm not sure. Help me explore" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "secondary_objectives",
+      "stage": "secondary_objectives",
+      "kind": "question",
+      "title": "Besides your main goal, what else matters to you?",
+      "question": {
+        "text": "Besides your main goal, what else matters to you?",
+        "why_we_ask": "This captures your secondary objectives without forcing you to rank everything.",
+        "interaction": "select_up_to_3",
+        "choices": [
+          { "value": "retire_completely", "label": "Retire completely" },
+          { "value": "transition_quickly", "label": "Transition quickly" },
+          { "value": "preserve_jobs", "label": "Preserve jobs" },
+          { "value": "preserve_company_culture", "label": "Preserve company culture" },
+          { "value": "keep_company_independent", "label": "Keep the company independent" },
+          { "value": "meaningful_employee_ownership", "label": "Give employees meaningful ownership" },
+          { "value": "generate_future_income", "label": "Generate future income" },
+          { "value": "more_cash_at_closing", "label": "Receive more cash at closing" },
+          { "value": "reduce_debt", "label": "Reduce debt" },
+          { "value": "remain_involved", "label": "Remain involved" },
+          { "value": "after_tax_outcomes", "label": "Consider after-tax outcomes" },
+          { "value": "protect_family_estate", "label": "Protect family/estate interests" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "secondary_ranking",
+      "stage": "prioritize",
+      "kind": "question",
+      "title": "Put your priorities in order.",
+      "question": {
+        "text": "Put your priorities in order.",
+        "why_we_ask": "Ranking the items you selected creates your Secondary Priorities. There is no ranking of irrelevant choices.",
+        "interaction": "ranking",
+        "choices_from": ["secondary_objectives"],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "useful",
+        "show_when": { "op": "count_at_least", "question": "secondary_objectives", "min": 2 }
+      }
+    },
+    {
+      "node_id": "nonnegotiable_sweep",
+      "stage": "nonnegotiables",
+      "kind": "question",
+      "title": "Which of your objectives are nonnegotiable?",
+      "question": {
+        "text": "Which of your objectives are nonnegotiable?",
+        "why_we_ask": "For each selected objective or important preference: marking it nonnegotiable means it is a must-have for you to move forward. Anything you do not mark remains a preference. The system distinguishes nonnegotiable, strong preference, and preference — and a nonnegotiable is never silently relaxed, ignored, or overridden.",
+        "interaction": "multi_select",
+        "choices_from": ["primary_objective", "secondary_objectives"],
+        "required": false,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential",
+        "effects": [
+          { "mark_answer_values_nonnegotiable": { "when": { "op": "count_at_least", "question": "nonnegotiable_sweep", "min": 1 } } }
+        ]
+      }
+    },
+    {
+      "node_id": "avoid_outcomes",
+      "stage": "avoid",
+      "kind": "question",
+      "title": "Are there outcomes you want to avoid?",
+      "question": {
+        "text": "Are there outcomes you want to avoid?",
+        "why_we_ask": "This creates your negative constraints — the platform now knows not only what you want, but also what you do not want.",
+        "interaction": "multi_select",
+        "choices": [
+          { "value": "losing_employee_ownership", "label": "Losing employee ownership" },
+          { "value": "outside_buyer", "label": "Selling to an outside buyer" },
+          { "value": "long_term_involvement", "label": "Remaining involved long-term" },
+          { "value": "excessive_debt", "label": "Taking on excessive debt" },
+          { "value": "waiting_years_for_proceeds", "label": "Waiting many years for proceeds" },
+          { "value": "disrupting_employees", "label": "Disrupting employees" },
+          { "value": "moving_the_company", "label": "Moving the company" },
+          { "value": "losing_control_quickly", "label": "Losing control too quickly" },
+          { "value": "unfamiliar_partners", "label": "Taking on unfamiliar partners" },
+          { "value": "nothing_specific", "label": "Nothing specific" }
+        ],
+        "required": false,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "useful"
+      }
+    },
+    {
+      "node_id": "preferred_timing",
+      "stage": "timing",
+      "kind": "question",
+      "title": "When would you ideally like the transition to happen?",
+      "question": {
+        "text": "When would you ideally like the transition to happen?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "within_1_year", "label": "Within 1 year" },
+          { "value": "one_to_three_years", "label": "1-3 years" },
+          { "value": "three_to_five_years", "label": "3-5 years" },
+          { "value": "flexible", "label": "I'm flexible" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "timing_nonnegotiable",
+      "stage": "timing",
+      "kind": "question",
+      "title": "Is this timing nonnegotiable?",
+      "question": {
+        "text": "Is this timing nonnegotiable?",
+        "why_we_ask": "If yes, timing becomes a hard constraint.",
+        "interaction": "yes_no",
+        "choices": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "no", "label": "No" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential",
+        "effects": [
+          { "mark_nonnegotiable": { "when": { "op": "equals", "question": "timing_nonnegotiable", "value": "yes" }, "target": "Transition timing" } }
+        ]
+      }
+    },
+    {
+      "node_id": "post_transaction_involvement",
+      "stage": "owner_involvement",
+      "kind": "question",
+      "title": "After the transaction, how involved would you like to be?",
+      "question": {
+        "text": "After the transaction, how involved would you like to be?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "leave_completely", "label": "I want to leave completely" },
+          { "value": "stay_temporarily", "label": "I could stay temporarily" },
+          { "value": "remain_involved", "label": "I'd like to remain involved" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "involvement_duration",
+      "stage": "owner_involvement",
+      "kind": "question",
+      "title": "How long would you be comfortable remaining involved?",
+      "question": {
+        "text": "How long would you be comfortable remaining involved?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "less_than_6_months", "label": "Less than 6 months" },
+          { "value": "six_to_eighteen_months", "label": "6-18 months" },
+          { "value": "over_eighteen_months", "label": "18+ months" },
+          { "value": "flexible", "label": "I'm flexible" }
+        ],
+        "required": false,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "useful",
+        "show_when": {
+          "op": "in_set",
+          "question": "post_transaction_involvement",
+          "values": ["stay_temporarily", "remain_involved"]
+        }
+      }
+    },
+    {
+      "node_id": "involvement_nonnegotiable",
+      "stage": "owner_involvement",
+      "kind": "question",
+      "title": "Is your involvement preference nonnegotiable?",
+      "question": {
+        "text": "Is your involvement preference nonnegotiable?",
+        "why_we_ask": "Marking it nonnegotiable means it is a must-have for you to move forward.",
+        "interaction": "yes_no",
+        "choices": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "no", "label": "No" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "useful",
+        "show_when": {
+          "op": "in_set",
+          "question": "post_transaction_involvement",
+          "values": ["stay_temporarily", "remain_involved"]
+        },
+        "effects": [
+          { "mark_nonnegotiable": { "when": { "op": "equals", "question": "involvement_nonnegotiable", "value": "yes" }, "target": "Post-transaction involvement" } }
+        ]
+      }
+    },
+    {
+      "node_id": "employee_ownership_importance",
+      "stage": "employee_ownership",
+      "kind": "question",
+      "title": "How important is employee ownership?",
+      "question": {
+        "text": "How important is employee ownership?",
+        "why_we_ask": "Now that the system understands your priorities. If you choose Essential, employee ownership becomes nonnegotiable and the system does not need to ask this again later.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "essential", "label": "Essential" },
+          { "value": "very_important", "label": "Very important" },
+          { "value": "explore_it", "label": "I'd like to explore it" },
+          { "value": "open_to_other_options", "label": "I'm open to other options" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential",
+        "effects": [
+          { "mark_nonnegotiable": { "when": { "op": "equals", "question": "employee_ownership_importance", "value": "essential" }, "target": "Employee ownership" } }
+        ]
+      }
+    },
+    {
+      "node_id": "revenue_band",
+      "stage": "business_snapshot",
+      "kind": "question",
+      "title": "Revenue",
+      "question": {
+        "text": "Which range describes your annual revenue?",
+        "why_we_ask": "Start approximate. The system should not demand exact numbers this early unless they are necessary.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "under_1m", "label": "Under $1M" },
+          { "value": "one_to_five_m", "label": "$1M-$5M" },
+          { "value": "five_to_ten_m", "label": "$5M-$10M" },
+          { "value": "ten_to_twenty_five_m", "label": "$10M-$25M" },
+          { "value": "over_25m", "label": "$25M+" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "cash_flow_band",
+      "stage": "business_snapshot",
+      "kind": "question",
+      "title": "Approximate annual cash flow / EBITDA",
+      "question": {
+        "text": "Which range describes your approximate annual cash flow / EBITDA?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "under_250k", "label": "Under $250K" },
+          { "value": "250k_to_1m", "label": "$250K-$1M" },
+          { "value": "one_to_two_point_five_m", "label": "$1M-$2.5M" },
+          { "value": "two_point_five_to_five_m", "label": "$2.5M-$5M" },
+          { "value": "over_5m", "label": "$5M+" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "employee_count_band",
+      "stage": "business_snapshot",
+      "kind": "question",
+      "title": "Number of employees",
+      "question": {
+        "text": "Which range describes your number of employees?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "under_10", "label": "Under 10" },
+          { "value": "ten_to_fifty", "label": "10-50" },
+          { "value": "fifty_to_two_hundred", "label": "50-200" },
+          { "value": "over_200", "label": "Over 200" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "business_debt",
+      "stage": "business_snapshot",
+      "kind": "question",
+      "title": "Existing business debt",
+      "question": {
+        "text": "How would you describe your existing business debt?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "none", "label": "None" },
+          { "value": "some", "label": "Some" },
+          { "value": "significant", "label": "Significant" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "ownership_structure_type",
+      "stage": "business_snapshot",
+      "kind": "question",
+      "title": "Ownership",
+      "question": {
+        "text": "How is the business owned today?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "one_owner", "label": "One owner" },
+          { "value": "multiple_owners", "label": "Multiple owners" },
+          { "value": "family_owned", "label": "Family-owned" },
+          { "value": "other", "label": "Other" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "owner_dependency",
+      "stage": "business_dependency",
+      "kind": "question",
+      "title": "How dependent is the business on you personally?",
+      "question": {
+        "text": "How dependent is the business on you personally?",
+        "why_we_ask": "This can materially affect the feasibility of different transition paths. A later scenario may note that owner dependency appears to be a significant issue your professional team may want to address before a transition — it should not automatically declare the business unsuitable.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "operates_without_me", "label": "The business can operate without me" },
+          { "value": "team_could_take_over", "label": "I'm important, but the team could take over" },
+          { "value": "a_lot_depends_on_me", "label": "A lot depends on me" },
+          { "value": "almost_everything_depends_on_me", "label": "Almost everything depends on me" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "leadership_readiness",
+      "stage": "management_readiness",
+      "kind": "question",
+      "title": "Do you have people who could help lead the company after you leave?",
+      "question": {
+        "text": "Do you have people who could help lead the company after you leave?",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "some", "label": "Some" },
+          { "value": "not_yet", "label": "Not yet" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "employee_interest",
+      "stage": "management_readiness",
+      "kind": "question",
+      "title": "How interested do your employees appear to be in ownership?",
+      "question": {
+        "text": "How interested do your employees appear to be in ownership?",
+        "why_we_ask": "This information becomes an input to scenario development.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "very_interested", "label": "Very interested" },
+          { "value": "some_interest", "label": "Some interest" },
+          { "value": "not_sure", "label": "I'm not sure" },
+          { "value": "not_discussed", "label": "I haven't discussed it" }
+        ],
+        "required": false,
+        "storage_scope": "local_private",
+        "information_value": "useful",
+        "show_when": {
+          "op": "in_set",
+          "question": "leadership_readiness",
+          "values": ["yes", "some"]
+        }
+      }
+    },
+    {
+      "node_id": "liquidity_preference",
+      "stage": "liquidity",
+      "kind": "question",
+      "title": "How would you ideally like to receive the value from your business?",
+      "question": {
+        "text": "How would you ideally like to receive the value from your business?",
+        "why_we_ask": "Only now does the application dive deeper into proceeds.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "mostly_cash_at_closing", "label": "Mostly cash at closing" },
+          { "value": "mix_cash_and_future_payments", "label": "A mix of cash and future payments" },
+          { "value": "mostly_income_over_time", "label": "Mostly income over time" },
+          { "value": "flexible", "label": "I'm flexible" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": true,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "essential"
+      }
+    },
+    {
+      "node_id": "explore_liquidity_target",
+      "stage": "liquidity",
+      "kind": "question",
+      "title": "Would you like to explore a specific target?",
+      "question": {
+        "text": "Would you like to explore a specific target?",
+        "why_we_ask": "A quantitative threshold is introduced only where useful — the journey avoids demanding a number from someone who has no idea yet.",
+        "interaction": "yes_no",
+        "choices": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "not_yet", "label": "Not yet" }
+        ],
+        "required": false,
+        "storage_scope": "local_private",
+        "information_value": "useful",
+        "show_when": {
+          "op": "in_set",
+          "question": "liquidity_preference",
+          "values": ["mostly_cash_at_closing", "mix_cash_and_future_payments"]
+        }
+      }
+    },
+    {
+      "node_id": "liquidity_target_amount",
+      "stage": "liquidity",
+      "kind": "question",
+      "title": "Approximately how much would you ideally like at closing?",
+      "question": {
+        "text": "Approximately how much would you ideally like at closing?",
+        "interaction": "numeric",
+        "choices": [],
+        "required": false,
+        "storage_scope": "local_private",
+        "information_value": "optional",
+        "show_when": { "op": "equals", "question": "explore_liquidity_target", "value": "yes" }
+      }
+    },
+    {
+      "node_id": "seller_financing_interest",
+      "stage": "seller_financing",
+      "kind": "question",
+      "title": "Would you like to explore seller financing?",
+      "body": "One possible way to structure a transaction is for you to receive part of the purchase price over time through seller financing.",
+      "question": {
+        "text": "Would you like to explore that?",
+        "why_we_ask": "Seller financing appears only when your answers make it relevant.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "show_me_other_options", "label": "Show me other options" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": false,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "useful",
+        "show_when": {
+          "op": "in_set",
+          "question": "liquidity_preference",
+          "values": ["mix_cash_and_future_payments", "mostly_income_over_time", "flexible", "not_sure"]
+        }
+      }
+    },
+    {
+      "node_id": "seller_note_intent",
+      "stage": "seller_financing",
+      "kind": "question",
+      "title": "What would you want to do with the seller note?",
+      "question": {
+        "text": "What would you want to do with the seller note?",
+        "why_we_ask": "This launches the Seller-Note Liquidity pathway.",
+        "interaction": "single_select",
+        "choices": [
+          { "value": "keep_it", "label": "Keep it" },
+          { "value": "sell_part_of_it", "label": "Explore selling part of it" },
+          { "value": "sell_all_of_it", "label": "Explore selling all of it" },
+          { "value": "not_sure", "label": "I'm not sure" }
+        ],
+        "required": false,
+        "storage_scope": "local_private",
+        "decision_layer": "owner_objective",
+        "information_value": "optional",
+        "show_when": { "op": "equals", "question": "seller_financing_interest", "value": "yes" }
+      }
+    },
+    {
+      "node_id": "ownership_structures",
+      "stage": "structures",
+      "kind": "screen",
+      "title": "Ownership Structure Exploration",
+      "body": "The platform now has enough context to surface potential structures. It selects the most relevant 2-3 rather than showing everything. Potential structures include: ESOP, Direct Employee Purchase, Management Buyout, Employee-Owned Acquisition Entity, Staged Employee Ownership, Other / Explore Alternatives. You can Explore, Compare, or Show Me Another Path. No structure becomes selected merely because it was displayed."
+    },
+    {
+      "node_id": "scenario_builder",
+      "stage": "scenarios",
+      "kind": "screen",
+      "title": "Scenario Builder",
+      "body": "For each relevant scenario you see: what it is (plain-language explanation), why it appeared (tied to what you told us), current assumptions, potential characteristics, trade-offs, a must-have check against your nonnegotiables, and questions for your professionals. The platform does not call this a recommendation."
+    },
+    {
+      "node_id": "what_if_exploration",
+      "stage": "scenarios",
+      "kind": "screen",
+      "title": "What-If Exploration",
+      "body": "You can explore a small number of controlled adjustments — for example: What if you received less cash at closing? What if you stayed involved for 18 months instead of 6? What if you kept more of the seller note? You can compare the effect without losing the original scenario."
+    },
+    {
+      "node_id": "scenario_compatibility",
+      "stage": "scenarios",
+      "kind": "screen",
+      "title": "Scenario Compatibility",
+      "body": "Every scenario receives a simple compatibility assessment against your own requirements: which nonnegotiables it appears to satisfy, and which assumptions may conflict. This is a constraint analysis, not a ranking."
+    },
+    {
+      "node_id": "professional_team",
+      "stage": "professional_team",
+      "kind": "screen",
+      "title": "Build the Professional Team",
+      "body": "Your current plan involves several areas of specialized expertise: Attorney, CPA / tax professional, Valuation professional, Financing professional, ESOP professional, Trustee, Financial advisor, and other specialists. For each, the journey asks whether you already have someone."
+    },
+    {
+      "node_id": "role_fit_check",
+      "stage": "professional_team",
+      "kind": "screen",
+      "title": "Role-Fit Check",
+      "body": "Your existing professional may be an important part of your team. Some transaction functions require specialized experience. The platform does not judge a professional's competence — it helps you consider whether the person's experience matches the role."
+    },
+    {
+      "node_id": "professional_review_package",
+      "stage": "review_package",
+      "kind": "screen",
+      "title": "Your Professional Review Package",
+      "body": "The platform now assembles the Owner's Employee Ownership Professional Review Package, opening with a one-page executive summary: what I want, my must-haves, my strong preferences, what I want to avoid, the paths I want evaluated, and my main questions for advisors — followed by thirteen sections from Owner Objective through Current Working Plan. The journey then becomes iterative: professional feedback can produce new questions, assumptions, scenarios, priorities, and a new package version."
+    }
+  ]
+}

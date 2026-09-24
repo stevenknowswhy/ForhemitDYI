@@ -15,6 +15,7 @@ members = [
     "crates/contracts",
     "crates/destination",
     "crates/enginekit",
+    "crates/journey",
     "crates/reality",
     "crates/vault",
     "crates/scenario",

@@ -1,0 +1,19 @@
+[package]
+name = "forhemit-journey"
+description = "Journey runtime — walks versioned journey definitions as a stateful, resumable process with per-question storage scopes, Ask-Only-When-Relevant conditionals, and audit-first transitions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+forhemit-contracts = { workspace = true }
+forhemit-enginekit = { workspace = true }
+rusqlite = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true, features = ["serde"] }
+ulid = { workspace = true }
+
+[lints]
+workspace = true
