@@ -133,7 +133,7 @@ pub struct NewSuccessorDraft {
 /// The snapshot id accessor lives here so the engine never constructs a
 /// version without one.
 pub(crate) fn new_snapshot_id() -> SnapshotId {
-    new_id("snap", |s| SnapshotId::new(s))
+    new_id("snap", SnapshotId::new)
 }
 
 /// Mints a prefixed ULID id; the prefix keeps ids readable in exports and

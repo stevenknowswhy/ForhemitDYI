@@ -47,7 +47,7 @@ impl FixedDecimal {
             }
         }
         let is_zero = int_part.bytes().all(|b| b == b'0')
-            && frac_part.is_none_or(|frac| frac.bytes().all(|b| b == b'0'));
+            && frac_part.map_or(true, |frac| frac.bytes().all(|b| b == b'0'));
         let canonical = if is_zero {
             "0".to_owned()
         } else {
@@ -163,7 +163,12 @@ impl std::fmt::Display for CurrencyCode {
 /// variant and derives the `value_type` column from it, so the declared
 /// shape and the actual value cannot disagree.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "value_type", content = "value", rename_all = "snake_case", deny_unknown_fields)]
+#[serde(
+    tag = "value_type",
+    content = "value",
+    rename_all = "snake_case",
+    deny_unknown_fields
+)]
 pub enum TypedValue {
     /// A plain decimal number (e.g. an employee count).
     Number(FixedDecimal),
@@ -215,12 +220,11 @@ impl TypedValue {
     pub fn validate(&self) -> Result<(), crate::ScenarioError> {
         match self {
             Self::Percentage(pct) => {
-                let value = pct
-                    .as_str()
-                    .parse::<f64>()
-                    .map_err(|_| crate::ScenarioError::InvalidValue {
+                let value = pct.as_str().parse::<f64>().map_err(|_| {
+                    crate::ScenarioError::InvalidValue {
                         reason: "a percentage must be a number",
-                    })?;
+                    }
+                })?;
                 if !(0.0..=100.0).contains(&value) {
                     return Err(crate::ScenarioError::InvalidValue {
                         reason: "a percentage must be between 0 and 100",

@@ -2,7 +2,10 @@
 //! pinned reference set that answers "what did we actually know when we
 //! made this scenario?". 1:1 with a scenario version.
 
-use forhemit_contracts::{BusinessRealityVersionId, DestinationVersionId, FactVersionId, FinancialModelVersionId, ScenarioVersionId, SnapshotId};
+use forhemit_contracts::{
+    BusinessRealityVersionId, DestinationVersionId, FactVersionId, FinancialModelVersionId,
+    ScenarioVersionId, SnapshotId,
+};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 

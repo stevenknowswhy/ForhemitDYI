@@ -5,8 +5,8 @@
 //! **not** happen — no scenario row exists without its audit event.
 
 use forhemit_contracts::{
-    AssumptionId, ComparisonId, ConflictId, DestinationVersionId, NonnegotiableId, ScenarioFamilyId,
-    ScenarioVersionId, UnknownId,
+    AssumptionId, ComparisonId, ConflictId, DestinationVersionId, NonnegotiableId,
+    ScenarioFamilyId, ScenarioVersionId, UnknownId,
 };
 use forhemit_enginekit::AuditError;
 
@@ -165,7 +165,9 @@ impl std::fmt::Display for ScenarioError {
             Self::FamilyNotFound { scenario_family_id } => {
                 write!(f, "scenario family not found: {scenario_family_id}")
             }
-            Self::VersionNotFound { scenario_version_id } => {
+            Self::VersionNotFound {
+                scenario_version_id,
+            } => {
                 write!(f, "scenario version not found: {scenario_version_id}")
             }
             Self::ConflictNotFound { conflict_id } => {
@@ -174,12 +176,16 @@ impl std::fmt::Display for ScenarioError {
             Self::AssumptionNotFound { assumption_id } => {
                 write!(f, "assumption not found: {assumption_id}")
             }
-            Self::FinalizedVersionImmutable { scenario_version_id } => write!(
+            Self::FinalizedVersionImmutable {
+                scenario_version_id,
+            } => write!(
                 f,
                 "scenario version {scenario_version_id} is finalized and immutable; \
                  record the change as a successor version"
             ),
-            Self::ParentStillMutable { scenario_version_id } => write!(
+            Self::ParentStillMutable {
+                scenario_version_id,
+            } => write!(
                 f,
                 "scenario version {scenario_version_id} is still a draft; \
                  edit the draft instead of forking a successor from it"
@@ -193,35 +199,57 @@ impl std::fmt::Display for ScenarioError {
                 f,
                 "a comparison captures what was compared: at least two scenario versions"
             ),
-            Self::ComparisonForeignVersion { scenario_version_id } => write!(
+            Self::ComparisonForeignVersion {
+                scenario_version_id,
+            } => write!(
                 f,
                 "comparison result references {scenario_version_id}, which is not part \
                  of the comparison"
             ),
             Self::ComparisonUnknownDimension { index } => {
-                write!(f, "comparison result references unknown dimension index {index}")
+                write!(
+                    f,
+                    "comparison result references unknown dimension index {index}"
+                )
             }
             Self::ComparisonDuplicateResult => {
-                write!(f, "a version may appear at most once per comparison dimension")
+                write!(
+                    f,
+                    "a version may appear at most once per comparison dimension"
+                )
             }
             Self::DuplicateComparisonVersion => {
-                write!(f, "a comparison compares distinct paths; a version was listed twice")
+                write!(
+                    f,
+                    "a comparison compares distinct paths; a version was listed twice"
+                )
             }
             Self::FamilyAlreadyArchived { scenario_family_id } => {
-                write!(f, "scenario family {scenario_family_id} is already archived")
+                write!(
+                    f,
+                    "scenario family {scenario_family_id} is already archived"
+                )
             }
-            Self::NotADraft { scenario_version_id, lifecycle_status } => write!(
+            Self::NotADraft {
+                scenario_version_id,
+                lifecycle_status,
+            } => write!(
                 f,
                 "scenario version {scenario_version_id} is not a draft (lifecycle {}); \
                  a material change creates a successor version",
                 lifecycle_status.status_name()
             ),
-            Self::DraftNotReadinessGated { scenario_version_id } => write!(
+            Self::DraftNotReadinessGated {
+                scenario_version_id,
+            } => write!(
                 f,
                 "scenario version {scenario_version_id} is still a draft; \
                  readiness moves only after finalizing"
             ),
-            Self::ReadinessUnchanged { scenario_version_id, readiness } => write!(
+            Self::ReadinessUnchanged {
+                scenario_version_id,
+                readiness,
+            } => write!(
                 f,
                 "scenario version {scenario_version_id} is already {} on the readiness axis",
                 readiness.status_name()

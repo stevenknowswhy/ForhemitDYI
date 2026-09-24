@@ -23,8 +23,8 @@ use forhemit_contracts::{
     ActorRecord, AssumptionId, AuditEventDraft, AuditEventType, BranchId, BusinessRealityVersionId,
     ComparisonDimensionId, ComparisonId, ComparisonResultId, ConflictId, ConstraintId,
     CorrelationId, EngineId, FactVersionId, NonnegotiableId, ObjectId,
-    ProfessionalReviewReferenceId, ScenarioFamilyId, ScenarioImpactId, ScenarioVersionId, UnknownId,
-    WorkspaceId,
+    ProfessionalReviewReferenceId, ScenarioFamilyId, ScenarioImpactId, ScenarioVersionId,
+    UnknownId, WorkspaceId,
 };
 use forhemit_enginekit::{AuditSink, Clock};
 use serde::{Deserialize, Serialize};
@@ -34,9 +34,7 @@ use time::OffsetDateTime;
 
 use crate::assumption::{NewAssumption, NewAssumptionRevision, ScenarioAssumption};
 use crate::branch::{NewWhatIf, ScenarioBranch};
-use crate::comparison::{
-    ComparisonDimension, ComparisonResult, NewComparison, ScenarioComparison,
-};
+use crate::comparison::{ComparisonDimension, ComparisonResult, NewComparison, ScenarioComparison};
 use crate::conflict::{
     ConflictResolution, ConflictSeverity, ConflictType, NewConflict, NonnegotiableConflict,
     OwnerDecision, ScenarioConflict,
@@ -1179,12 +1177,11 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
         correlation_id: CorrelationId,
     ) -> Result<ConflictRecord, ScenarioError> {
         let mut table = self.lock_table()?;
-        let record = table
-            .conflicts
-            .get_mut(&conflict_id)
-            .ok_or_else(|| ScenarioError::ConflictNotFound {
+        let record = table.conflicts.get_mut(&conflict_id).ok_or_else(|| {
+            ScenarioError::ConflictNotFound {
                 conflict_id: conflict_id.clone(),
-            })?;
+            }
+        })?;
         if record.conflict.resolution.is_some() {
             return Err(ScenarioError::ConflictAlreadyResolved {
                 conflict_id: record.conflict.conflict_id.clone(),
@@ -1270,9 +1267,7 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
             actor,
             correlation_id,
         )?;
-        self.lock_table()?
-            .review_references
-            .push(reference.clone());
+        self.lock_table()?.review_references.push(reference.clone());
         Ok(reference)
     }
 
@@ -1395,9 +1390,7 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
 
         let mut table = self.lock_table()?;
         table.families.insert(family_id, family.clone());
-        table
-            .versions
-            .insert(child_version_id, version.clone());
+        table.versions.insert(child_version_id, version.clone());
         table.branches.push(branch.clone());
         Ok(WhatIfCreated {
             branch,
@@ -1456,11 +1449,11 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
             .collect();
         let mut results = Vec::new();
         for result in &request.results {
-            let dimension = dimensions
-                .get(result.dimension_index)
-                .ok_or(ScenarioError::ComparisonUnknownDimension {
+            let dimension = dimensions.get(result.dimension_index).ok_or(
+                ScenarioError::ComparisonUnknownDimension {
                     index: result.dimension_index,
-                })?;
+                },
+            )?;
             if !request
                 .scenario_version_ids
                 .contains(&result.scenario_version_id)
@@ -1668,7 +1661,7 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
             .filter(|record| &record.conflict.scenario_version_id == scenario_version_id)
             .cloned()
             .collect();
-        records.sort_by(|a, b| a.conflict.created_at.cmp(&b.conflict.created_at));
+        records.sort_by_key(|record| record.conflict.created_at);
         Ok(records)
     }
 
@@ -1771,6 +1764,7 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
     /// The shared draft-edit path: validate mutability, emit the audit
     /// event, then apply. `apply` mutates the stored draft only after
     /// the event was accepted — audit-first ordering.
+    #[allow(clippy::too_many_arguments)] // every parameter is a distinct, named part of one audited edit
     fn apply_draft_edit<T: Serialize>(
         &self,
         scenario_version_id: &ScenarioVersionId,
@@ -1784,12 +1778,11 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
         apply: impl FnOnce(&mut ScenarioVersion),
     ) -> Result<(), ScenarioError> {
         let mut table = self.lock_table()?;
-        let version = table
-            .versions
-            .get_mut(scenario_version_id)
-            .ok_or_else(|| ScenarioError::VersionNotFound {
+        let version = table.versions.get_mut(scenario_version_id).ok_or_else(|| {
+            ScenarioError::VersionNotFound {
                 scenario_version_id: scenario_version_id.clone(),
-            })?;
+            }
+        })?;
         if !version.is_draft() {
             return Err(ScenarioError::FinalizedVersionImmutable {
                 scenario_version_id: version.scenario_version_id.clone(),

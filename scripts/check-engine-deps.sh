@@ -59,7 +59,7 @@ check_crate crates/scenario "forhemit-contracts forhemit-enginekit"
 for crate_dir in crates/*/; do
   crate_dir=${crate_dir%/}
   case $crate_dir in
-    crates/contracts | crates/enginekit | crates/audit | crates/reality | crates/destination | crates/vault) ;;
+    crates/contracts | crates/enginekit | crates/audit | crates/reality | crates/destination | crates/vault | crates/scenario) ;;
     *)
       if [[ -f $crate_dir/Cargo.toml ]]; then
         echo "UNCLASSIFIED: $crate_dir is not in scripts/check-engine-deps.sh — classify it with its allowed shared deps"

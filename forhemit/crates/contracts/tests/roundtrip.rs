@@ -344,10 +344,7 @@ fn audit_event_type_covers_all_variants() {
             AuditEventType::RealityFactRevised,
             "\"reality_fact_revised\"",
         ),
-        (
-            AuditEventType::ScenarioCreated,
-            "\"scenario_created\"",
-        ),
+        (AuditEventType::ScenarioCreated, "\"scenario_created\""),
         (
             AuditEventType::ScenarioDraftUpdated,
             "\"scenario_draft_updated\"",

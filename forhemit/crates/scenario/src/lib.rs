@@ -35,7 +35,9 @@ mod unknown;
 mod value;
 mod version;
 
-pub use assumption::{AssumptionCategory, NewAssumption, NewAssumptionRevision, ScenarioAssumption};
+pub use assumption::{
+    AssumptionCategory, NewAssumption, NewAssumptionRevision, ScenarioAssumption,
+};
 pub use branch::{BranchType, NewWhatIf, ScenarioBranch};
 pub use comparison::{
     ComparisonDimension, ComparisonDimensionType, ComparisonOutcome, ComparisonResult,
@@ -53,16 +55,14 @@ pub use engine::{
 pub use error::ScenarioError;
 pub use family::{ArchiveFamily, NewFamily, ScenarioFamily};
 pub use nonnegotiable::{NewNonnegotiable, ScenarioNonnegotiable};
-pub use review::{
-    NewReviewReference, ProfessionalReviewReference, ProfessionalReviewStatus,
-};
+pub use review::{NewReviewReference, ProfessionalReviewReference, ProfessionalReviewStatus};
 pub use snapshot::ScenarioSnapshot;
 pub use status::{LifecycleStatus, ReadinessStatus, ScenarioType, StatusHistoryEntry};
 pub use template::{
     load_builtin_templates, StructureTemplate, TemplateAssumption, TemplateError, TemplateUnknown,
 };
 pub use unknown::{
-    NewUnknown, ScenarioUnknown, UnknownImportance, UnknownResolutionStatus, UnknownResolution,
+    NewUnknown, ScenarioUnknown, UnknownImportance, UnknownResolution, UnknownResolutionStatus,
 };
 pub use value::{CurrencyCode, FixedDecimal, TypedValue};
 pub use version::{NewDraft, NewSuccessorDraft, ScenarioVersion};

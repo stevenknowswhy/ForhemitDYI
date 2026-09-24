@@ -142,11 +142,10 @@ pub fn load_builtin_templates() -> Result<Vec<StructureTemplate>, TemplateError>
     TEMPLATE_SOURCES
         .iter()
         .map(|(id, source)| {
-            serde_json::from_str(source)
-                .map_err(|source| TemplateError::Malformed {
-                    template_id: (*id).to_owned(),
-                    source,
-                })
+            serde_json::from_str(source).map_err(|source| TemplateError::Malformed {
+                template_id: (*id).to_owned(),
+                source,
+            })
         })
         .collect()
 }

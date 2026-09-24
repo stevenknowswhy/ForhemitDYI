@@ -3,7 +3,9 @@
 //! table (integrity rule 8): a newer scenario version cannot make one
 //! disappear, and there is no delete API.
 
-use forhemit_contracts::{ActorRecord, ConflictId, DestinationVersionId, NonnegotiableId, ObjectiveId, ScenarioVersionId};
+use forhemit_contracts::{
+    ActorRecord, ConflictId, DestinationVersionId, NonnegotiableId, ObjectiveId, ScenarioVersionId,
+};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
