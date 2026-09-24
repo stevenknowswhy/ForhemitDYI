@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EngineId",
+  "description": "The engine that produced an event or owns an object.",
+  "oneOf": [
+    {
+      "description": "Audit / provenance engine — the append-only event store (crate `audit`).",
+      "type": "string",
+      "const": "audit"
+    },
+    {
+      "description": "Local vault — the encrypted document workspace (crate `vault`).",
+      "type": "string",
+      "const": "vault"
+    },
+    {
+      "description": "Destination engine — the journey's persistent North Star (crate\n`destination`).",
+      "type": "string",
+      "const": "destination"
+    },
+    {
+      "description": "Journey runtime — walks the EOJ journey definition (crate `journey`).",
+      "type": "string",
+      "const": "journey"
+    },
+    {
+      "description": "Business Reality — owner-reported facts (crate `reality`).",
+      "type": "string",
+      "const": "reality"
+    },
+    {
+      "description": "Scenario engine — families, versions, conflicts (crate `scenario`).",
+      "type": "string",
+      "const": "scenario"
+    },
+    {
+      "description": "Professional review package assembly and export (crate `package`).",
+      "type": "string",
+      "const": "package"
+    },
+    {
+      "description": "The Tauri shell itself (crate `app`).",
+      "type": "string",
+      "const": "app"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DestinationId",
+  "description": "Identifies a DesiredOutcome — the destination is \"the first object\ncreated by every journey\" (Destination First - Locked Core\nArchitecture).",
+  "type": "string"
+}

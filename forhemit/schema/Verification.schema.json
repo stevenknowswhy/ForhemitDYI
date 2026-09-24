@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Verification",
+  "description": "How well a value is verified — independent of its provenance (schema doc\n§11 \"VerificationStatus\").",
+  "oneOf": [
+    {
+      "description": "Verification state unknown.",
+      "type": "string",
+      "const": "unknown"
+    },
+    {
+      "description": "Known to be unverified.",
+      "type": "string",
+      "const": "unverified"
+    },
+    {
+      "description": "Partially verified.",
+      "type": "string",
+      "const": "partially_verified"
+    },
+    {
+      "description": "Verified.",
+      "type": "string",
+      "const": "verified"
+    },
+    {
+      "description": "Verified by a professional.",
+      "type": "string",
+      "const": "professionally_verified"
+    },
+    {
+      "description": "Contested.",
+      "type": "string",
+      "const": "contested"
+    },
+    {
+      "description": "Rejected.",
+      "type": "string",
+      "const": "rejected"
+    }
+  ]
+}

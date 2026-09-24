@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DecisionLayer",
+  "description": "Which of the three decision layers a piece of information belongs to.",
+  "oneOf": [
+    {
+      "description": "What the owner wants — \"the source of truth for the owner's wishes,\nnot a professional conclusion\" (doc §1).",
+      "type": "string",
+      "const": "owner_objective"
+    },
+    {
+      "description": "What might accomplish the objective under current assumptions —\n\"exploratory scenarios, not professional advice\" (doc §2).",
+      "type": "string",
+      "const": "platform_scenario"
+    },
+    {
+      "description": "What the qualified professional concludes — \"outside the platform's\nauthority\" (doc §3); recorded, never manufactured.",
+      "type": "string",
+      "const": "professional_determination"
+    }
+  ]
+}

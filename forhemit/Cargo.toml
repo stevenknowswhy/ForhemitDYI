@@ -11,9 +11,8 @@
 resolver = "2"
 members = [
     "app/src-tauri",
-    # Added per crate as it lands:
-    #   "crates/contracts"  (versioned domain vocabulary)
-    #   "crates/enginekit"  (ids, time, audit event-emission trait)
+    "crates/contracts",
+    # Next: "crates/enginekit" (ids, time, audit event-emission trait)
 ]
 
 [workspace.package]

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CausationId",
+  "description": "Names the immediate event that caused this one (Audit doc §19) — the\ndirect causal chain, distinct from correlation.",
+  "type": "string"
+}

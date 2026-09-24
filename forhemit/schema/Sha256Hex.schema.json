@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sha256Hex",
+  "description": "A lowercase hex-encoded SHA-256 digest (exactly 64 hex characters).\n\nValidation runs on construction *and* on deserialization, so a value read\nfrom disk can never hold a malformed digest.",
+  "type": "string"
+}
