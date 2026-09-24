@@ -1,0 +1,39 @@
+# Forhemit desktop app — Cargo workspace.
+#
+# Spec: art_fL7Z2ate ("Forhemit Destination-to-Package — the first downloadable
+# Rust app"). Layering rule (Standalone Engine Architecture): engine crates
+# under `crates/` depend only on `contracts` (the cross-engine vocabulary) and
+# `enginekit` (shared runtime kit) — never on each other's internals. The rule
+# is enforced by `ci/check_workspace_deps.py` in CI. The `app` shell is the
+# composition root: its commands are thin adapters over engine APIs.
+
+[workspace]
+resolver = "2"
+members = [
+    "app/src-tauri",
+    # Added per crate as it lands:
+    #   "crates/contracts"  (versioned domain vocabulary)
+    #   "crates/enginekit"  (ids, time, audit event-emission trait)
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[workspace.dependencies]
+forhemit-contracts = { path = "crates/contracts" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "1"
+time = "0.3"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = "warn"
+unwrap_used = "warn"
+expect_used = "warn"

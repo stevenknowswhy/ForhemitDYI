@@ -13,3 +13,11 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+
+# Rust workspace build artifacts (forhemit/)
+forhemit/target/
+
+# Frontend dependencies and build output (app/)
+forhemit/app/node_modules/
+forhemit/app/dist/
