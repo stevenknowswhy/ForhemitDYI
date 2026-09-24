@@ -60,8 +60,9 @@ pub use audit::{AuditEvent, AuditEventDraft, AuditEventType};
 pub use decision::DecisionLayer;
 pub use engine::EngineId;
 pub use ids::{
-    ActorId, CausationId, CorrelationId, DestinationId, DestinationVersionId, EventId, FactId,
-    FactVersionId, ObjectId, ObjectiveId, TransactionId, WorkspaceId,
+    ActorId, AnalysisId, CausationId, CorrelationId, DestinationId, DestinationVersionId,
+    DocumentId, DocumentVersionId, EmptyIdError, EventId, FactId, FactVersionId, ObjectId,
+    ObjectiveId, TransactionId, VaultId, WorkspaceId,
 };
 pub use integrity::{InvalidSha256Hex, PayloadRef, Sha256Hex};
 pub use nonnegotiable::NonnegotiableState;

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DocumentId",
+  "description": "Identifies a document in the local vault (Vault doc §47\n\"Document\": \"document_id … filename … hash … current_version_id\").",
+  "type": "string"
+}

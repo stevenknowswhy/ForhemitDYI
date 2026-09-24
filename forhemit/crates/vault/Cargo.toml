@@ -1,0 +1,42 @@
+[package]
+name = "forhemit-vault"
+description = "Local Vault engine — the encrypted offline document workspace (Local Vault - Workspace Engine §56 minimum viable vault)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+forhemit-contracts = { workspace = true }
+forhemit-enginekit = { workspace = true }
+aes-gcm = { workspace = true }
+age = { workspace = true }
+argon2 = { workspace = true }
+base64 = { workspace = true }
+rand = { workspace = true }
+rusqlite = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+time = { workspace = true }
+ulid = { workspace = true }
+zeroize = { workspace = true }
+
+# OS keychain per platform (keyring 3.x feature map). The `keyring` version
+# comes from the workspace; each target picks its native keystore. Linux
+# builds the Secret Service backend without system libraries: `crypto-rust`
+# avoids OpenSSL and `vendored` builds libdbus from source.
+[target.'cfg(target_os = "macos")'.dependencies]
+keyring = { workspace = true, features = ["apple-native"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+keyring = { workspace = true, features = ["windows-native"] }
+
+[target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
+keyring = { workspace = true, features = ["sync-secret-service", "crypto-rust", "vendored"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[lints]
+workspace = true

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VaultId",
+  "description": "Identifies a local vault — Vault doc §47: the vault \"contains:\nvault_id, owner/principal, workspace, devices, encryption state…\".",
+  "type": "string"
+}
