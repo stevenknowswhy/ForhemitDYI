@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BusinessRealityVersionId",
+  "description": "Identifies the Business Reality version a scenario was built\nagainst (Scenario Engine Data Model doc §4, integrity rule 2).\nDerived as a content address of the pinned fact-version set by the\nscenario engine, not minted: same facts → same id, any revision →\na different id.",
+  "type": "string"
+}

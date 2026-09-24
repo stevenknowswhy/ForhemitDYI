@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScenarioImpactId",
+  "description": "Identifies a recorded upstream-change impact (Scenario Engine Data\nModel doc §35; SCHEMA.md §2.15).",
+  "type": "string"
+}

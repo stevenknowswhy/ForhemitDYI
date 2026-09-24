@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BranchId",
+  "description": "Identifies a ScenarioBranch — explicit what-if lineage whose\nparent scenario version is always identified (Scenario Engine Data\nModel doc §30, integrity rule 7).",
+  "type": "string"
+}

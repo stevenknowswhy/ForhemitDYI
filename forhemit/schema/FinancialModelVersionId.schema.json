@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FinancialModelVersionId",
+  "description": "Identifies a Financial Model version (Scenario Engine Data Model\ndoc §24, integrity rule 3: \"Every material financial output\nreferences a Financial Model version\"). Reserved for the financial\nmodeling engine; carried opaquely in v1 so the reference cannot\nexist without a version.",
+  "type": "string"
+}

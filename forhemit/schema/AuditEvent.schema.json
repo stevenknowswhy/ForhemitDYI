@@ -339,6 +339,61 @@
           "description": "An encrypted backup of the vault was exported (Vault doc §45:\n\"Backup completed\"; §35: \"The Vault should support encrypted\nbackups\").",
           "type": "string",
           "const": "backup_completed"
+        },
+        {
+          "description": "A scenario family was created — the birth of one conceptual path,\nwhether by the owner's explorer or by a what-if branch (Scenario\nEngine Data Model doc §3; event contract §3.1).",
+          "type": "string",
+          "const": "scenario_created"
+        },
+        {
+          "description": "A scenario draft mutation — the draft's creation or one of its\naudited edits while mutable (Scenario Engine Data Model doc §46;\nevent contract §3.2). The payload preserves previous values.",
+          "type": "string",
+          "const": "scenario_draft_updated"
+        },
+        {
+          "description": "A draft was finalized into history — the version became immutable;\nfurther material change creates a successor version (Scenario\nEngine Data Model doc §46, integrity rule 6; event contract §3.3).",
+          "type": "string",
+          "const": "scenario_version_finalized"
+        },
+        {
+          "description": "A conflict was recorded against a scenario version — including\nstructured nonnegotiable conflicts, which carry the destination\nback-reference instead of a warning flag (Scenario Engine Data\nModel doc §16; event contract §3.4).",
+          "type": "string",
+          "const": "scenario_conflict_detected"
+        },
+        {
+          "description": "A conflict's resolution was recorded — for nonnegotiable\nconflicts, the owner's decision (keep / explore another path /\nchange the requirement), never an engine decision (NONNEGOTIABLE\ndoc §5; event contract §3.5).",
+          "type": "string",
+          "const": "scenario_conflict_resolved"
+        },
+        {
+          "description": "A what-if branch was created from a parent scenario version; the\nparent is untouched (Scenario Engine Data Model doc §30–31; event\ncontract §3.6).",
+          "type": "string",
+          "const": "scenario_what_if_created"
+        },
+        {
+          "description": "A scenario version was found pinned to Business Reality or\ndestination state that has since moved; the version itself is not\nmodified (Scenario Engine Data Model doc §35; event contract §3.7).",
+          "type": "string",
+          "const": "scenario_affected_by_reality_change"
+        },
+        {
+          "description": "A durable comparison was recorded — what was compared, never which\nscenario won (Scenario Engine Data Model doc §32, integrity rule\n10; event contract §3.8).",
+          "type": "string",
+          "const": "scenario_comparison_recorded"
+        },
+        {
+          "description": "A professional review reference was recorded — always attributed\nto a role and identity; it never marks the scenario approved\n(Scenario Engine Data Model doc §27, §29; event contract §3.9).",
+          "type": "string",
+          "const": "scenario_professional_review_recorded"
+        },
+        {
+          "description": "A finalized version's readiness status changed, with the previous\nand new values preserved (Scenario Engine Data Model doc §36, §40;\nevent contract §3.10).",
+          "type": "string",
+          "const": "scenario_readiness_changed"
+        },
+        {
+          "description": "A scenario family was archived — retention, not deletion; every\nversion and its history remain readable (Scenario Engine Data\nModel doc §3; event contract §3.11).",
+          "type": "string",
+          "const": "scenario_family_archived"
         }
       ]
     },

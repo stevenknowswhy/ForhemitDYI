@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UnknownId",
+  "description": "Identifies one ScenarioUnknown — first-class missing information\n(Scenario Engine Data Model doc §15), never a blank zero.",
+  "type": "string"
+}

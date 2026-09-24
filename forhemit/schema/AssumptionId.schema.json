@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AssumptionId",
+  "description": "Identifies one ScenarioAssumption — a typed, provenance-stamped\nvalue a scenario is built on (Scenario Engine Data Model doc §7).",
+  "type": "string"
+}

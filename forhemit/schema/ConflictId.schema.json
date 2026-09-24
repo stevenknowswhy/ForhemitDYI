@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConflictId",
+  "description": "Identifies one ScenarioConflict — severity describes the condition,\nnever a score (Scenario Engine Data Model doc §16–17).",
+  "type": "string"
+}
