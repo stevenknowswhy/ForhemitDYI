@@ -60,13 +60,13 @@ pub use audit::{AuditEvent, AuditEventDraft, AuditEventType};
 pub use decision::DecisionLayer;
 pub use engine::EngineId;
 pub use ids::{
-    ActorId, AnalysisId, AssumptionId, BranchId, BusinessRealityVersionId, CausationId,
-    ComparisonDimensionId, ComparisonId, ComparisonResultId, ConflictId, ConstraintId,
-    CorrelationId, DestinationId, DestinationVersionId, DocumentId, DocumentVersionId,
-    EmptyIdError, EventId, FactId, FactVersionId, FinancialModelVersionId, NonnegotiableId,
-    ObjectId, ObjectiveId, ProfessionalReviewId, ProfessionalReviewReferenceId, ScenarioFamilyId,
-    ScenarioImpactId, ScenarioVersionId, SnapshotId, TransactionId, UnknownId, VaultId,
-    WorkspaceId,
+    ActorId, AnalysisId, AnswerId, AnswerVersionId, AssumptionId, BranchId,
+    BusinessRealityVersionId, CausationId, ComparisonDimensionId, ComparisonId, ComparisonResultId,
+    ConflictId, ConstraintId, CorrelationId, DestinationId, DestinationVersionId, DocumentId,
+    DocumentVersionId, EmptyIdError, EventId, FactId, FactVersionId, FinancialModelVersionId,
+    JourneyId, JourneyInstanceId, JourneyNodeId, NonnegotiableId, ObjectId, ObjectiveId,
+    ProfessionalReviewId, ProfessionalReviewReferenceId, ScenarioFamilyId, ScenarioImpactId,
+    ScenarioVersionId, SnapshotId, TransactionId, UnknownId, VaultId, WorkspaceId,
 };
 pub use integrity::{InvalidSha256Hex, PayloadRef, Sha256Hex};
 pub use nonnegotiable::NonnegotiableState;

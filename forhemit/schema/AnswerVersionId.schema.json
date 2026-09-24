@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnswerVersionId",
+  "description": "Identifies one immutable answer version (Journey Builder doc §8:\nthe instance carries \"change history\"; the implementation spec:\n\"back/edit/change create new versions — the Destination's original\nis retained\"). A revision never edits the version it supersedes.",
+  "type": "string"
+}

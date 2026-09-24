@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JourneyId",
+  "description": "Identifies a journey definition — \"Employee Ownership Journey\" is the\nfirst (Journey Builder doc §3: the Journey is \"the overall\nexperience\"). Definitions are versioned data files; the id is\nstable while versions iterate.",
+  "type": "string"
+}

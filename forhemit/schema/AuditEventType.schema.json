@@ -127,6 +127,31 @@
       "description": "A scenario family was archived — retention, not deletion; every\nversion and its history remain readable (Scenario Engine Data\nModel doc §3; event contract §3.11).",
       "type": "string",
       "const": "scenario_family_archived"
+    },
+    {
+      "description": "A Journey Instance was created — an owner started a journey\ndefinition walk (Journey Builder doc §8; event contract §4.1).",
+      "type": "string",
+      "const": "journey_instance_started"
+    },
+    {
+      "description": "An answer was recorded — the first version of one (Journey\nBuilder doc §3 \"Answer\"; event contract §4.2). The payload carries\nthe walk's new position and the answer's declared Storage Scope.",
+      "type": "string",
+      "const": "journey_answer_recorded"
+    },
+    {
+      "description": "An answer was revised — a new answer version superseding the\nprevious one; the previous version is retained, never edited\n(Journey Builder doc §9 \"back/edit native\"; event contract §4.3).",
+      "type": "string",
+      "const": "journey_answer_revised"
+    },
+    {
+      "description": "A node was passed without an answer — the owner took a question\nexit on an optional node (EOJ v0.2 §30 \"Question Exit\"; event\ncontract §4.4).",
+      "type": "string",
+      "const": "journey_node_skipped"
+    },
+    {
+      "description": "The walk reached its terminal node with every eligible required\nquestion answered — the instance is complete and its outputs may\nbe assembled (Journey Builder doc §8; event contract §4.5).",
+      "type": "string",
+      "const": "journey_instance_completed"
     }
   ]
 }

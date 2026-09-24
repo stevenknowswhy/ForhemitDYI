@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JourneyNodeId",
+  "description": "Identifies one node in a journey definition — \"one interaction or\ninformation step\" (Journey Builder doc §3). Stable within the\ndefinition; answers reference nodes through it.",
+  "type": "string"
+}

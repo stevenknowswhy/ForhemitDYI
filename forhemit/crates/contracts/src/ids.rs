@@ -270,3 +270,37 @@ define_id!(
     /// Model doc §35; SCHEMA.md §2.15).
     ScenarioImpactId
 );
+define_id!(
+    /// Identifies a journey definition — "Employee Ownership Journey" is the
+    /// first (Journey Builder doc §3: the Journey is "the overall
+    /// experience"). Definitions are versioned data files; the id is
+    /// stable while versions iterate.
+    JourneyId
+);
+define_id!(
+    /// Identifies a Journey Instance — "when a user starts a journey,
+    /// create: Journey Instance" (Journey Builder doc §8). One owner's
+    /// stateful walk of one journey definition.
+    JourneyInstanceId
+);
+define_id!(
+    /// Identifies one node in a journey definition — "one interaction or
+    /// information step" (Journey Builder doc §3). Stable within the
+    /// definition; answers reference nodes through it.
+    JourneyNodeId
+);
+define_id!(
+    /// Identifies one answer within a journey instance — the stable
+    /// identity that survives revisions, the way a FactId does for facts
+    /// (Business Reality doc §25: versions change, the fact's identity
+    /// does not). A node revised later keeps its answer id and gains a
+    /// new version.
+    AnswerId
+);
+define_id!(
+    /// Identifies one immutable answer version (Journey Builder doc §8:
+    /// the instance carries "change history"; the implementation spec:
+    /// "back/edit/change create new versions — the Destination's original
+    /// is retained"). A revision never edits the version it supersedes.
+    AnswerVersionId
+);

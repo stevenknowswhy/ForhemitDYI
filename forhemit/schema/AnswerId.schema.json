@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnswerId",
+  "description": "Identifies one answer within a journey instance — the stable\nidentity that survives revisions, the way a FactId does for facts\n(Business Reality doc §25: versions change, the fact's identity\ndoes not). A node revised later keeps its answer id and gains a\nnew version.",
+  "type": "string"
+}

@@ -128,6 +128,25 @@ pub enum AuditEventType {
     /// version and its history remain readable (Scenario Engine Data
     /// Model doc §3; event contract §3.11).
     ScenarioFamilyArchived,
+    /// A Journey Instance was created — an owner started a journey
+    /// definition walk (Journey Builder doc §8; event contract §4.1).
+    JourneyInstanceStarted,
+    /// An answer was recorded — the first version of one (Journey
+    /// Builder doc §3 "Answer"; event contract §4.2). The payload carries
+    /// the walk's new position and the answer's declared Storage Scope.
+    JourneyAnswerRecorded,
+    /// An answer was revised — a new answer version superseding the
+    /// previous one; the previous version is retained, never edited
+    /// (Journey Builder doc §9 "back/edit native"; event contract §4.3).
+    JourneyAnswerRevised,
+    /// A node was passed without an answer — the owner took a question
+    /// exit on an optional node (EOJ v0.2 §30 "Question Exit"; event
+    /// contract §4.4).
+    JourneyNodeSkipped,
+    /// The walk reached its terminal node with every eligible required
+    /// question answered — the instance is complete and its outputs may
+    /// be assembled (Journey Builder doc §8; event contract §4.5).
+    JourneyInstanceCompleted,
 }
 
 /// The audit event contract (Audit doc §63 field set; implementation-spec
