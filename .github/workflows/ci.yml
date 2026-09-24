@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: Rust (fmt, clippy, test, schema, engine deps)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: forhemit
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Tauri Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev librsvg2-dev patchelf libayatana-appindicator3-dev
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: forhemit
+      - name: Engine dependency rule
+        run: bash scripts/check-engine-deps.sh
+        working-directory: ${{ github.workspace }}
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test --workspace
+      - name: Contract schema drift
+        run: |
+          cargo run -q -p forhemit-contracts --bin export_schemas -- /tmp/schema-regen
+          diff -ru schema /tmp/schema-regen
+
+  frontend:
+    name: Frontend (vite build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: forhemit/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: forhemit/app/package-lock.json
+      - run: npm ci
+      - run: npm run build
