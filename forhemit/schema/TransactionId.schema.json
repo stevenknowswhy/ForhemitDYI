@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TransactionId",
+  "description": "Identifies the transaction (multi-event unit of work) an event\nbelongs to — Audit doc §63 field `transaction_id`.",
+  "type": "string"
+}

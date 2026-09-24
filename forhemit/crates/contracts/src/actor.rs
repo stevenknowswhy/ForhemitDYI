@@ -60,3 +60,39 @@ pub enum ActionOrigination {
     /// AI-generated content.
     AiGenerated,
 }
+
+/// Top-level classification of an audit actor — the spec sample's
+/// `Human | Service | Automation | External` grouping.
+///
+/// Integrity rule 5 requires "human, automated, AI, integration, and
+/// system actions" to be distinguishable: the top-level classification
+/// groups them, and the finer-grained [`ActorKind`] (§7) plus
+/// [`ActionOrigination`] (§8) on [`ActorRecord`] preserve the
+/// distinctions.
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, schemars::JsonSchema, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActorClassification {
+    /// A person.
+    Human,
+    /// A service account or system process acting on its own behalf.
+    Service,
+    /// An automated workflow or AI agent.
+    Automation,
+    /// An actor outside the platform — an external integration or party.
+    External,
+}
+
+/// The `actor` field of the audit event contract (Audit doc §63): who or
+/// what acted, identified and classified.
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, schemars::JsonSchema, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ActorRecord {
+    /// Stable identifier for the actor (user id, service account name, …).
+    pub actor_id: crate::ActorId,
+    /// Top-level human/service/automation/external classification.
+    pub classification: ActorClassification,
+    /// Finer-grained actor kind (Audit doc §7), when known.
+    pub kind: Option<ActorKind>,
+    /// How the action originated (Audit doc §8), when known.
+    pub origination: Option<ActionOrigination>,
+}

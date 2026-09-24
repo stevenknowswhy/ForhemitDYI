@@ -14,7 +14,12 @@ use schemars::SchemaGenerator;
 /// [`export_per_type`] by `tests/schema_export.rs`.
 pub const CONTRACT_TYPES: &[&str] = &[
     "ActionOrigination",
+    "ActorClassification",
+    "ActorId",
     "ActorKind",
+    "ActorRecord",
+    "AuditEvent",
+    "AuditEventType",
     "CausationId",
     "CorrelationId",
     "DecisionLayer",
@@ -26,6 +31,7 @@ pub const CONTRACT_TYPES: &[&str] = &[
     "PayloadRef",
     "Provenance",
     "Sha256Hex",
+    "TransactionId",
     "Verification",
     "WorkspaceId",
 ];
@@ -35,7 +41,12 @@ pub const CONTRACT_TYPES: &[&str] = &[
 pub fn export_per_type() -> Vec<(&'static str, String)> {
     vec![
         type_schema::<crate::ActionOrigination>("ActionOrigination"),
+        type_schema::<crate::ActorClassification>("ActorClassification"),
+        type_schema::<crate::ActorId>("ActorId"),
         type_schema::<crate::ActorKind>("ActorKind"),
+        type_schema::<crate::ActorRecord>("ActorRecord"),
+        type_schema::<crate::AuditEvent>("AuditEvent"),
+        type_schema::<crate::AuditEventType>("AuditEventType"),
         type_schema::<crate::CausationId>("CausationId"),
         type_schema::<crate::CorrelationId>("CorrelationId"),
         type_schema::<crate::DecisionLayer>("DecisionLayer"),
@@ -47,6 +58,7 @@ pub fn export_per_type() -> Vec<(&'static str, String)> {
         type_schema::<crate::PayloadRef>("PayloadRef"),
         type_schema::<crate::Provenance>("Provenance"),
         type_schema::<crate::Sha256Hex>("Sha256Hex"),
+        type_schema::<crate::TransactionId>("TransactionId"),
         type_schema::<crate::Verification>("Verification"),
         type_schema::<crate::WorkspaceId>("WorkspaceId"),
     ]

@@ -39,10 +39,14 @@
 //! ```
 //!
 //! Plain structs reject unknown keys outright (see
-//! [`integrity::PayloadRef`]); the audit store enforces the same strictness
-//! for tagged event envelopes when they land.
+//! [`integrity::PayloadRef`]). Tagged enums enforce their version tag
+//! instead — serde derive cannot combine an internal tag with
+//! `deny_unknown_fields` — so [`audit::AuditEvent`] rejects missing or
+//! unknown `event_version` values: older readers refuse newer envelopes
+//! instead of reinterpreting them.
 
 pub mod actor;
+pub mod audit;
 pub mod decision;
 pub mod engine;
 pub mod ids;
@@ -51,10 +55,14 @@ pub mod nonnegotiable;
 pub mod provenance;
 pub mod schema;
 
-pub use actor::{ActionOrigination, ActorKind};
+pub use actor::{ActionOrigination, ActorClassification, ActorKind, ActorRecord};
+pub use audit::{AuditEvent, AuditEventDraft, AuditEventType};
 pub use decision::DecisionLayer;
 pub use engine::EngineId;
-pub use ids::{CausationId, CorrelationId, DestinationId, EventId, ObjectId, WorkspaceId};
+pub use ids::{
+    ActorId, CausationId, CorrelationId, DestinationId, EventId, ObjectId, TransactionId,
+    WorkspaceId,
+};
 pub use integrity::{InvalidSha256Hex, PayloadRef, Sha256Hex};
 pub use nonnegotiable::NonnegotiableState;
 pub use provenance::{Provenance, Verification};

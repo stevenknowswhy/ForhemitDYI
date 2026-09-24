@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActorClassification",
+  "description": "Top-level classification of an audit actor — the spec sample's\n`Human | Service | Automation | External` grouping.\n\nIntegrity rule 5 requires \"human, automated, AI, integration, and\nsystem actions\" to be distinguishable: the top-level classification\ngroups them, and the finer-grained [`ActorKind`] (§7) plus\n[`ActionOrigination`] (§8) on [`ActorRecord`] preserve the\ndistinctions.",
+  "oneOf": [
+    {
+      "description": "A person.",
+      "type": "string",
+      "const": "human"
+    },
+    {
+      "description": "A service account or system process acting on its own behalf.",
+      "type": "string",
+      "const": "service"
+    },
+    {
+      "description": "An automated workflow or AI agent.",
+      "type": "string",
+      "const": "automation"
+    },
+    {
+      "description": "An actor outside the platform — an external integration or party.",
+      "type": "string",
+      "const": "external"
+    }
+  ]
+}

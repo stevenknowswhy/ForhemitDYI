@@ -105,3 +105,16 @@ define_id!(
     /// Architecture).
     DestinationId
 );
+
+define_id!(
+    /// Identifies the transaction (multi-event unit of work) an event
+    /// belongs to — Audit doc §63 field `transaction_id`.
+    TransactionId
+);
+
+define_id!(
+    /// Identifies the actor behind an event — Audit doc §7: the platform
+    /// never records a bare "User changed value" without saying who or
+    /// what did it.
+    ActorId
+);

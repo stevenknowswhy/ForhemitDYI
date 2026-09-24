@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActorId",
+  "description": "Identifies the actor behind an event — Audit doc §7: the platform\nnever records a bare \"User changed value\" without saying who or\nwhat did it.",
+  "type": "string"
+}

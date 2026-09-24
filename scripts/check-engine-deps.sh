@@ -49,12 +49,13 @@ check_crate crates/enginekit "forhemit-contracts"
 # Engine crates — add each new engine crate here with its allowed shared
 # deps, e.g.:
 #   check_crate crates/audit "forhemit-contracts forhemit-enginekit"
+check_crate crates/audit "forhemit-contracts forhemit-enginekit"
 
 # Any crate directory not classified above fails loudly:
 for crate_dir in crates/*/; do
   crate_dir=${crate_dir%/}
   case $crate_dir in
-    crates/contracts | crates/enginekit) ;;
+    crates/contracts | crates/enginekit | crates/audit) ;;
     *)
       if [[ -f $crate_dir/Cargo.toml ]]; then
         echo "UNCLASSIFIED: $crate_dir is not in scripts/check-engine-deps.sh — classify it with its allowed shared deps"
