@@ -53,6 +53,7 @@ check_crate crates/audit "forhemit-contracts forhemit-enginekit"
 check_crate crates/reality "forhemit-contracts forhemit-enginekit"
 check_crate crates/destination "forhemit-contracts forhemit-enginekit"
 check_crate crates/vault "forhemit-contracts forhemit-enginekit"
+check_crate crates/scenario "forhemit-contracts forhemit-enginekit"
 
 # Any crate directory not classified above fails loudly:
 for crate_dir in crates/*/; do

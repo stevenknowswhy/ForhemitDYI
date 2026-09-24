@@ -1,0 +1,19 @@
+[package]
+name = "forhemit-scenario"
+description = "Scenario engine — versioned exploratory paths with typed provenance-first assumptions, first-class unknowns, structured nonnegotiable conflicts, what-if branches, and winner-free comparisons"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+forhemit-contracts = { workspace = true }
+forhemit-enginekit = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+time = { workspace = true, features = ["serde"] }
+ulid = { workspace = true }
+
+[lints]
+workspace = true

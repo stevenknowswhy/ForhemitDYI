@@ -199,6 +199,7 @@ provenance, and verification travel together (schema doc §9).
 | `resolution_status` | TEXT | NOT NULL, enum §6.10, default `open` |
 | `required_action` | TEXT | NULL |
 | `source_dependency` | TEXT | NULL |
+| `created_at` | RFC 3339 | NOT NULL |
 | `resolved_at` | RFC 3339 | NULL — set when resolution_status reaches `resolved`/`waived` |
 | `resolved_by` | actor JSON | NULL, same condition |
 | `resolution_reference` | TEXT | NULL, same condition |
@@ -587,6 +588,34 @@ versions — it is an append-only reference row, not version content). Payload:
 
 No `approved` value exists in `review_status`: a reference records that a professional
 was engaged, never that the platform approved anything (schema doc §29).
+
+### 3.10 `ScenarioReadinessChanged` — the readiness axis moves (schema doc §36, §40)
+
+Emitted by `set_readiness` on a finalized version (drafts are `preliminary` by
+definition). Readiness and lifecycle are separate axes and stay separate: this event
+never changes `lifecycle_status`. A status-history row is written with the same
+prev/new pair (§2.14). Payload:
+
+```json
+{
+  "scenario_version_id": "sv_…",
+  "previous_readiness": "modelable",
+  "new_readiness": "ready_for_professional_review",
+  "reason": "Every critical unknown is resolved; the owner asked for the package."
+}
+```
+
+### 3.11 `ScenarioFamilyArchived` — a family is retired (schema doc §3)
+
+Emitted by `archive_family`. Retention, not deletion: every version and its history
+remain readable. Payload:
+
+```json
+{
+  "scenario_family_id": "fam_…",
+  "archive_reason": "Owner chose to explore only the staged path."
+}
+```
 
 ---
 

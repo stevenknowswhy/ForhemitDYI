@@ -1,0 +1,62 @@
+{
+  "template_id": "esop",
+  "name": "ESOP feasibility path",
+  "scenario_type": "esop",
+  "description": "A company-owned trust acquires the owner's shares on behalf of all eligible employees. Structured per Employee Ownership Journey v0.2's ESOP exploration path; every seeded value is a starting point for the owner to confirm or replace.",
+  "seed_assumptions": [
+    {
+      "category": "ownership",
+      "name": "Shareholder percentage sold to the trust",
+      "description": "The owner's working assumption for how much of the company the trust buys in this path.",
+      "value": { "value_type": "percentage", "value": "100" },
+      "provenance": "scenario_assumed",
+      "verification": "unverified"
+    },
+    {
+      "category": "financing",
+      "name": "Bank financing covers the purchase price",
+      "description": "ESOP purchases are typically financed by company debt repaid from future cash flow; the working assumption is that a lender will cover the purchase price on those terms.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "scenario_assumed",
+      "verification": "unknown"
+    },
+    {
+      "category": "business",
+      "name": "Company cash flow can carry the ESOP loan",
+      "description": "Repayment capacity is the load-bearing question of an ESOP path; the working assumption is that current cash flow supports it.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "owner_reported",
+      "verification": "unverified"
+    },
+    {
+      "category": "timing",
+      "name": "Owner transition completes in stages over several years",
+      "description": "The owner's working timeline for handing over day-to-day control while the trust owns the company.",
+      "value": { "value_type": "duration_months", "value": 36 },
+      "provenance": "scenario_assumed",
+      "verification": "unverified"
+    }
+  ],
+  "seed_unknowns": [
+    {
+      "category": "financial",
+      "description": "An independent appraisal of the company's fair market value has not been done; every price figure in this path depends on it.",
+      "importance": "critical",
+      "required_action": "Commission an independent valuation by a qualified appraiser before relying on any price figure here.",
+      "source_dependency": "professional_valuation"
+    },
+    {
+      "category": "legal",
+      "description": "Whether the company's legal form and existing agreements permit an ESOP trust purchase is not yet checked.",
+      "importance": "important",
+      "required_action": "Have counsel review the shareholder agreement and corporate documents for ESOP compatibility.",
+      "source_dependency": "legal_review"
+    },
+    {
+      "category": "employee",
+      "description": "Whether the workforce wants ownership and can support the governance it requires is unknown.",
+      "importance": "important",
+      "source_dependency": "employee_exploration"
+    }
+  ]
+}

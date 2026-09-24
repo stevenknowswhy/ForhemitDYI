@@ -1,0 +1,50 @@
+{
+  "template_id": "direct_employee_purchase",
+  "name": "Direct employee purchase path",
+  "scenario_type": "direct_employee_purchase",
+  "description": "The employees purchase the business directly from the owner. Structured per Employee Ownership Journey v0.2's direct-purchase path; seeded values are starting points to confirm or replace.",
+  "seed_assumptions": [
+    {
+      "category": "buyer",
+      "name": "Employee group can organize a purchasing entity",
+      "description": "The working assumption that the employees form or engage a legal entity able to sign and finance the purchase.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "scenario_assumed",
+      "verification": "unknown"
+    },
+    {
+      "category": "financing",
+      "name": "Seller-financed portion of the price",
+      "description": "The owner's working assumption for how much of the price the employees will ask the seller to finance.",
+      "value": { "value_type": "percentage", "value": "30" },
+      "provenance": "owner_reported",
+      "verification": "unverified"
+    },
+    {
+      "category": "financial",
+      "name": "Purchase price the employees can raise",
+      "description": "A starting price band the employee group believes it can finance, to be replaced by a professional valuation.",
+      "value": {
+        "value_type": "range",
+        "value": { "min": "1000000", "max": "2500000" }
+      },
+      "provenance": "scenario_assumed",
+      "verification": "unverified"
+    }
+  ],
+  "seed_unknowns": [
+    {
+      "category": "buyer",
+      "description": "How many employees are actual prospective buyers — and how much capital each can commit — is unknown.",
+      "importance": "critical",
+      "required_action": "Survey the employee group for genuine buyer interest and capacity before relying on this path.",
+      "source_dependency": "employee_exploration"
+    },
+    {
+      "category": "legal",
+      "description": "The legal structure for a direct employee purchase (cooperative, trust, or share purchase agreement) is undecided.",
+      "importance": "important",
+      "source_dependency": "legal_review"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "template_id": "employee_owned_acquisition_entity",
+  "name": "Employee-owned acquisition entity path",
+  "scenario_type": "employee_owned_acquisition_entity",
+  "description": "A new entity owned by employees is formed to acquire the company. Structured per Employee Ownership Journey v0.2's acquisition-entity path; seeded values are starting points to confirm or replace.",
+  "seed_assumptions": [
+    {
+      "category": "ownership",
+      "name": "Acquisition entity holds the shares",
+      "description": "The working assumption that a newly formed employee-owned entity, not the employees individually, holds the company's shares.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "scenario_assumed",
+      "verification": "unknown"
+    },
+    {
+      "category": "governance",
+      "name": "Employee-owners govern through elected representatives",
+      "description": "The working assumption that the entity's governance gives employee-owners representation rather than direct day-to-day votes.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "scenario_assumed",
+      "verification": "unverified"
+    },
+    {
+      "category": "timing",
+      "name": "Entity forms before the purchase agreement",
+      "description": "The working sequencing: the acquisition entity exists and is funded before any purchase agreement is signed.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "scenario_assumed",
+      "verification": "unverified"
+    }
+  ],
+  "seed_unknowns": [
+    {
+      "category": "legal",
+      "description": "The entity form and its formation cost are undecided; this path cannot be priced without them.",
+      "importance": "important",
+      "required_action": "Have counsel propose entity options and formation steps for the acquisition vehicle.",
+      "source_dependency": "legal_review"
+    },
+    {
+      "category": "external_environment",
+      "description": "Lender appetite for a newly formed employee-owned acquisition vehicle is unknown.",
+      "importance": "important",
+      "source_dependency": "financing_exploration"
+    }
+  ]
+}

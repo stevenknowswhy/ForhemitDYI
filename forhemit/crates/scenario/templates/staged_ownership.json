@@ -1,0 +1,47 @@
+{
+  "template_id": "staged_ownership",
+  "name": "Staged ownership transfer path",
+  "scenario_type": "staged_ownership",
+  "description": "Ownership transfers to employees in stages over time. Structured per Employee Ownership Journey v0.2's staged-transfer path; seeded values are starting points to confirm or replace.",
+  "seed_assumptions": [
+    {
+      "category": "timing",
+      "name": "Transfer happens in stages",
+      "description": "The number of stages the owner's working assumption contemplates before the employees hold the business fully.",
+      "value": { "value_type": "duration_months", "value": 60 },
+      "provenance": "owner_reported",
+      "verification": "unverified"
+    },
+    {
+      "category": "ownership",
+      "name": "Shares sold per stage are roughly equal",
+      "description": "The working assumption that each stage transfers a similar block of ownership.",
+      "value": { "value_type": "percentage", "value": "20" },
+      "provenance": "scenario_assumed",
+      "verification": "unverified"
+    },
+    {
+      "category": "seller",
+      "name": "Owner needs stage proceeds to be predictable",
+      "description": "The owner's working assumption about how much the timing of stage payments matters to their own plans.",
+      "value": { "value_type": "boolean", "value": true },
+      "provenance": "owner_reported",
+      "verification": "unverified"
+    }
+  ],
+  "seed_unknowns": [
+    {
+      "category": "tax",
+      "description": "The tax consequences of selling in stages rather than all at once are not understood yet.",
+      "importance": "important",
+      "required_action": "Ask a tax professional to compare staged versus single-sale treatment before committing to stages.",
+      "source_dependency": "tax_review"
+    },
+    {
+      "category": "buyer",
+      "description": "Which employees would buy in the early stages — and whether later-stage buyers exist — is unknown.",
+      "importance": "important",
+      "source_dependency": "employee_exploration"
+    }
+  ]
+}
