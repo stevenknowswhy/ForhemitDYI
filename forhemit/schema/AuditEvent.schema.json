@@ -314,6 +314,31 @@
           "description": "The destination was archived — retained historically but no longer\nactive (Destination Engine doc §6).",
           "type": "string",
           "const": "destination_archived"
+        },
+        {
+          "description": "A document entered the local vault (Vault doc §45: \"Document\nimported\").",
+          "type": "string",
+          "const": "document_imported"
+        },
+        {
+          "description": "A new immutable document version was created (Vault doc §45:\n\"Version created\"; §14: \"Versioning is mandatory\").",
+          "type": "string",
+          "const": "document_version_created"
+        },
+        {
+          "description": "Local vault analysis ran over a document (Vault doc §45: \"Document\nanalyzed\").",
+          "type": "string",
+          "const": "document_analyzed"
+        },
+        {
+          "description": "A previous document version was restored — as a new version,\nnever by rewriting history (Vault doc §45: \"Document restored\";\n§14: \"Restore a previous version\").",
+          "type": "string",
+          "const": "document_restored"
+        },
+        {
+          "description": "An encrypted backup of the vault was exported (Vault doc §45:\n\"Backup completed\"; §35: \"The Vault should support encrypted\nbackups\").",
+          "type": "string",
+          "const": "backup_completed"
         }
       ]
     },

@@ -34,6 +34,9 @@ jobs:
       - name: Engine dependency rule
         run: bash scripts/check-engine-deps.sh
         working-directory: ${{ github.workspace }}
+      - name: Zero-network rule (local-only v1)
+        run: bash scripts/check-no-network.sh
+        working-directory: ${{ github.workspace }}
       - name: Format
         run: cargo fmt --all --check
       - name: Clippy

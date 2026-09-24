@@ -65,6 +65,23 @@ pub enum AuditEventType {
     /// The destination was archived — retained historically but no longer
     /// active (Destination Engine doc §6).
     DestinationArchived,
+    /// A document entered the local vault (Vault doc §45: "Document
+    /// imported").
+    DocumentImported,
+    /// A new immutable document version was created (Vault doc §45:
+    /// "Version created"; §14: "Versioning is mandatory").
+    DocumentVersionCreated,
+    /// Local vault analysis ran over a document (Vault doc §45: "Document
+    /// analyzed").
+    DocumentAnalyzed,
+    /// A previous document version was restored — as a new version,
+    /// never by rewriting history (Vault doc §45: "Document restored";
+    /// §14: "Restore a previous version").
+    DocumentRestored,
+    /// An encrypted backup of the vault was exported (Vault doc §45:
+    /// "Backup completed"; §35: "The Vault should support encrypted
+    /// backups").
+    BackupCompleted,
 }
 
 /// The audit event contract (Audit doc §63 field set; implementation-spec

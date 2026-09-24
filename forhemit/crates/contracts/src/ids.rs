@@ -149,3 +149,28 @@ define_id!(
     /// version id and never edits the version it supersedes.
     FactVersionId
 );
+
+define_id!(
+    /// Identifies a local vault — Vault doc §47: the vault "contains:
+    /// vault_id, owner/principal, workspace, devices, encryption state…".
+    VaultId
+);
+
+define_id!(
+    /// Identifies a document in the local vault (Vault doc §47
+    /// "Document": "document_id … filename … hash … current_version_id").
+    DocumentId
+);
+
+define_id!(
+    /// Identifies one immutable version of a vault document (Vault doc §47
+    /// "DocumentVersion": "version_id … supersedes_version"); Vault doc §14:
+    /// "Versioning is mandatory."
+    DocumentVersionId
+);
+
+define_id!(
+    /// Identifies one local-analysis run over a document (Vault doc §47
+    /// "LocalAnalysis": "analysis_id, inputs, model/tool…").
+    AnalysisId
+);
