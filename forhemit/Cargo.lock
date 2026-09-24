@@ -911,6 +911,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "forhemit-reality"
+version = "0.1.0"
+dependencies = [
+ "forhemit-contracts",
+ "forhemit-enginekit",
+ "serde",
+ "serde_json",
+ "time",
+ "ulid",
+]
+
+[[package]]
 name = "form_urlencoded"
 version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

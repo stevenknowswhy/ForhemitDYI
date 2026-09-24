@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FactId",
+  "description": "Identifies one Business Reality fact — the stable identity that\nsurvives revisions (Business Reality doc §25: \"Historical snapshots\nremain available\" — versions change, the fact's identity does not).\nScenario assumptions reference facts through this id.",
+  "type": "string"
+}
