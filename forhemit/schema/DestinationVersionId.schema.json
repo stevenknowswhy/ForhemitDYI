@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DestinationVersionId",
+  "description": "Identifies one immutable version in a destination's history\n(Destination Engine doc §26: \"Every material change creates a new\nversion… The previous version remains accessible\").",
+  "type": "string"
+}

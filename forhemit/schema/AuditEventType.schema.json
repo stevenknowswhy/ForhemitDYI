@@ -27,6 +27,26 @@
       "description": "A Business Reality fact was revised — a new fact version\nsuperseding the previous one; the previous version is retained,\nnever edited (Business Reality doc §25).",
       "type": "string",
       "const": "reality_fact_revised"
+    },
+    {
+      "description": "A destination version was created — either the destination's first\nversion or a new version from a material edit (Destination Engine\ndoc §26: \"Every material change creates a new version\").",
+      "type": "string",
+      "const": "destination_version_created"
+    },
+    {
+      "description": "The owner explicitly confirmed the destination — \"This is the\noutcome I'm trying to create\" (Destination Engine doc §6).",
+      "type": "string",
+      "const": "destination_confirmed"
+    },
+    {
+      "description": "The owner kept the destination as a working draft at the\ndestination checkpoint (Destination Builder doc §17).",
+      "type": "string",
+      "const": "destination_marked_working"
+    },
+    {
+      "description": "The destination was archived — retained historically but no longer\nactive (Destination Engine doc §6).",
+      "type": "string",
+      "const": "destination_archived"
     }
   ]
 }

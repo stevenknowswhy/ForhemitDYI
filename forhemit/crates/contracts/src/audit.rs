@@ -52,6 +52,19 @@ pub enum AuditEventType {
     /// superseding the previous one; the previous version is retained,
     /// never edited (Business Reality doc §25).
     RealityFactRevised,
+    /// A destination version was created — either the destination's first
+    /// version or a new version from a material edit (Destination Engine
+    /// doc §26: "Every material change creates a new version").
+    DestinationVersionCreated,
+    /// The owner explicitly confirmed the destination — "This is the
+    /// outcome I'm trying to create" (Destination Engine doc §6).
+    DestinationConfirmed,
+    /// The owner kept the destination as a working draft at the
+    /// destination checkpoint (Destination Builder doc §17).
+    DestinationMarkedWorking,
+    /// The destination was archived — retained historically but no longer
+    /// active (Destination Engine doc §6).
+    DestinationArchived,
 }
 
 /// The audit event contract (Audit doc §63 field set; implementation-spec

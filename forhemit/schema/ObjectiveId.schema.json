@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ObjectiveId",
+  "description": "Identifies one objective within a destination. Stable across\ndestination versions, so downstream engines can back-reference the\nsame objective in later versions (spec: nonnegotiable constraints\n\"expose reference IDs so later scenario conflicts can\nback-reference them\").",
+  "type": "string"
+}
