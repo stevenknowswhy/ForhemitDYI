@@ -64,8 +64,10 @@
   async function setup() {
     error = null;
     notice = null;
-    if (passphrase.length < 8) {
-      error = "The recovery passphrase must be at least 8 characters.";
+    // UX-only pre-flight — the engine enforces the same 12-character
+    // floor at create (vault_setup refuses anything shorter).
+    if (passphrase.length < 12) {
+      error = "The recovery passphrase must be at least 12 characters.";
       return;
     }
     if (passphrase !== confirmPassphrase) {
@@ -233,7 +235,7 @@
         sent anywhere — it stays on this device.
       </p>
       <div class="form">
-        <input type="password" placeholder="Recovery passphrase (8+ characters)" bind:value={passphrase} />
+        <input type="password" placeholder="Recovery passphrase (12+ characters)" bind:value={passphrase} />
         <input type="password" placeholder="Repeat the passphrase" bind:value={confirmPassphrase} />
         <button type="button" class="primary" onclick={setup}>Create vault</button>
       </div>

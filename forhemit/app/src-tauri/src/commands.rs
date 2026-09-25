@@ -29,7 +29,7 @@ use forhemit_scenario::{
     NewUnknown, NewWhatIf, ReadinessStatus, ScenarioType, TypedValue, UnknownImportance,
     UnknownResolution, UnknownResolutionStatus,
 };
-use forhemit_vault::{VaultEngine, VaultError, VaultStore};
+use forhemit_vault::{validate_recovery_passphrase, VaultEngine, VaultError, VaultStore};
 use ulid::Ulid;
 
 use crate::state::{AppEngines, VaultSlot};
@@ -1160,13 +1160,19 @@ pub fn vault_status(engines: &AppEngines) -> Result<VaultStatusView, String> {
 ///
 /// # Errors
 ///
-/// A vault that already exists, or an engine refusal (weak passphrase,
-/// audit refusal).
+/// A vault that already exists, or an engine refusal: a recovery
+/// passphrase that is blank or under the engine's 12-character policy
+/// (enforced in the vault engine, not here), or an audit refusal.
 pub fn vault_setup(
     engines: &AppEngines,
     recovery_passphrase: String,
 ) -> Result<VaultStatusView, String> {
     let exports_label = engines.exports_dir()?.display().to_string();
+    // Pre-flight the engine's passphrase policy BEFORE creating anything:
+    // a refused setup must leave no vault database behind — an empty
+    // vault file would make every later attempt report "a vault already
+    // exists". The engine enforces the same policy again inside create.
+    validate_recovery_passphrase(&recovery_passphrase).map_err(|error| error.to_string())?;
     engines.with_vault(|slot| {
         if engines.vault_path().exists() {
             return Err(

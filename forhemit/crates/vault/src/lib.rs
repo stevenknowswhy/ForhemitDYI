@@ -35,7 +35,7 @@ mod store;
 pub use backup::{export_backup as export_backup_bytes, import_backup as import_backup_bytes};
 pub use error::VaultError;
 pub use keys::{MemoryKeyStore, OsKeyRing, VaultKey, VaultKeyStore};
-pub use recovery::RecoveryEscrow;
+pub use recovery::{validate_recovery_passphrase, RecoveryEscrow, MIN_RECOVERY_PASSPHRASE_LEN};
 pub use search::{SearchHit, SearchIndex};
 pub use store::{IntegrityFailure, StoredVersion, StoredVersionContent, VaultStore};
 
@@ -79,7 +79,9 @@ impl VaultEngine {
     /// Argon2id-derived recovery key, records the vault's identity rows,
     /// and binds the key into the key store. The recovery passphrase is
     /// the owner's offline credential — it is never stored, only its
-    /// derived key wraps the vault key.
+    /// derived key wraps the vault key. It must meet the
+    /// [`MIN_RECOVERY_PASSPHRASE_LEN`] policy (engine-enforced, security
+    /// review M1); recovery of existing escrows is never gated by it.
     pub fn create(
         store: VaultStore,
         keystore: Arc<dyn VaultKeyStore>,
