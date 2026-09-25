@@ -1207,6 +1207,7 @@ impl<S: AuditSink<AuditEventDraft>> ScenarioEngine<S> {
             correlation_id,
         )?;
         record.conflict.resolution = Some(ConflictResolution {
+            owner_decision,
             decided_by: actor,
             decided_at,
             resolution_reference: resolution_reference.clone(),

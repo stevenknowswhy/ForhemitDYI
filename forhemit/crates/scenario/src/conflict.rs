@@ -117,6 +117,9 @@ pub enum OwnerDecision {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ConflictResolution {
+    /// The decision that closed the conflict, when the owner decided
+    /// (verbatim — the engine never chooses; schema doc §16).
+    pub owner_decision: Option<OwnerDecision>,
     /// The decision that closed the conflict.
     pub decided_by: ActorRecord,
     /// When it was decided.

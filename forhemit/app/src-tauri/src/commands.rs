@@ -36,10 +36,10 @@ use crate::state::{AppEngines, VaultSlot};
 use crate::views::{
     comparison_view, conflict_decision_from_wire, document_view, exported_file_view, family_view,
     locked_view, not_set_up_view, package_preview_view, search_hit_view, status_view,
-    version_content_view, version_view, workspace_snapshot, ComparisonView, ExportedFileView,
-    FamilyAndVersionView, JourneyView, PackagePreviewView, ScenarioFamilyView, ScenarioVersionView,
-    VaultDocumentView, VaultSearchHitView, VaultState, VaultStatusView, VaultVersionContentView,
-    VerifyView,
+    version_content_view, version_view, version_views, workspace_snapshot, ComparisonView,
+    ExportedFileView, FamilyAndVersionView, JourneyView, PackagePreviewView, ScenarioFamilyView,
+    ScenarioVersionView, VaultDocumentHistoryView, VaultDocumentView, VaultSearchHitView,
+    VaultState, VaultStatusView, VaultVersionContentView, VerifyView,
 };
 
 /// A new journey instance id — a ULID-prefixed identifier.
@@ -1264,12 +1264,17 @@ pub fn vault_import(
 pub fn vault_document_history(
     engines: &AppEngines,
     document_id: String,
-) -> Result<VaultDocumentView, String> {
+) -> Result<VaultDocumentHistoryView, String> {
     with_open_vault(engines, |engine| {
-        document_view(
-            engine,
-            &DocumentId::new(document_id).map_err(|e| e.to_string())?,
-        )
+        let doc_id = DocumentId::new(document_id).map_err(|e| e.to_string())?;
+        let document = document_view(engine, &doc_id)?;
+        let history = engine
+            .version_history(&doc_id)
+            .map_err(|error| error.to_string())?;
+        Ok(VaultDocumentHistoryView {
+            document_id: document.document_id,
+            versions: version_views(&history),
+        })
     })
 }
 

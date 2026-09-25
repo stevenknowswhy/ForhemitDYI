@@ -21,8 +21,9 @@ pub use scenario::{
 };
 pub use vault::{
     document_view, locked_view, not_set_up_view, search_hit_view, status_view,
-    version_content_view, version_views, VaultDocumentView, VaultSearchHitView, VaultState,
-    VaultStatusView, VaultVersionContentView, VaultVersionView, SHARING_WORDING,
+    version_content_view, version_views, VaultDocumentHistoryView, VaultDocumentView,
+    VaultSearchHitView, VaultState, VaultStatusView, VaultVersionContentView, VaultVersionView,
+    SHARING_WORDING,
 };
 
 use forhemit_journey::{

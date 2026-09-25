@@ -216,6 +216,13 @@ impl VaultStore {
         std::fs::read(path).map_err(|error| VaultError::Backup(format!("read vault file: {error}")))
     }
 
+    /// Nanoseconds fit `i64` until the year 2262 — SQLite stores them as
+    /// INTEGER (the column's declared type), and reads must expect that.
+    fn sqlite_nanos(created_at_unix_nanos: i128) -> Result<i64, VaultError> {
+        i64::try_from(created_at_unix_nanos)
+            .map_err(|_| VaultError::Internal("timestamp out of range for SQLite".to_owned()))
+    }
+
     /// Writes the vault-record rows (Vault doc §47 "Vault": `vault_id`,
     /// workspace, creation time) — exactly once, at vault creation.
     pub fn write_vault_record(
@@ -317,7 +324,10 @@ impl VaultStore {
         let transaction = self.conn.unchecked_transaction()?;
         transaction.execute(
             "INSERT OR IGNORE INTO documents (document_id, created_at_unix_nanos) VALUES (?1, ?2)",
-            rusqlite::params![document_id.as_str(), created_at_unix_nanos.to_string()],
+            rusqlite::params![
+                document_id.as_str(),
+                Self::sqlite_nanos(created_at_unix_nanos)?
+            ],
         )?;
         // Fresh DEK for this version, wrapped immediately; the raw DEK
         // never leaves this scope unwrapped, and each version can be
@@ -360,7 +370,7 @@ impl VaultStore {
                 version_id.as_str(),
                 document_id.as_str(),
                 sequence,
-                created_at_unix_nanos.to_string(),
+                Self::sqlite_nanos(created_at_unix_nanos)?,
                 crypto::encode_b64(&filename_nonce),
                 filename_ciphertext,
                 crypto::encode_b64(&content_nonce),
@@ -413,9 +423,7 @@ impl VaultStore {
                 content_hash: crypto::sha256_hex(&plaintext),
                 byte_count: row.get(10)?,
                 note: row.get(11)?,
-                created_at_unix_nanos: row.get::<_, String>(2)?.parse().map_err(|_| {
-                    VaultError::Internal("stored timestamp was not an integer".to_owned())
-                })?,
+                created_at_unix_nanos: i128::from(row.get::<_, i64>(2)?),
                 restored_from: row
                     .get::<_, Option<String>>(12)?
                     .map(|id| DocumentVersionId::new(&id))
@@ -630,7 +638,7 @@ impl VaultStore {
                 version_id.as_str(),
                 tool,
                 summary,
-                created_at_unix_nanos.to_string(),
+                Self::sqlite_nanos(created_at_unix_nanos)?,
             ],
         )?;
         Ok(())

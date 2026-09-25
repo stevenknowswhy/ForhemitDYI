@@ -101,6 +101,16 @@ pub struct VaultDocumentView {
     pub note: Option<String>,
 }
 
+/// A document's full version history — its latest state plus every
+/// version row, oldest first, never rewritten (Vault doc §14).
+#[derive(Clone, Debug, Serialize)]
+pub struct VaultDocumentHistoryView {
+    /// The document's id.
+    pub document_id: String,
+    /// The version rows, oldest first.
+    pub versions: Vec<VaultVersionView>,
+}
+
 /// One row of a document's version history — oldest first, never
 /// rewritten (Vault doc §14).
 #[derive(Clone, Debug, Serialize)]

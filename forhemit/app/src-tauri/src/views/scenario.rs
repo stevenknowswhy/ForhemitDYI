@@ -333,6 +333,8 @@ pub struct ConflictView {
     pub nonnegotiable: Option<NonnegotiableConflictView>,
     /// The resolved.
     pub resolved: bool,
+    /// The owner's decision, when the owner decided (display label).
+    pub owner_decision: Option<&'static str>,
     /// Where the resolution came from, when recorded.
     pub resolution_reference: Option<String>,
     /// When the conflict was resolved (RFC 3339).
@@ -649,6 +651,17 @@ fn conflict_view(record: &forhemit_scenario::ConflictRecord) -> ConflictView {
                 decided_at: extension.decided_at.map(iso),
             }),
         resolved: conflict.resolution.is_some(),
+        owner_decision: conflict
+            .resolution
+            .as_ref()
+            .and_then(|resolution| resolution.owner_decision)
+            .or_else(|| {
+                record
+                    .nonnegotiable
+                    .as_ref()
+                    .and_then(|extension| extension.owner_decision)
+            })
+            .map(owner_decision_label),
         resolution_reference: conflict
             .resolution
             .as_ref()

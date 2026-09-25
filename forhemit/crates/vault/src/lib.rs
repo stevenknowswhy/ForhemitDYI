@@ -91,7 +91,12 @@ impl VaultEngine {
         if store.read_workspace_id()?.is_some() {
             return Err(VaultError::VaultAlreadyExists);
         }
-        let vault_id = VaultId::new(mint_id())?;
+        // One identity: the store was opened with the caller's vault id —
+        // the escrow row carries that same id, and recovery re-derives the
+        // AAD binding from it. Minting a second id here would seal the
+        // escrow under an identity the store never records, making
+        // recovery structurally impossible.
+        let vault_id = store.vault_id().clone();
         let vault_key = VaultKey::from_bytes(crypto::generate_key());
         let escrow = RecoveryEscrow::create(&vault_id, &vault_key, recovery_passphrase)?;
         let created_at = clock.now().unix_timestamp_nanos();
@@ -590,5 +595,92 @@ impl VaultEngine {
         self.sink
             .emit(draft)
             .map_err(|error| VaultError::Audit(error.to_string()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used, clippy::expect_used)] // test code: failures must panic the test
+
+    use super::*;
+    use forhemit_enginekit::{AuditError, SystemClock};
+    use std::sync::Mutex as StdMutex;
+
+    #[derive(Default)]
+    struct SilentSink {
+        events: StdMutex<Vec<AuditEventDraft>>,
+    }
+
+    impl AuditSink<AuditEventDraft> for SilentSink {
+        fn emit(&self, event: AuditEventDraft) -> Result<(), AuditError> {
+            self.events.lock().unwrap().push(event);
+            Ok(())
+        }
+    }
+
+    fn workspace() -> WorkspaceId {
+        WorkspaceId::new("local-workspace").unwrap()
+    }
+
+    /// Regression: the shell mints the vault id, opens the store with it,
+    /// and only then calls create. Recovery must still work across a
+    /// restart — the escrow's AAD binding and the store's identity have to
+    /// agree, or the owner is permanently locked out.
+    #[test]
+    fn recovery_works_when_the_store_carries_a_caller_minted_id() {
+        let dir = std::env::temp_dir().join(format!(
+            "forhemit-vault-identity-{}-{}",
+            std::process::id(),
+            mint_id()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        let db_path = dir.join("vault.sqlite3");
+
+        let caller_minted = VaultId::new(format!("vlt_{}", mint_id())).unwrap();
+        let store = VaultStore::open(caller_minted.clone(), &db_path).unwrap();
+        let engine = VaultEngine::create(
+            store,
+            Arc::new(MemoryKeyStore::default()),
+            Arc::new(SilentSink::default()),
+            Arc::new(SystemClock),
+            workspace(),
+            "correct horse battery staple",
+        )
+        .unwrap();
+        let original_key = engine.vault_id().clone();
+        assert_eq!(
+            original_key, caller_minted,
+            "engine must adopt the store's identity"
+        );
+        drop(engine);
+
+        // Restart: fresh key store (the keychain entry is gone), the id is
+        // re-discovered from the escrow row.
+        let store = VaultStore::open_discovering(&db_path).unwrap();
+        assert_eq!(store.vault_id(), &caller_minted);
+        let recovered = VaultEngine::recover(
+            store,
+            Arc::new(MemoryKeyStore::default()),
+            Arc::new(SilentSink::default()),
+            Arc::new(SystemClock),
+            workspace(),
+            "correct horse battery staple",
+        )
+        .expect("recovery with the right passphrase must open the escrow");
+        assert_eq!(recovered.vault_id(), &caller_minted);
+
+        // And a wrong passphrase still fails honestly, without exposing why.
+        let store = VaultStore::open_discovering(&db_path).unwrap();
+        let wrong = VaultEngine::recover(
+            store,
+            Arc::new(MemoryKeyStore::default()),
+            Arc::new(SilentSink::default()),
+            Arc::new(SystemClock),
+            workspace(),
+            "not the passphrase",
+        );
+        assert!(matches!(&wrong, Err(VaultError::RecoveryFailed)));
+
+        std::fs::remove_dir_all(&dir).ok();
     }
 }

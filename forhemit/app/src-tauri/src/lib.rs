@@ -322,7 +322,7 @@ fn vault_import(
 fn vault_document_history(
     state: tauri::State<'_, AppEngines>,
     document_id: String,
-) -> Result<views::VaultDocumentView, String> {
+) -> Result<views::VaultDocumentHistoryView, String> {
     commands::vault_document_history(&state, document_id)
 }
 
