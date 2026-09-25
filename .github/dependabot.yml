@@ -1,0 +1,31 @@
+# Dependabot — weekly dependency refreshes (security review M2, art_lbDyK13f).
+#
+# This repo gives bot-authored PRs no code review, so the queue is kept short
+# (open-pull-requests-limit) and every PR carries the `dependencies` label plus
+# an ecosystem label so they are easy to spot and triage. Dependabot creates
+# any missing labels itself.
+#
+# The real advisory gate is cargo-deny / npm audit in .github/workflows/ci.yml;
+# Dependabot is for keeping versions moving, not for blocking.
+
+version: 2
+updates:
+  # Rust workspace — forhemit/Cargo.lock
+  - package-ecosystem: cargo
+    directory: /forhemit
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - cargo
+
+  # Frontend — forhemit/app/package-lock.json
+  - package-ecosystem: npm
+    directory: /forhemit/app
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - npm
