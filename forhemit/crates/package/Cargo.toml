@@ -1,0 +1,21 @@
+[package]
+name = "forhemit-package"
+description = "Professional Review Package engine — assembles the owner's journey, destination, business reality, and ready scenarios into the stakeholder-facing review package, exported as self-contained HTML and PDF"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+forhemit-contracts = { workspace = true }
+forhemit-enginekit = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true, features = ["serde", "formatting", "macros"] }
+ulid = { workspace = true }
+
+[dev-dependencies]
+time = { workspace = true, features = ["macros"] }
+
+[lints]
+workspace = true

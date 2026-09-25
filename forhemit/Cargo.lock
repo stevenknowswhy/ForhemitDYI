@@ -1527,6 +1527,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "forhemit-package"
+version = "0.1.0"
+dependencies = [
+ "forhemit-contracts",
+ "forhemit-enginekit",
+ "serde",
+ "serde_json",
+ "time",
+ "ulid",
+]
+
+[[package]]
 name = "forhemit-reality"
 version = "0.1.0"
 dependencies = [
