@@ -63,3 +63,25 @@ jobs:
           cache-dependency-path: forhemit/app/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  dependencies:
+    name: Dependencies (cargo-deny + npm audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: cargo-deny — RUSTSEC advisories + license allowlist
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          manifest-path: forhemit/Cargo.toml
+          command: check
+          # Top-level `arguments` is inserted BEFORE the command (action.yml),
+          # so the check list goes in command-arguments.
+          command-arguments: advisories licenses
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: forhemit/app/package-lock.json
+      - name: npm audit — fail on high/critical in production deps
+        working-directory: forhemit/app
+        run: npm audit --omit=dev --audit-level=high

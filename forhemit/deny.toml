@@ -1,0 +1,66 @@
+# cargo-deny configuration — the dependency audit gate run by the
+# "Dependencies (cargo-deny + npm audit)" job in .github/workflows/ci.yml.
+#
+# Failing on NEW advisories is the point of this file. If you add an entry to
+# `ignore`, pair it with a reason and a removal trigger so it cannot rot.
+
+[advisories]
+# Advisory IDs ignored on purpose. Every entry below is an `unmaintained`
+# notice (RUSTSEC class "unmaintained" — no vulnerability, no yanked crate),
+# is transitive inside the Tauri 2 tree, and has no safe upgrade available
+# ("Solution: No safe upgrade is available!" per RustSec).
+#
+# Removal trigger: re-run `cargo deny check advisories` after any major Tauri
+# version bump — these crates are only reachable through tauri's
+# gtk/glib/menu and i18n stacks, so a major bump may drop them entirely.
+ignore = [
+    # proc-macro-error 1.0.4 <- glib-macros <- glib <- gtk <- muda <- tauri 2.
+    # Maintainer unreachable (no commits for 2 years); depends on syn 1.x.
+    { id = "RUSTSEC-2024-0370", reason = "unmaintained transitive of tauri 2 (gtk/menu stack); no safe upgrade — revisit on tauri major bump" },
+    # proc-macro-error2 2.0.1 <- i18n-embed-fl <- tauri 2. Maintained fork of
+    # the above; the author has confirmed it is no longer maintained.
+    { id = "RUSTSEC-2026-0173", reason = "unmaintained transitive of tauri 2 (i18n stack); no safe upgrade — revisit on tauri major bump" },
+    # The rust-unic family <- unic-ucd-ident <- urlpattern <- tauri-utils <- tauri 2.
+    # The whole rust-unic project is unmaintained; tauri is the only path to
+    # it in this tree.
+    { id = "RUSTSEC-2025-0081", reason = "rust-unic unmaintained, transitive of tauri 2 via urlpattern; no safe upgrade — revisit on tauri major bump" },
+    { id = "RUSTSEC-2025-0075", reason = "rust-unic unmaintained, transitive of tauri 2 via urlpattern; no safe upgrade — revisit on tauri major bump" },
+    { id = "RUSTSEC-2025-0080", reason = "rust-unic unmaintained, transitive of tauri 2 via urlpattern; no safe upgrade — revisit on tauri major bump" },
+    { id = "RUSTSEC-2025-0098", reason = "rust-unic unmaintained, transitive of tauri 2 via urlpattern; no safe upgrade — revisit on tauri major bump" },
+    { id = "RUSTSEC-2025-0100", reason = "rust-unic unmaintained, transitive of tauri 2 via urlpattern; no safe upgrade — revisit on tauri major bump" },
+]
+
+[licenses]
+# Allowlist of SPDX identifiers. This is the set of license atoms observed in
+# the current dependency tree (verified with `cargo deny check licenses`
+# against Cargo.lock at the time of writing).
+#
+# OR-expressions pass when at least one branch is allowed, so a dependency
+# offering e.g. "Apache-2.0 OR GPL-2.0-only" resolves to the permissive
+# choice — copyleft alternates are intentionally NOT in the list. AND
+# expressions need every atom allowed, which is why Unicode-3.0 and ISC
+# appear here even though no crate is licensed under them alone.
+#
+# The app's own license (proprietary) is deliberately NOT part of this
+# check — it only gates dependencies.
+allow = [
+    "0BSD",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "CC0-1.0",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "MPL-2.0",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+]
+
+[licenses.private]
+# Every crate in this workspace is `publish = false` (proprietary, never
+# published to any registry) — the license check skips them entirely, so the
+# allowlist above gates third-party dependencies only.
+ignore = true
