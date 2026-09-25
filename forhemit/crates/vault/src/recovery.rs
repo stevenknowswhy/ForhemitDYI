@@ -26,6 +26,32 @@ fn escrow_aad(vault_id: &VaultId) -> Vec<u8> {
     format!("forhemit-vault:recovery-escrow:{vault_id}").into_bytes()
 }
 
+/// Minimum accepted recovery-passphrase length. The escrow and the `age`
+/// backups are offline brute-force targets, so the floor is engine
+/// policy, not UI advice (security review M1). It gates only creation:
+/// existing escrows keep opening with whatever passphrase made them —
+/// a wrong passphrase already fails authenticated decryption, so
+/// tightening recovery would add no security and could lock owners out.
+pub const MIN_RECOVERY_PASSPHRASE_LEN: usize = 12;
+
+/// Enforces the recovery-passphrase policy: never blank, and at least
+/// [`MIN_RECOVERY_PASSPHRASE_LEN`] characters. Public: the shell
+/// pre-flights it before creating a vault database, so a refused setup
+/// leaves no file behind.
+pub fn validate_recovery_passphrase(passphrase: &str) -> Result<(), VaultError> {
+    if passphrase.trim().is_empty() {
+        return Err(VaultError::InvalidInput(
+            "recovery passphrase must not be blank".into(),
+        ));
+    }
+    if passphrase.chars().count() < MIN_RECOVERY_PASSPHRASE_LEN {
+        return Err(VaultError::InvalidInput(format!(
+            "recovery passphrase must be at least {MIN_RECOVERY_PASSPHRASE_LEN} characters — it guards an offline brute-force target"
+        )));
+    }
+    Ok(())
+}
+
 /// The escrowed material stored in the vault database at creation.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecoveryEscrow {
@@ -40,8 +66,21 @@ pub struct RecoveryEscrow {
 
 impl RecoveryEscrow {
     /// Creates the escrow for a vault key from a recovery passphrase,
-    /// generating the per-vault salt.
+    /// generating the per-vault salt. The passphrase must meet the
+    /// [`MIN_RECOVERY_PASSPHRASE_LEN`] policy.
     pub fn create(
+        vault_id: &VaultId,
+        vault_key: &VaultKey,
+        passphrase: &str,
+    ) -> Result<Self, VaultError> {
+        validate_recovery_passphrase(passphrase)?;
+        Self::wrap_vault_key(vault_id, vault_key, passphrase)
+    }
+
+    /// Seals the vault key under the passphrase-derived key — the escrow
+    /// format itself, shared by `create` and the test-only pre-policy
+    /// constructor.
+    fn wrap_vault_key(
         vault_id: &VaultId,
         vault_key: &VaultKey,
         passphrase: &str,
@@ -61,6 +100,17 @@ impl RecoveryEscrow {
             wrapped_nonce_hex: hex_encode(&nonce),
             wrapped_vault_key_hex: hex_encode(&wrapped),
         })
+    }
+
+    /// Test-only: builds an escrow without the passphrase policy, to
+    /// simulate escrows created before the floor existed.
+    #[cfg(test)]
+    pub(crate) fn create_unchecked(
+        vault_id: &VaultId,
+        vault_key: &VaultKey,
+        passphrase: &str,
+    ) -> Result<Self, VaultError> {
+        Self::wrap_vault_key(vault_id, vault_key, passphrase)
     }
 
     /// Opens the escrow with the recovery passphrase and returns the
@@ -147,14 +197,56 @@ mod tests {
     fn escrow_is_bound_to_its_vault() {
         let key = VaultKey::from_bytes(generate_key());
         let vault = vault();
-        let escrow = RecoveryEscrow::create(&vault, &key, "passphrase").unwrap();
+        let escrow = RecoveryEscrow::create(&vault, &key, "binding passphrase").unwrap();
         let other_vault = VaultId::new("another-vault").unwrap();
         // The AAD binding makes an escrow blob transferred to a different
         // vault's record fail rather than yield the key.
         assert!(matches!(
-            escrow.open(&other_vault, "passphrase"),
+            escrow.open(&other_vault, "binding passphrase"),
             Err(VaultError::RecoveryFailed)
         ));
+    }
+
+    #[test]
+    fn create_refuses_passphrases_below_the_policy_floor() {
+        let vault = vault();
+        let key = VaultKey::from_bytes(generate_key());
+        for weak in [
+            "",
+            "   ",
+            "short",
+            "0123456789a",  // 11 characters
+            "            ", // long enough, but blank
+        ] {
+            assert!(
+                matches!(
+                    RecoveryEscrow::create(&vault, &key, weak),
+                    Err(VaultError::InvalidInput(_))
+                ),
+                "expected refusal for {weak:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn create_accepts_the_twelve_character_floor() {
+        let vault = vault();
+        let key = VaultKey::from_bytes(generate_key());
+        let escrow = RecoveryEscrow::create(&vault, &key, "twelve chars")
+            .expect("a 12-character passphrase meets the policy");
+        let opened = escrow.open(&vault, "twelve chars").unwrap();
+        assert_eq!(opened.as_bytes(), key.as_bytes());
+    }
+
+    #[test]
+    fn pre_policy_escrows_still_open_with_short_passphrases() {
+        // The policy gates creation, not recovery: an escrow made before
+        // the floor existed keeps opening with its original passphrase.
+        let vault = vault();
+        let key = VaultKey::from_bytes(generate_key());
+        let escrow = RecoveryEscrow::create_unchecked(&vault, &key, "pre-policy").unwrap();
+        let opened = escrow.open(&vault, "pre-policy").unwrap();
+        assert_eq!(opened.as_bytes(), key.as_bytes());
     }
 
     #[test]

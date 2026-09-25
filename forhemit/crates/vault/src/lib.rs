@@ -35,7 +35,7 @@ mod store;
 pub use backup::{export_backup as export_backup_bytes, import_backup as import_backup_bytes};
 pub use error::VaultError;
 pub use keys::{MemoryKeyStore, OsKeyRing, VaultKey, VaultKeyStore};
-pub use recovery::RecoveryEscrow;
+pub use recovery::{validate_recovery_passphrase, RecoveryEscrow, MIN_RECOVERY_PASSPHRASE_LEN};
 pub use search::{SearchHit, SearchIndex};
 pub use store::{IntegrityFailure, StoredVersion, StoredVersionContent, VaultStore};
 
@@ -79,7 +79,9 @@ impl VaultEngine {
     /// Argon2id-derived recovery key, records the vault's identity rows,
     /// and binds the key into the key store. The recovery passphrase is
     /// the owner's offline credential — it is never stored, only its
-    /// derived key wraps the vault key.
+    /// derived key wraps the vault key. It must meet the
+    /// [`MIN_RECOVERY_PASSPHRASE_LEN`] policy (engine-enforced, security
+    /// review M1); recovery of existing escrows is never gated by it.
     pub fn create(
         store: VaultStore,
         keystore: Arc<dyn VaultKeyStore>,
@@ -256,7 +258,7 @@ impl VaultEngine {
             None,
             None,
         )?;
-        self.index_version(&document_id, &version_id, filename, content)?;
+        self.index_version(&document_id, &version_id, filename, content, note)?;
         self.emit(
             AuditEventType::DocumentImported,
             document_id.as_str(),
@@ -309,7 +311,7 @@ impl VaultEngine {
             None,
             Some(&previous.version_id),
         )?;
-        self.index_version(document_id, &version_id, filename, content)?;
+        self.index_version(document_id, &version_id, filename, content, note)?;
         self.emit(
             AuditEventType::DocumentVersionCreated,
             document_id.as_str(),
@@ -371,6 +373,7 @@ impl VaultEngine {
             &version_id,
             &source.version.filename,
             &source.content,
+            note,
         )?;
         self.emit(
             AuditEventType::DocumentRestored,
@@ -508,6 +511,7 @@ impl VaultEngine {
                     &full.version.version_id,
                     &full.version.filename,
                     &full.content,
+                    full.version.note.as_deref(),
                 )?;
                 indexed += 1;
             }
@@ -563,12 +567,13 @@ impl VaultEngine {
         version_id: &DocumentVersionId,
         filename: &str,
         content: &[u8],
+        note: Option<&str>,
     ) -> Result<(), VaultError> {
         let index = self
             .index
             .lock()
             .map_err(|_| VaultError::Internal("search index lock poisoned".to_owned()))?;
-        index.index_version(document_id, version_id, filename, content)
+        index.index_version(document_id, version_id, filename, content, note)
     }
 
     /// Emits one audit event for a material change. Emission failures
@@ -680,6 +685,161 @@ mod tests {
             "not the passphrase",
         );
         assert!(matches!(&wrong, Err(VaultError::RecoveryFailed)));
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    fn actor() -> ActorRecord {
+        ActorRecord {
+            actor_id: forhemit_contracts::ActorId::new("owner_stefano").unwrap(),
+            classification: forhemit_contracts::ActorClassification::Human,
+            kind: None,
+            origination: None,
+        }
+    }
+
+    fn temp_dir(tag: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "forhemit-vault-{}-{}-{}",
+            tag,
+            std::process::id(),
+            mint_id()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    /// The engine refuses passphrases below the recovery policy at
+    /// creation — including empty and all-whitespace — and accepts the
+    /// 12-character floor (security review M1: the floor is engine
+    /// policy, not UI advice).
+    #[test]
+    fn engine_create_enforces_the_recovery_passphrase_policy() {
+        let dir = temp_dir("policy");
+        let db_path = dir.join("vault.sqlite3");
+        let vault_id = VaultId::new(format!("vlt_{}", mint_id())).unwrap();
+
+        let attempt = |passphrase: &str| {
+            let store = VaultStore::open(vault_id.clone(), &db_path).unwrap();
+            VaultEngine::create(
+                store,
+                Arc::new(MemoryKeyStore::default()),
+                Arc::new(SilentSink::default()),
+                Arc::new(SystemClock),
+                workspace(),
+                passphrase,
+            )
+        };
+
+        for weak in [
+            "",
+            "tooshort",
+            "0123456789a",  // 11 characters
+            "            ", // long enough, but blank
+        ] {
+            assert!(
+                matches!(attempt(weak), Err(VaultError::InvalidInput(_))),
+                "expected refusal for {weak:?}"
+            );
+        }
+
+        // Exactly at the floor is accepted — and the passphrase the
+        // engine accepted is the one that later opens the escrow.
+        drop(attempt("twelve chars").expect("the 12-character floor is accepted"));
+        let store = VaultStore::open_discovering(&db_path).unwrap();
+        let recovered = VaultEngine::recover(
+            store,
+            Arc::new(MemoryKeyStore::default()),
+            Arc::new(SilentSink::default()),
+            Arc::new(SystemClock),
+            workspace(),
+            "twelve chars",
+        )
+        .expect("the floor passphrase opens the escrow");
+        assert_eq!(recovered.vault_id(), &vault_id);
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Recovery is never gated by the creation policy: an escrow made
+    /// before the floor existed keeps opening with its original (short)
+    /// passphrase — the policy must not lock legitimate owners out.
+    #[test]
+    fn pre_policy_escrows_still_recover_through_the_engine() {
+        let dir = temp_dir("pre-policy");
+        let db_path = dir.join("vault.sqlite3");
+        let vault_id = VaultId::new(format!("vlt_{}", mint_id())).unwrap();
+        let store = VaultStore::open(vault_id.clone(), &db_path).unwrap();
+        store.write_vault_record(&workspace(), 0).unwrap();
+        // An escrow in the pre-policy format: a 10-character passphrase.
+        let vault_key = VaultKey::from_bytes(crypto::generate_key());
+        let escrow = RecoveryEscrow::create_unchecked(&vault_id, &vault_key, "pre-policy").unwrap();
+        store.write_escrow(&escrow).unwrap();
+        drop(store);
+
+        let store = VaultStore::open_discovering(&db_path).unwrap();
+        let recovered = VaultEngine::recover(
+            store,
+            Arc::new(MemoryKeyStore::default()),
+            Arc::new(SilentSink::default()),
+            Arc::new(SystemClock),
+            workspace(),
+            "pre-policy",
+        )
+        .expect("a pre-policy passphrase still opens its escrow");
+        assert_eq!(recovered.vault_id(), &vault_id);
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// The note is sealed with the version's DEK like the filename; the
+    /// §50 rebuild decrypts it back out of the ciphertext and indexes it,
+    /// so a note term finds the document after a fresh open (binary
+    /// content — only the note can match).
+    #[test]
+    fn sealed_notes_are_searchable_after_reopening() {
+        let dir = temp_dir("note-search");
+        let db_path = dir.join("vault.sqlite3");
+        let vault_id = VaultId::new(format!("vlt_{}", mint_id())).unwrap();
+        let store = VaultStore::open(vault_id.clone(), &db_path).unwrap();
+        let keystore = Arc::new(MemoryKeyStore::default());
+        let sink = Arc::new(SilentSink::default());
+        let engine = VaultEngine::create(
+            store,
+            keystore.clone(),
+            sink.clone(),
+            Arc::new(SystemClock),
+            workspace(),
+            "correct horse battery staple",
+        )
+        .unwrap();
+        let stored = engine
+            .import_document(
+                &actor(),
+                "q3-board-pack.pdf",
+                &[0xFF, 0xFE, 0x00, 0x92],
+                Some("password sent separately"),
+            )
+            .unwrap();
+        drop(engine);
+
+        // Reopen: the index rebuilds from ciphertext only.
+        let store = VaultStore::open_discovering(&db_path).unwrap();
+        let reopened =
+            VaultEngine::open(store, keystore, sink, Arc::new(SystemClock), workspace()).unwrap();
+
+        let note_hits = reopened.search("separately", 20).unwrap();
+        assert_eq!(
+            note_hits.len(),
+            1,
+            "the sealed note must be indexed after reopen"
+        );
+        assert_eq!(note_hits[0].version_id, stored.version.version_id);
+
+        // No regression: filenames still match after the rebuild.
+        let filename_hits = reopened.search("board", 20).unwrap();
+        assert_eq!(filename_hits.len(), 1);
+        assert_eq!(filename_hits[0].filename, "q3-board-pack.pdf");
 
         std::fs::remove_dir_all(&dir).ok();
     }

@@ -54,18 +54,27 @@ impl SearchIndex {
         Ok(Self { conn })
     }
 
-    /// Indexes one document version: its filename always, and its content
+    /// Indexes one document version: its filename always, its content
     /// when the bytes are valid UTF-8 (binary formats are filename-only —
-    /// text extraction is a different engine, Vault doc §11).
+    /// text extraction is a different engine, Vault doc §11), and the
+    /// version's note when one exists. The note is folded into the
+    /// indexed body so a note match surfaces its own text in the
+    /// snippet — the index is derived data inside the encrypted
+    /// boundary, rebuilt from the just-decrypted note.
     pub fn index_version(
         &self,
         document_id: &DocumentId,
         version_id: &DocumentVersionId,
         filename: &str,
         plaintext: &[u8],
+        note: Option<&str>,
     ) -> Result<(), VaultError> {
         self.remove_version(document_id, version_id)?;
-        let body = std::str::from_utf8(plaintext).unwrap_or("");
+        let mut body = std::str::from_utf8(plaintext).unwrap_or("").to_owned();
+        if let Some(note_text) = note.map(str::trim).filter(|text| !text.is_empty()) {
+            body.push('\n');
+            body.push_str(note_text);
+        }
         self.conn.execute(
             "INSERT INTO document_fts (document_id, version_id, filename, body) VALUES (?1, ?2, ?3, ?4)",
             rusqlite::params![document_id.as_str(), version_id.as_str(), filename, body],
@@ -182,6 +191,7 @@ mod tests {
                 &DocumentVersionId::new("ver-1").unwrap(),
                 "2025 P&L.txt",
                 b"Q3 EBITDA was 8,240,000. Revenue grew across every line.",
+                None,
             )
             .unwrap();
         index
@@ -190,6 +200,7 @@ mod tests {
                 &DocumentVersionId::new("ver-2").unwrap(),
                 "payroll.xlsx",
                 &[0xFF, 0xFE, 0x00, 0x92], // not valid UTF-8
+                None,
             )
             .unwrap();
         index
@@ -244,6 +255,7 @@ mod tests {
                 &DocumentVersionId::new("ver-1").unwrap(),
                 "2025 P&L.txt",
                 b"Q3 EBITDA was 8,240,000.",
+                None,
             )
             .unwrap();
         assert_eq!(hit(&index, "EBITDA").len(), 1);
@@ -258,11 +270,29 @@ mod tests {
                 &DocumentVersionId::new("ver-1").unwrap(),
                 "renamed P&L.txt",
                 b"EBITDA revised.",
+                None,
             )
             .unwrap();
         let hits = hit(&index, "EBITDA");
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].filename, "renamed P&L.txt");
         assert_eq!(index.len().unwrap(), 2);
+    }
+
+    #[test]
+    fn note_text_is_indexed_and_searchable() {
+        let index = SearchIndex::new().unwrap();
+        index
+            .index_version(
+                &DocumentId::new("doc-3").unwrap(),
+                &DocumentVersionId::new("ver-3").unwrap(),
+                "wire-transfer.pdf",
+                &[0xFF, 0xFE], // binary: only the note can match
+                Some("password sent separately"),
+            )
+            .unwrap();
+        let hits = hit(&index, "separately");
+        assert_eq!(hits.len(), 1);
+        assert!(hits[0].snippet.contains("separately"));
     }
 }

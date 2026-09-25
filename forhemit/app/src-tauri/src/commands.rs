@@ -29,7 +29,7 @@ use forhemit_scenario::{
     NewUnknown, NewWhatIf, ReadinessStatus, ScenarioType, TypedValue, UnknownImportance,
     UnknownResolution, UnknownResolutionStatus,
 };
-use forhemit_vault::{VaultEngine, VaultError, VaultStore};
+use forhemit_vault::{validate_recovery_passphrase, VaultEngine, VaultError, VaultStore};
 use ulid::Ulid;
 
 use crate::state::{AppEngines, VaultSlot};
@@ -1160,13 +1160,19 @@ pub fn vault_status(engines: &AppEngines) -> Result<VaultStatusView, String> {
 ///
 /// # Errors
 ///
-/// A vault that already exists, or an engine refusal (weak passphrase,
-/// audit refusal).
+/// A vault that already exists, or an engine refusal: a recovery
+/// passphrase that is blank or under the engine's 12-character policy
+/// (enforced in the vault engine, not here), or an audit refusal.
 pub fn vault_setup(
     engines: &AppEngines,
     recovery_passphrase: String,
 ) -> Result<VaultStatusView, String> {
     let exports_label = engines.exports_dir()?.display().to_string();
+    // Pre-flight the engine's passphrase policy BEFORE creating anything:
+    // a refused setup must leave no vault database behind — an empty
+    // vault file would make every later attempt report "a vault already
+    // exists". The engine enforces the same policy again inside create.
+    validate_recovery_passphrase(&recovery_passphrase).map_err(|error| error.to_string())?;
     engines.with_vault(|slot| {
         if engines.vault_path().exists() {
             return Err(
@@ -1229,14 +1235,49 @@ pub fn vault_recover(
     })?
 }
 
+/// Maximum decoded payload `vault_import` accepts (security review L2).
+/// The engine's decode path is unbounded by design — the shell owns the
+/// byte ceiling: 100 MiB of decoded document bytes per import.
+const MAX_IMPORT_DECODED_BYTES: usize = 100 * 1024 * 1024;
+
+/// The one clear refusal message for an oversized import.
+fn import_payload_too_large() -> String {
+    format!(
+        "the file is too large: the vault accepts at most {} MiB per import",
+        MAX_IMPORT_DECODED_BYTES / (1024 * 1024)
+    )
+}
+
+/// One payload-size decision: at or under the cap is allowed — exactly
+/// 100 MiB is a valid import — anything over is the clear refusal.
+fn import_size_decision(decoded_bytes: usize) -> Result<(), String> {
+    if decoded_bytes > MAX_IMPORT_DECODED_BYTES {
+        Err(import_payload_too_large())
+    } else {
+        Ok(())
+    }
+}
+
+/// Decoded size implied by a standard-base64 string's length — exact for
+/// well-formed payloads (4 chars per 3 bytes, minus padding). Malformed
+/// input fails the decode itself; the post-decode check stays
+/// authoritative.
+fn base64_decoded_bound(content_base64: &str) -> usize {
+    let groups = content_base64.len() / 4;
+    let padding = content_base64.len() - content_base64.trim_end_matches('=').len();
+    groups.saturating_mul(3).saturating_sub(padding)
+}
+
 /// Imports a document from the frontend's file picker: the bytes arrive
 /// base64-encoded, the vault encrypts at rest, and importing never
 /// uploads — v1 keeps everything on this device.
 ///
 /// # Errors
 ///
-/// The vault is not open, the payload is not valid base64, or the vault
-/// engine refuses (empty filename, oversized payload, audit refusal).
+/// The vault is not open; the payload is not valid base64; the payload
+/// exceeds the [`MAX_IMPORT_DECODED_BYTES`] ceiling (refused before
+/// decoding whenever the encoded size alone proves it); or the vault
+/// engine refuses (empty filename, audit refusal).
 pub fn vault_import(
     engines: &AppEngines,
     filename: String,
@@ -1244,9 +1285,14 @@ pub fn vault_import(
     note: Option<String>,
 ) -> Result<VaultDocumentView, String> {
     use base64::Engine as _;
+    let content_base64 = content_base64.trim();
+    // Cheap refusal before decoding whenever the encoded size alone
+    // proves the payload oversized.
+    import_size_decision(base64_decoded_bound(content_base64))?;
     let content = base64::engine::general_purpose::STANDARD
-        .decode(content_base64.trim())
+        .decode(content_base64)
         .map_err(|error| format!("the file content is not valid base64: {error}"))?;
+    import_size_decision(content.len())?;
     with_open_vault(engines, |engine| {
         let stored = engine
             .import_document(&engines.actor, &filename, &content, note.as_deref())
@@ -1531,4 +1577,94 @@ pub(crate) async fn update_install(pending: &PendingUpdate) -> Result<(), String
         )
         .await
         .map_err(|error| format!("update install failed: {error}"))
+}
+
+// The shell's end-to-end guarantees from the security review: setup
+// refusals leave no vault file behind, and the import size cap refuses
+// oversized payloads while valid imports keep working.
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used, clippy::expect_used)] // test code: failures must panic the test
+
+    use super::*;
+
+    /// A debug-build engine set over a throwaway data dir (the memory
+    /// key ring applies); each call gets its own directory.
+    fn engines() -> AppEngines {
+        let dir = std::env::temp_dir().join(format!(
+            "forhemit-commands-test-{}-{}",
+            std::process::id(),
+            Ulid::new()
+        ));
+        AppEngines::open(&dir).unwrap()
+    }
+
+    fn base64_encode(bytes: &[u8]) -> String {
+        use base64::Engine as _;
+        base64::engine::general_purpose::STANDARD.encode(bytes)
+    }
+
+    #[test]
+    fn a_refused_setup_leaves_no_vault_behind() {
+        let engines = engines();
+        let refused = vault_setup(&engines, "short".to_owned());
+        assert!(
+            refused.is_err(),
+            "the engine policy must refuse a short passphrase"
+        );
+        // The refusal happened before any vault file existed, so a valid
+        // setup still succeeds afterwards.
+        assert!(
+            vault_setup(&engines, "twelve chars".to_owned()).is_ok(),
+            "a refused setup must not block a valid one"
+        );
+    }
+
+    #[test]
+    fn oversized_imports_are_refused_and_valid_imports_still_work() {
+        let engines = engines();
+        vault_setup(&engines, "correct horse battery staple".to_owned()).unwrap();
+
+        // One byte past the cap, base64-encoded — refused before
+        // decoding, with the cap message and nothing else.
+        let payload = vec![0u8; MAX_IMPORT_DECODED_BYTES + 16];
+        let refused = vault_import(
+            &engines,
+            "too-big.bin".to_owned(),
+            base64_encode(&payload),
+            None,
+        );
+        match refused {
+            Ok(_) => panic!("the oversized payload must be refused"),
+            Err(message) => assert_eq!(message, import_payload_too_large()),
+        }
+
+        // A valid import still works end to end.
+        let view = vault_import(
+            &engines,
+            "2025 P&L.txt".to_owned(),
+            base64_encode(b"Q3 EBITDA was 8,240,000."),
+            Some("password sent separately".to_owned()),
+        );
+        assert!(view.is_ok(), "a valid import must still work");
+    }
+
+    #[test]
+    fn the_cap_boundary_is_inclusive() {
+        assert_eq!(import_size_decision(MAX_IMPORT_DECODED_BYTES), Ok(()));
+        assert_eq!(
+            import_size_decision(MAX_IMPORT_DECODED_BYTES + 1),
+            Err(import_payload_too_large())
+        );
+    }
+
+    #[test]
+    fn the_encoded_bound_is_exact_for_well_formed_payloads() {
+        assert_eq!(base64_decoded_bound(""), 0);
+        assert_eq!(base64_decoded_bound("AQ=="), 1);
+        assert_eq!(base64_decoded_bound("AQw="), 2);
+        assert_eq!(base64_decoded_bound("AQww"), 3);
+        assert_eq!(base64_decoded_bound(&base64_encode(b"Q3 EBITDA")), 9);
+    }
 }
