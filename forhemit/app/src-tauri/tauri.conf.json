@@ -26,6 +26,9 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "category": "Finance",
+    "shortDescription": "Ownership-transition explorer for business owners.",
+    "longDescription": "Forhemit helps a business owner clarify their destination, walk the Employee Ownership journey, and prepare a Professional Review Package. Local-first: your information stays on this machine. Exploratory support, not professional advice.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
