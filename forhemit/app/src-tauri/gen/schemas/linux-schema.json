@@ -177,6 +177,546 @@
       "description": "Permission identifier",
       "oneOf": [
         {
+          "description": "Enables the audit_recent command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-audit-recent",
+          "markdownDescription": "Enables the audit_recent command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the audit_verify command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-audit-verify",
+          "markdownDescription": "Enables the audit_verify command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_archive command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-archive",
+          "markdownDescription": "Enables the destination_archive command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_completeness command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-completeness",
+          "markdownDescription": "Enables the destination_completeness command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_confirm command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-confirm",
+          "markdownDescription": "Enables the destination_confirm command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_create command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-create",
+          "markdownDescription": "Enables the destination_create command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_edit command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-edit",
+          "markdownDescription": "Enables the destination_edit command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_get command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-get",
+          "markdownDescription": "Enables the destination_get command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the destination_mark_working command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-destination-mark-working",
+          "markdownDescription": "Enables the destination_mark_working command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the journey_record command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-journey-record",
+          "markdownDescription": "Enables the journey_record command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the journey_revise command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-journey-revise",
+          "markdownDescription": "Enables the journey_revise command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the journey_skip command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-journey-skip",
+          "markdownDescription": "Enables the journey_skip command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the journey_start command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-journey-start",
+          "markdownDescription": "Enables the journey_start command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the journey_state command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-journey-state",
+          "markdownDescription": "Enables the journey_state command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the package_export command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-package-export",
+          "markdownDescription": "Enables the package_export command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the package_preview command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-package-preview",
+          "markdownDescription": "Enables the package_preview command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_add_assumption command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-add-assumption",
+          "markdownDescription": "Enables the scenario_add_assumption command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_add_constraint command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-add-constraint",
+          "markdownDescription": "Enables the scenario_add_constraint command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_add_nonnegotiable command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-add-nonnegotiable",
+          "markdownDescription": "Enables the scenario_add_nonnegotiable command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_add_unknown command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-add-unknown",
+          "markdownDescription": "Enables the scenario_add_unknown command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_comparison command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-comparison",
+          "markdownDescription": "Enables the scenario_comparison command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_create command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-create",
+          "markdownDescription": "Enables the scenario_create command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_families command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-families",
+          "markdownDescription": "Enables the scenario_families command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_family_view command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-family-view",
+          "markdownDescription": "Enables the scenario_family_view command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_finalize command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-finalize",
+          "markdownDescription": "Enables the scenario_finalize command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_record_conflict command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-record-conflict",
+          "markdownDescription": "Enables the scenario_record_conflict command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_resolve_conflict command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-resolve-conflict",
+          "markdownDescription": "Enables the scenario_resolve_conflict command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_resolve_unknown command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-resolve-unknown",
+          "markdownDescription": "Enables the scenario_resolve_unknown command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_set_readiness command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-set-readiness",
+          "markdownDescription": "Enables the scenario_set_readiness command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_version_view command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-version-view",
+          "markdownDescription": "Enables the scenario_version_view command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the scenario_what_if command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-scenario-what-if",
+          "markdownDescription": "Enables the scenario_what_if command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the snapshot_current command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-snapshot-current",
+          "markdownDescription": "Enables the snapshot_current command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the snapshot_record command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-snapshot-record",
+          "markdownDescription": "Enables the snapshot_record command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the snapshot_revise command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-snapshot-revise",
+          "markdownDescription": "Enables the snapshot_revise command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the update_check command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-update-check",
+          "markdownDescription": "Enables the update_check command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the update_install command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-update-install",
+          "markdownDescription": "Enables the update_install command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_backup command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-backup",
+          "markdownDescription": "Enables the vault_backup command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_document_content command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-document-content",
+          "markdownDescription": "Enables the vault_document_content command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_document_history command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-document-history",
+          "markdownDescription": "Enables the vault_document_history command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_documents command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-documents",
+          "markdownDescription": "Enables the vault_documents command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_import command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-import",
+          "markdownDescription": "Enables the vault_import command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_recover command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-recover",
+          "markdownDescription": "Enables the vault_recover command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_search command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-search",
+          "markdownDescription": "Enables the vault_search command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_setup command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-setup",
+          "markdownDescription": "Enables the vault_setup command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the vault_status command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-vault-status",
+          "markdownDescription": "Enables the vault_status command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the audit_recent command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-audit-recent",
+          "markdownDescription": "Denies the audit_recent command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the audit_verify command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-audit-verify",
+          "markdownDescription": "Denies the audit_verify command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_archive command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-archive",
+          "markdownDescription": "Denies the destination_archive command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_completeness command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-completeness",
+          "markdownDescription": "Denies the destination_completeness command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_confirm command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-confirm",
+          "markdownDescription": "Denies the destination_confirm command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_create command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-create",
+          "markdownDescription": "Denies the destination_create command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_edit command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-edit",
+          "markdownDescription": "Denies the destination_edit command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_get command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-get",
+          "markdownDescription": "Denies the destination_get command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the destination_mark_working command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-destination-mark-working",
+          "markdownDescription": "Denies the destination_mark_working command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the journey_record command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-journey-record",
+          "markdownDescription": "Denies the journey_record command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the journey_revise command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-journey-revise",
+          "markdownDescription": "Denies the journey_revise command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the journey_skip command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-journey-skip",
+          "markdownDescription": "Denies the journey_skip command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the journey_start command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-journey-start",
+          "markdownDescription": "Denies the journey_start command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the journey_state command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-journey-state",
+          "markdownDescription": "Denies the journey_state command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the package_export command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-package-export",
+          "markdownDescription": "Denies the package_export command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the package_preview command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-package-preview",
+          "markdownDescription": "Denies the package_preview command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_add_assumption command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-add-assumption",
+          "markdownDescription": "Denies the scenario_add_assumption command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_add_constraint command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-add-constraint",
+          "markdownDescription": "Denies the scenario_add_constraint command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_add_nonnegotiable command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-add-nonnegotiable",
+          "markdownDescription": "Denies the scenario_add_nonnegotiable command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_add_unknown command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-add-unknown",
+          "markdownDescription": "Denies the scenario_add_unknown command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_comparison command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-comparison",
+          "markdownDescription": "Denies the scenario_comparison command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_create command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-create",
+          "markdownDescription": "Denies the scenario_create command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_families command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-families",
+          "markdownDescription": "Denies the scenario_families command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_family_view command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-family-view",
+          "markdownDescription": "Denies the scenario_family_view command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_finalize command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-finalize",
+          "markdownDescription": "Denies the scenario_finalize command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_record_conflict command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-record-conflict",
+          "markdownDescription": "Denies the scenario_record_conflict command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_resolve_conflict command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-resolve-conflict",
+          "markdownDescription": "Denies the scenario_resolve_conflict command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_resolve_unknown command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-resolve-unknown",
+          "markdownDescription": "Denies the scenario_resolve_unknown command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_set_readiness command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-set-readiness",
+          "markdownDescription": "Denies the scenario_set_readiness command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_version_view command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-version-view",
+          "markdownDescription": "Denies the scenario_version_view command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the scenario_what_if command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-scenario-what-if",
+          "markdownDescription": "Denies the scenario_what_if command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the snapshot_current command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-snapshot-current",
+          "markdownDescription": "Denies the snapshot_current command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the snapshot_record command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-snapshot-record",
+          "markdownDescription": "Denies the snapshot_record command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the snapshot_revise command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-snapshot-revise",
+          "markdownDescription": "Denies the snapshot_revise command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the update_check command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-update-check",
+          "markdownDescription": "Denies the update_check command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the update_install command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-update-install",
+          "markdownDescription": "Denies the update_install command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_backup command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-backup",
+          "markdownDescription": "Denies the vault_backup command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_document_content command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-document-content",
+          "markdownDescription": "Denies the vault_document_content command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_document_history command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-document-history",
+          "markdownDescription": "Denies the vault_document_history command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_documents command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-documents",
+          "markdownDescription": "Denies the vault_documents command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_import command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-import",
+          "markdownDescription": "Denies the vault_import command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_recover command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-recover",
+          "markdownDescription": "Denies the vault_recover command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_search command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-search",
+          "markdownDescription": "Denies the vault_search command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_setup command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-setup",
+          "markdownDescription": "Denies the vault_setup command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the vault_status command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-vault-status",
+          "markdownDescription": "Denies the vault_status command without any pre-configured scope."
+        },
+        {
           "description": "Default core plugins set.\n#### This default permission set includes:\n\n- `core:path:default`\n- `core:event:default`\n- `core:window:default`\n- `core:webview:default`\n- `core:app:default`\n- `core:image:default`\n- `core:resources:default`\n- `core:menu:default`\n- `core:tray:default`",
           "type": "string",
           "const": "core:default",
