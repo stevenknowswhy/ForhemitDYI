@@ -26,6 +26,7 @@ import type {
   ScenarioFamilyView,
   ScenarioVersionView,
   UnknownWire,
+  UpdateOutcome,
   VaultDocumentHistoryView,
   VaultDocumentView,
   VaultSearchHitView,
@@ -209,4 +210,8 @@ export const api = {
   // Package — preview exposes provenance and readiness gating first.
   packagePreview: () => call<PackagePreviewView>("package_preview"),
   packageExport: (format: "html" | "pdf") => call<ExportedFileView>("package_export", { format }),
+  // Updater — explicit check only (the app never phones home on its own);
+  // refusals of unsigned/stale manifests surface verbatim to the owner.
+  updateCheck: () => call<UpdateOutcome>("update_check"),
+  updateInstall: () => call<null>("update_install"),
 };

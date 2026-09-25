@@ -7,6 +7,7 @@
 
 pub mod commands;
 pub mod state;
+pub mod updater_manifest;
 pub mod views;
 
 #[cfg(test)]
@@ -372,6 +373,19 @@ fn package_export(
     commands::package_export(&state, format)
 }
 
+#[tauri::command]
+async fn update_check(
+    app: tauri::AppHandle,
+    pending: tauri::State<'_, commands::PendingUpdate>,
+) -> Result<updater_manifest::UpdateCheckView, String> {
+    commands::update_check(&app, &pending).await
+}
+
+#[tauri::command]
+async fn update_install(pending: tauri::State<'_, commands::PendingUpdate>) -> Result<(), String> {
+    commands::update_install(&pending).await
+}
+
 /// Runs the desktop app.
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[allow(clippy::expect_used)] // builder failure at startup is unrecoverable; the template aborts with a diagnostic
@@ -379,10 +393,18 @@ pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
             use tauri::Manager;
+            // The updater plugin is registered only on desktop builds; its
+            // artifact verification against the embedded public key cannot
+            // be disabled (see `updater_manifest` for the pre-flight
+            // refusal rules layered on top of it).
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
             let data_dir = app.path().app_data_dir()?.join("workspace");
             let engines = AppEngines::open(&data_dir)
                 .map_err(|error| -> Box<dyn std::error::Error> { error.into() })?;
             app.manage(engines);
+            app.manage(commands::PendingUpdate::default());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -429,6 +451,8 @@ pub fn run() {
             vault_backup,
             package_preview,
             package_export,
+            update_check,
+            update_install,
         ])
         .run(tauri::generate_context!())
         .expect("failed to run the Forhemit application");

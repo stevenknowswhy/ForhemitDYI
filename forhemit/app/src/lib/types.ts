@@ -643,3 +643,26 @@ export interface ExportedFileView {
   saved_path: string;
   content_base64: string;
 }
+
+// --- Updater (shell infrastructure; see distribution/SIGNING.md) ---
+// The refusal variants mirror the Rust `Refusal` enum's serde tag contract.
+
+export type UpdateRefusal =
+  | { reason: "malformed"; detail: string }
+  | { reason: "not_newer"; current: string; offered: string }
+  | { reason: "unsigned"; target: string }
+  | { reason: "bad_signature"; target: string; detail: string }
+  | { reason: "missing_platform"; target: string }
+  | { reason: "bad_pub_date"; detail: string };
+
+export type UpdateOutcome =
+  | { outcome: "up_to_date"; current_version: string }
+  | {
+      outcome: "available";
+      version: string;
+      notes: string | null;
+      pub_date: string | null;
+      download_url: string;
+    }
+  | { outcome: "refused"; refusal: UpdateRefusal }
+  | { outcome: "unavailable"; detail: string };

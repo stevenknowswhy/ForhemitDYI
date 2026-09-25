@@ -14,6 +14,7 @@
   import VaultView from "./lib/components/VaultView.svelte";
   import PackageExport from "./lib/components/PackageExport.svelte";
   import LayerChip from "./lib/components/LayerChip.svelte";
+  import UpdateCheck from "./lib/components/UpdateCheck.svelte";
   import type { Destination, DestinationVersion } from "./lib/types";
 
   type View = "home" | "builder" | "journey" | "snapshot" | "scenarios" | "vault" | "package" | "audit";
@@ -212,6 +213,7 @@
 
 <footer class="footer">
   <LayerChip kind="system" label="Whose information am I looking at? Owner-stated vs system-recorded is labeled everywhere" />
+  <UpdateCheck />
 </footer>
 
 <style>

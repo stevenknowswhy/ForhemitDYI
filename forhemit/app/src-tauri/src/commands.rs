@@ -1451,3 +1451,84 @@ fn with_open_vault<R>(
         }
     })?
 }
+
+// --- Updater (shell-level release infrastructure) ---
+//
+// The updater is not a domain engine: it mutates nothing in the owner's
+// workspace, so it emits no audit events. Its refusal rules live in
+// `updater_manifest` (unit-tested); these adapters wire the plugin's
+// fetch / verify / install machinery to the UI. Update checks are explicit —
+// the app never phones home on its own (local-first v1).
+
+/// The pending update a pre-flight verdict accepted, held between the
+/// owner's "check for updates" and their install decision.
+#[derive(Default)]
+pub struct PendingUpdate(std::sync::Mutex<Option<tauri_plugin_updater::Update>>);
+
+/// Checks the configured update endpoint and applies the pre-flight verdict
+/// before anything is downloaded.
+pub(crate) async fn update_check(
+    app: &tauri::AppHandle,
+    pending: &PendingUpdate,
+) -> Result<crate::updater_manifest::UpdateCheckView, String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let updater = app
+        .updater()
+        .map_err(|error| format!("updater unavailable: {error}"))?;
+    let current_version = app.package_info().version.to_string();
+    match updater.check().await {
+        Err(error) => Ok(crate::updater_manifest::UpdateCheckView::Unavailable {
+            detail: error.to_string(),
+        }),
+        Ok(None) => Ok(crate::updater_manifest::UpdateCheckView::UpToDate { current_version }),
+        Ok(Some(update)) => {
+            // Defense-in-depth: re-derive the refusal decision from the raw
+            // manifest the plugin fetched — an unsigned or stale manifest is
+            // refused here with a precise reason, before any bytes move.
+            let verdict = crate::updater_manifest::verdict(
+                &update.raw_json.to_string(),
+                &update.current_version,
+                &update.target,
+                time::OffsetDateTime::now_utc(),
+            );
+            match verdict {
+                Ok(manifest) => {
+                    let view = crate::updater_manifest::UpdateCheckView::Available {
+                        version: manifest.version,
+                        notes: manifest.notes,
+                        pub_date: manifest.pub_date,
+                        download_url: update.download_url.to_string(),
+                    };
+                    *pending
+                        .0
+                        .lock()
+                        .map_err(|_| "pending-update state poisoned".to_owned())? = Some(update);
+                    Ok(view)
+                }
+                Err(refusal) => Ok(crate::updater_manifest::UpdateCheckView::Refused { refusal }),
+            }
+        }
+    }
+}
+
+/// Downloads, verifies (minisign, against the public key embedded at build
+/// time), and installs the pending update. On Windows the installer exits
+/// the app during install; on other platforms the owner restarts when
+/// convenient.
+pub(crate) async fn update_install(pending: &PendingUpdate) -> Result<(), String> {
+    let pending_update = pending
+        .0
+        .lock()
+        .map_err(|_| "pending-update state poisoned".to_owned())?
+        .take();
+    let Some(update) = pending_update else {
+        return Err("no pending update — check for updates first".to_owned());
+    };
+    update
+        .download_and_install(
+            |_chunk_length, _content_length| {},
+            || {}, // download finished
+        )
+        .await
+        .map_err(|error| format!("update install failed: {error}"))
+}
