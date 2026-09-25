@@ -20,7 +20,9 @@ use state::AppEngines;
 // (E0255). Each wrapper delegates to the engine adapter in `commands`.
 
 #[tauri::command]
-fn destination_get(state: tauri::State<'_, AppEngines>) -> Option<forhemit_destination::Destination> {
+fn destination_get(
+    state: tauri::State<'_, AppEngines>,
+) -> Option<forhemit_destination::Destination> {
     commands::destination_get(&state)
 }
 
@@ -138,9 +140,7 @@ fn snapshot_revise(
 }
 
 #[tauri::command]
-fn audit_recent(
-    state: tauri::State<'_, AppEngines>,
-) -> Result<Vec<state::AuditLogLine>, String> {
+fn audit_recent(state: tauri::State<'_, AppEngines>) -> Result<Vec<state::AuditLogLine>, String> {
     commands::audit_recent(&state)
 }
 

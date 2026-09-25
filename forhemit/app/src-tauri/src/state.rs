@@ -14,9 +14,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 use forhemit_audit::AuditStore;
-use forhemit_contracts::{
-    ActorRecord, AuditEventDraft, JourneyInstanceId, WorkspaceId,
-};
+use forhemit_contracts::{ActorRecord, AuditEventDraft, JourneyInstanceId, WorkspaceId};
 use forhemit_destination::Destination;
 use forhemit_enginekit::{AuditError, AuditSink, Clock, SystemClock};
 use forhemit_journey::{JourneyDefinition, SqliteJourneyStore};
@@ -118,10 +116,7 @@ struct Session {
 /// rather than fabricating a timestamp.
 fn rfc3339_now(clock: &Arc<dyn Clock>) -> String {
     use time::format_description::well_known::Rfc3339;
-    clock
-        .now()
-        .format(&Rfc3339)
-        .unwrap_or_default()
+    clock.now().format(&Rfc3339).unwrap_or_default()
 }
 
 /// Serializes `value` to a pretty JSON file.
@@ -136,8 +131,8 @@ fn read_json<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<Option<T>, Str
     if !path.exists() {
         return Ok(None);
     }
-    let text =
-        std::fs::read_to_string(path).map_err(|error| format!("read {}: {error}", path.display()))?;
+    let text = std::fs::read_to_string(path)
+        .map_err(|error| format!("read {}: {error}", path.display()))?;
     serde_json::from_str(&text)
         .map(Some)
         .map_err(|error| format!("parse {}: {error}", path.display()))
@@ -159,9 +154,8 @@ impl AppEngines {
         let clock: Arc<dyn Clock> = Arc::new(SystemClock);
         let audit = AuditStore::open(data_dir.join("audit.sqlite3"), clock.clone())
             .map_err(|error| error.to_string())?;
-        let journey_store =
-            SqliteJourneyStore::open(&data_dir.join("journey.sqlite3"))
-                .map_err(|error| error.to_string())?;
+        let journey_store = SqliteJourneyStore::open(&data_dir.join("journey.sqlite3"))
+            .map_err(|error| error.to_string())?;
 
         let log = Arc::new(Mutex::new(Vec::<AuditLogLine>::new()));
         let tee = Arc::new(TeeSink {
@@ -169,18 +163,16 @@ impl AppEngines {
             log: log.clone(),
             clock: clock.clone(),
         });
-        let workspace_id = WorkspaceId::new(WORKSPACE_ID)
-            .map_err(|error| error.to_string())?;
+        let workspace_id = WorkspaceId::new(WORKSPACE_ID).map_err(|error| error.to_string())?;
         let reality = RealityEngine::new(tee.clone(), clock.clone(), workspace_id.clone());
-        let definition = forhemit_journey::load_employee_ownership_v0_2()
-            .map_err(|error| error.to_string())?;
+        let definition =
+            forhemit_journey::load_employee_ownership_v0_2().map_err(|error| error.to_string())?;
 
         let destination = read_json::<Destination>(&data_dir.join("destination.json"))?;
-        let active_journey =
-            read_json::<ActiveJourney>(&data_dir.join("active_journey.json"))?
-                .map(|pointer| JourneyInstanceId::new(pointer.instance_id))
-                .transpose()
-                .map_err(|error| error.to_string())?;
+        let active_journey = read_json::<ActiveJourney>(&data_dir.join("active_journey.json"))?
+            .map(|pointer| JourneyInstanceId::new(pointer.instance_id))
+            .transpose()
+            .map_err(|error| error.to_string())?;
 
         Ok(Self {
             workspace_id,
@@ -227,9 +219,7 @@ impl AppEngines {
         let mut session = self.session.lock().map_err(|_| "session lock poisoned")?;
         session.destination = destination;
         match &session.destination {
-            Some(destination) => {
-                write_json(&self.data_dir.join("destination.json"), destination)
-            }
+            Some(destination) => write_json(&self.data_dir.join("destination.json"), destination),
             // No destination means the aggregate was cleared; the persisted
             // file (if any) must not survive as a stale copy.
             None => {
@@ -252,10 +242,7 @@ impl AppEngines {
         let mut session = self.session.lock().map_err(|_| "session lock poisoned")?;
         let result = f(session.destination.as_mut());
         match &session.destination {
-            Some(destination) => write_json(
-                &self.data_dir.join("destination.json"),
-                destination,
-            )?,
+            Some(destination) => write_json(&self.data_dir.join("destination.json"), destination)?,
             // No destination means the aggregate was cleared; the persisted
             // file (if any) must not survive as a stale copy.
             None => {

@@ -70,7 +70,11 @@ fn content_type(path: &Path) -> &'static str {
 /// paths fall back to the shell page so SPA routes survive refresh.
 fn asset_under(root: &Path, requested: &str) -> Option<(PathBuf, Vec<u8>)> {
     let relative = requested.trim_start_matches('/');
-    let relative = if relative.is_empty() { "index.html" } else { relative };
+    let relative = if relative.is_empty() {
+        "index.html"
+    } else {
+        relative
+    };
     let mut candidates = vec![root.join(relative)];
     if !relative.contains('.') {
         candidates.push(root.join("index.html"));
@@ -143,9 +147,11 @@ fn main() {
 fn reply(request: tiny_http::Request, status: u32, body: &str) {
     let header = Header::from_bytes("Content-Type", "application/json; charset=utf-8")
         .expect("valid header");
-    if let Err(error) =
-        request.respond(Response::from_data(body.as_bytes().to_vec()).with_status_code(status).with_header(header))
-    {
+    if let Err(error) = request.respond(
+        Response::from_data(body.as_bytes().to_vec())
+            .with_status_code(status)
+            .with_header(header),
+    ) {
         eprintln!("respond: {error}");
     }
 }
@@ -217,7 +223,12 @@ fn dispatch(engines: &AppEngines, name: &str, body: &str) -> Result<String, Stri
     }
 }
 
-/// Serializes a command result to a JSON string.
+/// Serializes a command result for the HTTP surface: `Ok` unwraps to the
+/// bare JSON value the frontend expects; `Err` returns the engine's
+/// refusal message, which the dispatcher maps to HTTP 400.
 fn to_json<T: serde::Serialize>(result: Result<T, String>) -> Result<String, String> {
-    serde_json::to_string(&result).map_err(|error| format!("serialize: {error}"))
+    match result {
+        Ok(value) => serde_json::to_string(&value).map_err(|error| format!("serialize: {error}")),
+        Err(message) => Err(message),
+    }
 }

@@ -11,8 +11,7 @@ use forhemit_destination::{
     ChangeReason, Completeness, Destination, DestinationContent, DestinationEngine,
 };
 use forhemit_journey::{
-    AnswerValue, JourneyEngine, JourneyError, JourneyInstance, RecordAnswer, ReviseAnswer,
-    SkipNode,
+    AnswerValue, JourneyEngine, JourneyError, JourneyInstance, RecordAnswer, ReviseAnswer, SkipNode,
 };
 use forhemit_reality::fact::FactVersion;
 use forhemit_reality::{FactPeriod, FactValue, RecordFact, ReviseFact};

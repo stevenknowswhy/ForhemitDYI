@@ -19,6 +19,8 @@
   import { PREFERENCE_OPTIONS as PREFS } from "../screens";
   import LayerChip from "./LayerChip.svelte";
   import ProgressBar from "./ProgressBar.svelte";
+  import NonnegotiableRow from "./NonnegotiableRow.svelte";
+  import ReviewList from "./ReviewList.svelte";
 
   let { onDone, onHome, seed = null }:
     { onDone: (destination: Destination) => void; onHome: () => void; seed?: DestinationContent | null } =
