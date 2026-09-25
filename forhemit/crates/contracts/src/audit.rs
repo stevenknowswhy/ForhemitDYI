@@ -147,6 +147,13 @@ pub enum AuditEventType {
     /// question answered — the instance is complete and its outputs may
     /// be assembled (Journey Builder doc §8; event contract §4.5).
     JourneyInstanceCompleted,
+    /// A Professional Review Package was exported — written out as a
+    /// self-contained file the owner hands over themselves (Professional
+    /// Review Package Engine doc §50 event vocabulary, `Package*` family;
+    /// event contract §5.1). v1 has no sharing layer: the export action
+    /// itself is the record, and every export names the source versions
+    /// it was assembled from.
+    PackageExported,
 }
 
 /// The audit event contract (Audit doc §63 field set; implementation-spec

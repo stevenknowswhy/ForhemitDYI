@@ -419,6 +419,11 @@
           "description": "The walk reached its terminal node with every eligible required\nquestion answered — the instance is complete and its outputs may\nbe assembled (Journey Builder doc §8; event contract §4.5).",
           "type": "string",
           "const": "journey_instance_completed"
+        },
+        {
+          "description": "A Professional Review Package was exported — written out as a\nself-contained file the owner hands over themselves (Professional\nReview Package Engine doc §50 event vocabulary, `Package*` family;\nevent contract §5.1). v1 has no sharing layer: the export action\nitself is the record, and every export names the source versions\nit was assembled from.",
+          "type": "string",
+          "const": "package_exported"
         }
       ]
     },
