@@ -192,6 +192,11 @@ export interface Destination {
 export interface ChoiceView {
   value: string;
   label: string;
+  // Balanced, factual gains of choosing this option — presentation metadata
+  // only; absent when no meaningful tradeoff exists. Never a recommendation.
+  pros?: string[];
+  // What the choice gives up or risks. Same discipline as `pros`.
+  cons?: string[];
 }
 
 export interface QuestionView {
@@ -243,6 +248,15 @@ export interface ProgressView {
   total: number;
 }
 
+/** A skipped step with its real question title and stage — lets a labeled
+ * history rail show what was skipped instead of a bare node id. Additive:
+ * built by the backend's skipped_nodes view; absent on older responses. */
+export interface SkippedNodeView {
+  node_id: string;
+  title: string;
+  stage: string;
+}
+
 export interface JourneyView {
   instance_id: string;
   journey_title: string;
@@ -253,6 +267,9 @@ export interface JourneyView {
   outro_screens: ScreenView[];
   answered: AnsweredView[];
   skipped: string[];
+  /** Labeled skipped steps (real titles + stages) when the backend view
+   * provides them; `skipped` remains the bare-id wire form. */
+  skipped_nodes?: SkippedNodeView[];
   nonnegotiables: MarkedNonnegotiableView[];
   progress: ProgressView;
 }
