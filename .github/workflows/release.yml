@@ -1,0 +1,150 @@
+# Release pipeline (spec art_fL7Z2ate, "Installers + updater"): a `v*` tag
+# builds signed-or-unsigned artifacts for all three desktop targets and
+# attaches them to a GitHub release.
+#
+# Trust layers (distribution/SIGNING.md is the operator runbook):
+# - Updater artifacts are minisign-signed when TAURI_SIGNING_PRIVATE_KEY is
+#   present; the app refuses anything else (updater_manifest.rs + the
+#   plugin's unverifiable-artifact refusal). Without the key the build ships
+#   no updater artifacts and no latest.json, and the release is published as
+#   a clearly labeled unsigned prerelease.
+# - OS-level signing is additive: set the Apple (Developer ID + notarization)
+#   or Windows (Authenticode) secrets and the action signs — no workflow
+#   change. Absent secrets mean ad-hoc / unsigned installers.
+#
+# The release is created as a DRAFT and published only after every target
+# finishes, so `latest.json` is complete (all platforms) the moment it is
+# visible — an updater that catches a half-published manifest would see a
+# missing platform entry and refuse, which is safe but pointless churn.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: build (${{ matrix.platform }} ${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            args: --target aarch64-apple-darwin
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            args: --target x86_64-apple-darwin
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            args: ""
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            args: ""
+
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev librsvg2-dev patchelf libayatana-appindicator3-dev
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: forhemit/app/package-lock.json
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: forhemit
+
+      - name: Install frontend dependencies
+        working-directory: forhemit/app
+        run: npm ci
+
+      - name: Derive unsigned-build labeling
+        id: label
+        shell: bash
+        env:
+          HAS_SIGNING_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY != '' }}
+        run: |
+          if [ "$HAS_SIGNING_KEY" = "true" ]; then
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+            echo "releaseName=Forhemit ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "releaseBody=Installer and updater artifacts for ${GITHUB_REF_NAME}. v1 is local-only: the app never uploads your information; the only network call is the explicit update check, which refuses unsigned or stale manifests." >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+            echo "releaseName=Forhemit ${GITHUB_REF_NAME} — unsigned tester build" >> "$GITHUB_OUTPUT"
+            echo "releaseBody=TESTER BUILD — not notarized (macOS) and not Authenticode-signed (Windows); the auto-updater is disabled for this build because its artifacts carry no updater signature. Install steps, including the Gatekeeper and SmartScreen workarounds this build requires: distribution/INSTALL.md in the repository. v1 is local-only: the app never uploads your information." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and stage release artifacts
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Updater artifact signing (minisign). Absent = no updater
+          # artifacts, no latest.json, labeled unsigned.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # macOS: Developer ID signing + notarization. Absent = ad-hoc
+          # signing, clearly labeled not-yet-notarized.
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Windows: Authenticode (the action imports the .pfx and signs the
+          # NSIS/MSI installers). Absent = unsigned installers.
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        with:
+          projectPath: forhemit/app
+          tagName: ${{ github.ref_name }}
+          releaseName: ${{ steps.label.outputs.releaseName }}
+          releaseBody: ${{ steps.label.outputs.releaseBody }}
+          releaseDraft: true
+          prerelease: ${{ steps.label.outputs.prerelease }}
+          # Static-JSON updater: latest.json is generated from the signed
+          # artifacts and attached to the draft release; prefer the NSIS
+          # setup.exe as the Windows update artifact when both bundles exist.
+          uploadUpdaterJson: true
+          updaterJsonPreferNsis: true
+          # The release overlay turns on updater artifact creation; unsigned
+          # tester builds (no key) still build — they just produce no
+          # updater artifacts to sign.
+          args: ${{ matrix.args }} --config src-tauri/tauri.release.conf.json
+
+  # Visible only after every target succeeded — latest.json is complete.
+  publish-release:
+    name: publish release
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Publish the drafted release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false --latest

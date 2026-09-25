@@ -68,8 +68,10 @@ Tag `v*` push (or manual dispatch) → one job per target:
 | macos-x86_64 | macos | `app`, `dmg` | `<app>.app.tar.gz` (+ `.sig`) |
 | windows-x86_64 | windows | `nsis`, `msi` | `<app>-setup.exe` (+ `.sig`) |
 
-When updater artifacts are signed, a `release` job assembles `latest.json`
-(`scripts/build-updater-manifest.py`) and attaches it; the app checks:
+When updater artifacts are signed, tauri-action (`uploadUpdaterJson`)
+assembles `latest.json` from each target's signed artifacts and attaches it
+to the release — which is drafted until **every** target succeeds, so the
+visible manifest is always complete. The app checks:
 
 ```
 https://github.com/stevenknowswhy/ForhemitDYI/releases/latest/download/latest.json
@@ -99,9 +101,9 @@ Unsigned tester builds ship **no** `latest.json` — installed apps report
 
 When no signing secrets are configured, the workflow:
 
-- appends `-unsigned` to every artifact filename,
-- marks the GitHub release as a **prerelease**,
-- flags the release notes: builds are not notarized / not Authenticode-signed.
+- creates the release as a **prerelease**, named "… — unsigned tester build",
+- flags the release notes: builds are not notarized / not Authenticode-signed
+  and the auto-updater is disabled (artifacts carry no updater signature).
 
 Tester install steps (including the Gatekeeper / SmartScreen workarounds
 unsigned builds require) are in [INSTALL.md](./INSTALL.md).

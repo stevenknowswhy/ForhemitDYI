@@ -2,7 +2,8 @@
 
 Releases live at
 `https://github.com/stevenknowswhy/ForhemitDYI/releases`
-(one release per `v*` tag; unsigned tester builds are `-unsigned` prereleases).
+(one release per `v*` tag; unsigned tester builds are clearly labeled
+prereleases).
 
 v1 is local-only: the app never uploads your information. The only outbound
 network call is an **explicit** "Check for updates" request to GitHub
