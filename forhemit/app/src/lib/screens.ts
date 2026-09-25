@@ -2,6 +2,11 @@
 // from `Destination Builder v1.0.md`. This module is presentation data
 // only: it builds the `DestinationContent` wire object the engine
 // validates; no domain rules live here.
+//
+// Pros/cons copy discipline: balanced and factual tradeoffs — never a
+// ranking or recommendation (the choice stays the owner's). Newly authored
+// tradeoff copy here is PROVISIONAL until the advisor content review gate
+// (same gate as the journey's pros/cons copy) passes.
 
 import type {
   AllocationChoice,
@@ -30,7 +35,12 @@ import type {
 export interface ScreenChoice {
   value: string;
   label: string;
-  detail?: string;
+  /** Balanced, factual gains of choosing this option — shown in the
+   *  tradeoff column on selection. Absent where no meaningful tradeoff
+   *  exists. Never a recommendation. */
+  pros?: string[];
+  /** What the choice gives up or risks. Same discipline as `pros`. */
+  cons?: string[];
 }
 
 export interface ScreenDef {
@@ -52,22 +62,21 @@ export const SCREENS: ScreenDef[] = [
     number: 1,
     id: "welcome",
     title: "Your destination",
-    prompt:
-      "Before exploring any path, this walk captures the outcome you want to create — your Destination. " +
-      "It is the first object every journey creates, and it stays your North Star. You can change it " +
-      "later — every version is kept.",
-    why: "Destination-first: the desired outcome drives everything that follows.",
+    prompt: "This walk captures the outcome you want to create — your Destination.",
+    why:
+      "Destination-first: the desired outcome drives everything that follows. It is the first object " +
+      "every journey creates, and it stays your North Star. You can change it later — every version is kept.",
     interaction: "decision",
     choices: [
       {
         value: "start",
         label: "Start building my destination",
-        detail: "Walk the screens — answer, skip, or say “I'm not sure” anywhere.",
+        pros: ["Walk the screens — answer, skip, or say “I'm not sure” anywhere"],
       },
       {
         value: "not_sure_yet",
         label: "I'm not sure yet — start with fewer constraints",
-        detail: "Creates a destination with no initial constraints. Answering nothing is legitimate.",
+        pros: ["Creates a destination with no initial constraints — answering nothing is legitimate"],
       },
     ],
     optional: false,
@@ -80,9 +89,27 @@ export const SCREENS: ScreenDef[] = [
     why: "This anchors the financial area of your Desired Outcome.",
     interaction: "single",
     choices: [
-      { value: "cash_now", label: "I want substantial cash at closing" },
-      { value: "income_over_time", label: "I'm comfortable receiving some of the value over time" },
-      { value: "combination", label: "I'd like a mix of cash now and future income" },
+      {
+        value: "cash_now",
+        label: "I want substantial cash at closing",
+        pros: ["Cash now — simplest to reinvest or diversify", "A clean break at closing"],
+        cons: [
+          "Future upside if the company keeps growing is given up",
+          "Your role ends unless separately contracted",
+        ],
+      },
+      {
+        value: "income_over_time",
+        label: "I'm comfortable receiving some of the value over time",
+        pros: ["Predictable personal cash flow for years", "Retains upside during the payout period"],
+        cons: ["Depends on the buyer's continued performance", "Inflation erodes fixed payments; exit is delayed"],
+      },
+      {
+        value: "combination",
+        label: "I'd like a mix of cash now and future income",
+        pros: ["Some cash at closing plus future income", "Spreads timing risk across both forms"],
+        cons: ["Split across two structures — more to negotiate and track", "Neither the largest cash-out nor the fullest income"],
+      },
     ],
     optional: false,
   },
@@ -90,8 +117,10 @@ export const SCREENS: ScreenDef[] = [
     number: 3,
     id: "closing_proceeds",
     title: "Cash at closing",
-    prompt: "About how much would you ideally like at closing? You can never be blocked here because you don't know your business's value — “I'm not sure” is a real answer.",
-    why: "Sets the desired closing proceeds: a band or your own range — never a valuation.",
+    prompt: "About how much would you ideally like at closing?",
+    why:
+      "Sets the desired closing proceeds: a band or your own range — never a valuation. You can never " +
+      "be blocked here because you don't know your business's value — “I'm not sure” is a real answer.",
     interaction: "proceeds",
     choices: [],
     optional: false,
@@ -110,8 +139,8 @@ export const SCREENS: ScreenDef[] = [
     number: 5,
     id: "ownership_participants",
     title: "Who should own the company",
-    prompt: "Who would you like to have ownership after the transition? Choose all that apply.",
-    why: "Names the participant groups your desired outcome includes.",
+    prompt: "Who would you like to have ownership after the transition?",
+    why: "Names the participant groups your desired outcome includes. Choose all that apply.",
     interaction: "participants",
     choices: [
       { value: "all_employees", label: "All employees" },
@@ -128,13 +157,30 @@ export const SCREENS: ScreenDef[] = [
     number: 6,
     id: "employee_ownership_shape",
     title: "How employee ownership would look",
-    prompt: "If employees end up owning part of the company — how would you like that to look? These are descriptions of outcomes, not legal structures.",
-    why: "Shapes the employee-ownership outcome conceptually.",
+    prompt: "If employees end up owning part of the company — how would you like that to look?",
+    why:
+      "Shapes the employee-ownership outcome conceptually. These are descriptions of outcomes, " +
+      "not legal structures.",
     interaction: "shape",
     choices: [
-      { value: "broad", label: "Broadly shared among employees" },
-      { value: "employees_plus_management", label: "Employees own part, management has additional ownership" },
-      { value: "with_other_owners", label: "Employees own part alongside other owners" },
+      {
+        value: "broad",
+        label: "Broadly shared among employees",
+        pros: ["The widest ownership spread — no single group stands apart"],
+        cons: ["No one holds a deciding stake by default"],
+      },
+      {
+        value: "employees_plus_management",
+        label: "Employees own part, management has additional ownership",
+        pros: ["The people running the company carry more of its outcome"],
+        cons: ["A visible two-tier split to explain and maintain"],
+      },
+      {
+        value: "with_other_owners",
+        label: "Employees own part alongside other owners",
+        pros: ["Brings outside capital or partners into the outcome"],
+        cons: ["Control is shared with owners outside the employee group"],
+      },
     ],
     optional: true,
   },
@@ -142,8 +188,10 @@ export const SCREENS: ScreenDef[] = [
     number: 7,
     id: "ownership_allocation",
     title: "Approximate allocation",
-    prompt: "Do you have an approximate ownership split in mind? These percentages describe your desired outcome — they are not a proposed legal ownership structure.",
-    why: "Records the approximate desired allocation, if you have one.",
+    prompt: "Do you have an approximate ownership split in mind?",
+    why:
+      "Records the approximate desired allocation, if you have one. These percentages describe your " +
+      "desired outcome — they are not a proposed legal ownership structure.",
     interaction: "allocation",
     choices: [
       { value: "percentages", label: "Set approximate percentages" },
@@ -159,10 +207,30 @@ export const SCREENS: ScreenDef[] = [
     why: "Sets the personal outcome — the role you want afterward.",
     interaction: "role",
     choices: [
-      { value: "retired", label: "I'm ready to step away completely" },
-      { value: "transition_advisor", label: "I'd like to help for a limited period" },
-      { value: "ongoing_advisor", label: "I'd like to remain available occasionally" },
-      { value: "continuing_owner_operator", label: "I'd like to remain meaningfully involved" },
+      {
+        value: "retired",
+        label: "I'm ready to step away completely",
+        pros: ["A full break on day one of the transition"],
+        cons: ["No ongoing role or income from the company unless separately arranged"],
+      },
+      {
+        value: "transition_advisor",
+        label: "I'd like to help for a limited period",
+        pros: ["You stay through the handover, then step away"],
+        cons: ["A commitment for the transition period's length"],
+      },
+      {
+        value: "ongoing_advisor",
+        label: "I'd like to remain available occasionally",
+        pros: ["Stay available on your own terms"],
+        cons: ["The company may still call on your time"],
+      },
+      {
+        value: "continuing_owner_operator",
+        label: "I'd like to remain meaningfully involved",
+        pros: ["Your working relationship with the business continues"],
+        cons: ["Your time stays committed after the transition"],
+      },
     ],
     optional: false,
   },
@@ -170,8 +238,8 @@ export const SCREENS: ScreenDef[] = [
     number: 9,
     id: "transition_timing",
     title: "Timeframe",
-    prompt: "When would you ideally like to reach this destination? The system stores a desired timeframe, not a guaranteed closing date.",
-    why: "Sets the timing area of your Desired Outcome.",
+    prompt: "When would you ideally like to reach this destination?",
+    why: "Sets the timing area of your Desired Outcome. The system stores a desired timeframe, not a guaranteed closing date.",
     interaction: "timing",
     choices: [
       { value: "within12_months", label: "Within 12 months" },
@@ -186,8 +254,8 @@ export const SCREENS: ScreenDef[] = [
     number: 10,
     id: "preservation_goals",
     title: "What should remain true",
-    prompt: "What would you like to remain true about the company after the transition? Pick up to three, and rank which matters most.",
-    why: "Each goal can individually be marked nonnegotiable.",
+    prompt: "What would you like to remain true about the company after the transition?",
+    why: "Pick up to three, and rank which matters most. Each goal can individually be marked nonnegotiable.",
     interaction: "preservation",
     choices: [
       { value: "employees_remain", label: "Employees remain with the company" },
@@ -207,8 +275,10 @@ export const SCREENS: ScreenDef[] = [
     number: 11,
     id: "avoidances",
     title: "What to avoid",
-    prompt: "What would you like to avoid? Select any that apply — each can individually be marked nonnegotiable. Selecting nothing means “Nothing specific.”",
-    why: "Avoidances become desired outcomes of their own, with their own strength.",
+    prompt: "What would you like to avoid?",
+    why:
+      "Avoidances become desired outcomes of their own, with their own strength. Select any that " +
+      "apply — each can individually be marked nonnegotiable. Selecting nothing means “Nothing specific.”",
     interaction: "avoidances",
     choices: [
       { value: "outside_buyer", label: "Selling to an outside buyer" },
@@ -228,8 +298,8 @@ export const SCREENS: ScreenDef[] = [
     number: 12,
     id: "additional_context",
     title: "Anything else?",
-    prompt: "Additional owner context — anything else you want recorded as part of your desired outcome. Optional.",
-    why: "Free text, kept verbatim as you wrote it.",
+    prompt: "Anything else you want recorded as part of your desired outcome?",
+    why: "Optional free text, kept verbatim as you wrote it.",
     interaction: "notes",
     choices: [],
     optional: true,
@@ -238,10 +308,10 @@ export const SCREENS: ScreenDef[] = [
     number: 13,
     id: "review",
     title: "Review your destination",
-    prompt:
-      "This is the Desired Outcome built from your answers. It becomes the first object in your journey — " +
-      "every version is kept, and you can edit later with a recorded reason.",
-    why: "The Destination Builder's checkpoint: confirm it, or keep it as a working draft.",
+    prompt: "The Desired Outcome built from your answers.",
+    why:
+      "The Destination Builder's checkpoint: confirm it, or keep it as a working draft. It becomes the " +
+      "first object in your journey — every version is kept, and you can edit later with a recorded reason.",
     interaction: "review",
     choices: [],
     optional: false,
