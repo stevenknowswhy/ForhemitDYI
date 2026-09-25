@@ -1,0 +1,7 @@
+# Obvious repo policy — auto-detected from GitHub settings.
+# defaultBranchRef: main; all merge methods allowed -> merge commit default.
+branch: main
+mergeMethod: merge
+mergeCommitAllowed: true
+squashMergeAllowed: true
+rebaseMergeAllowed: true
