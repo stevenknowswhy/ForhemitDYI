@@ -15,9 +15,10 @@
 #   (WINDOWS_CERTIFICATE*) or Azure Artifact Signing — the cloud signer, run
 #   via signtool + Microsoft's signing dlib through a generated
 #   bundle.windows.signCommand overlay. A signing-config gate job fails the
-#   run when both paths are set (ambiguous) or the Azure set is partial; it
-#   never silently picks a signer. With no signing secrets at all the run is
-#   byte-for-byte the plain unsigned build.
+#   run when both paths are set (ambiguous), the Azure set is partial, or an
+#   Apple set (Developer ID certificate / notarization) is partial or
+#   incoherent; it never silently picks a signer. With no signing secrets at
+#   all the run is byte-for-byte the plain unsigned build.
 #
 # The release is created as a DRAFT and published only after every target
 # finishes, so `latest.json` is complete (all platforms) the moment it is
@@ -46,13 +47,19 @@ jobs:
   # Ambiguity is a config error, so it fails the run before any build starts
   # rather than silently picking a signer — and a half-configured cloud
   # signer must not quietly ship unlabeled unsigned installers either.
-  # Outputs the resolved mode for the build job: none | pfx | azure.
+  # Apple macOS signing is validated the same way: the Developer ID
+  # certificate trio and the notarization trio must each be all-set or
+  # all-absent, and notarization without a certificate is incoherent (it
+  # would have nothing to staple). Outputs the resolved Windows mode
+  # (none | pfx | azure) and whether macOS Developer ID signing is
+  # configured (apple_cert).
   signing-config:
     name: signing config gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       mode: ${{ steps.gate.outputs.mode }}
+      apple_cert: ${{ steps.gate.outputs.apple_cert }}
     steps:
       - name: Refuse ambiguous or partial signing configuration
         id: gate
@@ -64,6 +71,12 @@ jobs:
           AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
           AZURE_SIGNING_CERT_PROFILE: ${{ secrets.AZURE_SIGNING_CERT_PROFILE }}
           AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           azure_names="AZURE_TENANT_ID AZURE_CLIENT_ID AZURE_CLIENT_SECRET AZURE_SIGNING_ACCOUNT AZURE_SIGNING_CERT_PROFILE AZURE_SIGNING_ENDPOINT"
           azure_set=0
@@ -95,6 +108,51 @@ jobs:
           fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "Windows signing mode: ${mode}"
+
+          apple_cert_names="APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY"
+          apple_cert_set=0
+          apple_cert_missing=""
+          for name in $apple_cert_names; do
+            if [ -n "${!name}" ]; then
+              apple_cert_set=$((apple_cert_set + 1))
+            else
+              apple_cert_missing="${apple_cert_missing:+$apple_cert_missing, }$name"
+            fi
+          done
+
+          apple_notary_names="APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID"
+          apple_notary_set=0
+          apple_notary_missing=""
+          for name in $apple_notary_names; do
+            if [ -n "${!name}" ]; then
+              apple_notary_set=$((apple_notary_set + 1))
+            else
+              apple_notary_missing="${apple_notary_missing:+$apple_notary_missing, }$name"
+            fi
+          done
+
+          if [ "$apple_cert_set" -gt 0 ] && [ "$apple_cert_set" -lt 3 ]; then
+            echo "::error::Partial Apple code signing configuration: missing ${apple_cert_missing}. Set all three secrets (APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY — distribution/SIGNING.md) or none of them — a half-configured macOS signer must not silently ship unsigned installers."
+            exit 1
+          fi
+
+          if [ "$apple_notary_set" -gt 0 ] && [ "$apple_notary_set" -lt 3 ]; then
+            echo "::error::Partial Apple notarization configuration: missing ${apple_notary_missing}. Set all three secrets (APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID — distribution/SIGNING.md) or none of them — a half-configured macOS signer must not silently ship unsigned installers."
+            exit 1
+          fi
+
+          if [ "$apple_notary_set" -eq 3 ] && [ "$apple_cert_set" -eq 0 ]; then
+            echo "::error::Incoherent Apple signing configuration: notarization secrets (APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID) are set without a Developer ID certificate (APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY). Notarization has nothing to staple without the certificate — set the certificate trio or remove the notarization trio; a half-configured macOS signer must not silently ship unsigned installers."
+            exit 1
+          fi
+
+          if [ "$apple_cert_set" -eq 3 ]; then
+            apple_cert=true
+          else
+            apple_cert=false
+          fi
+          echo "apple_cert=$apple_cert" >> "$GITHUB_OUTPUT"
+          echo "Apple code signing: ${apple_cert}"
 
   build:
     name: build (${{ matrix.platform }} ${{ matrix.target }})
@@ -237,30 +295,84 @@ jobs:
       # exposes absent secrets as empty strings, and set-but-empty env entries
       # make the bundler treat signing as configured: an empty
       # TAURI_SIGNING_PRIVATE_KEY fails to decode as a secret key, an empty
-      # APPLE_CERTIFICATE fails the macOS keychain import. Absent secrets must
-      # be absent env entries — hence one signed step per Windows path, so the
-      # Azure step can simply omit the .pfx entries. The unsigned build also
-      # omits the release overlay — with no key there is nothing to sign
-      # updater artifacts with, so we do not ask for them.
+      # APPLE_CERTIFICATE fails the macOS keychain import (v0.0.2-test died
+      # exactly there). Absent secrets must be absent env entries — hence one
+      # signed step per OS signing path: two for Windows (.pfx vs Azure, so
+      # the Azure step can omit the .pfx entries) and two for macOS (split on
+      # the gate's apple_cert output, so updater signing works with or
+      # without Apple enrollment). The unsigned build also omits the release
+      # overlay — with no key there is nothing to sign updater artifacts
+      # with, so we do not ask for them.
       - name: Build and stage release artifacts (signed, .pfx)
-        if: steps.label.outputs.signed == 'true' && needs.signing-config.outputs.mode != 'azure'
+        if: matrix.platform != 'macos-latest' && steps.label.outputs.signed == 'true' && needs.signing-config.outputs.mode != 'azure'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Updater artifact signing (minisign).
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          # macOS: Developer ID signing + notarization.
+          # Windows: Authenticode (the action imports the .pfx and signs the
+          # NSIS/MSI installers). macOS builds take the dedicated steps below.
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        with:
+          projectPath: forhemit/app
+          tagName: ${{ github.ref_name }}
+          releaseName: ${{ steps.label.outputs.releaseName }}
+          releaseBody: ${{ steps.label.outputs.releaseBody }}
+          releaseDraft: true
+          prerelease: ${{ steps.label.outputs.prerelease }}
+          # Static-JSON updater: latest.json is generated from the signed
+          # artifacts and attached to the draft release; prefer the NSIS
+          # setup.exe as the Windows update artifact when both bundles exist.
+          uploadUpdaterJson: true
+          updaterJsonPreferNsis: true
+          args: ${{ matrix.args }} --config src-tauri/tauri.release.conf.json
+
+      # macOS signed paths, split from the .pfx step above: updater signing
+      # and Apple code signing are independent trust layers, so the APPLE_*
+      # entries appear only when the gate confirmed the certificate and
+      # notarization trios are complete (apple_cert == 'true').
+      - name: Build and stage release artifacts (updater-signed, macOS unsigned)
+        if: matrix.platform == 'macos-latest' && steps.label.outputs.signed == 'true' && needs.signing-config.outputs.mode != 'azure' && needs.signing-config.outputs.apple_cert == 'false'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Updater artifact signing (minisign) only — installers ship
+          # ad-hoc/unsigned until Apple enrollment. No APPLE_* entries:
+          # empty ones fail the keychain import.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          projectPath: forhemit/app
+          tagName: ${{ github.ref_name }}
+          releaseName: ${{ steps.label.outputs.releaseName }}
+          releaseBody: ${{ steps.label.outputs.releaseBody }}
+          releaseDraft: true
+          prerelease: ${{ steps.label.outputs.prerelease }}
+          # Static-JSON updater: latest.json is generated from the signed
+          # artifacts and attached to the draft release; prefer the NSIS
+          # setup.exe as the Windows update artifact when both bundles exist.
+          uploadUpdaterJson: true
+          updaterJsonPreferNsis: true
+          args: ${{ matrix.args }} --config src-tauri/tauri.release.conf.json
+
+      - name: Build and stage release artifacts (signed, macOS codesign + updater)
+        if: matrix.platform == 'macos-latest' && steps.label.outputs.signed == 'true' && needs.signing-config.outputs.mode != 'azure' && needs.signing-config.outputs.apple_cert == 'true'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Updater artifact signing (minisign).
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # macOS: Developer ID signing + notarization (the gate guarantees
+          # both trios are complete here).
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # Windows: Authenticode (the action imports the .pfx and signs the
-          # NSIS/MSI installers).
-          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
-          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         with:
           projectPath: forhemit/app
           tagName: ${{ github.ref_name }}
