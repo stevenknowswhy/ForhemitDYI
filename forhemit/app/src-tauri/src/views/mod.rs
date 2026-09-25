@@ -5,6 +5,27 @@
 //! walk has passed through, the answered and skipped questions with their
 //! version history, and progress.
 
+mod package;
+mod scenario;
+mod vault;
+
+pub use package::{
+    exported_file_view, objective_lines, package_preview_view, workspace_snapshot,
+    ExportedFileView, PackagePreviewView,
+};
+pub use scenario::{
+    comparison_view, conflict_decision_from_wire, family_view, version_view, AssumptionView,
+    BranchView, ComparisonCellView, ComparisonDimensionView, ComparisonView, ConflictView,
+    FamilyAndVersionView, NonnegotiableConflictView, NonnegotiableUnderTestView,
+    ScenarioFamilyView, ScenarioVersionView, StatusEntryView, UnknownView, VALUE_TYPE_OPTIONS,
+};
+pub use vault::{
+    document_view, locked_view, not_set_up_view, search_hit_view, status_view,
+    version_content_view, version_views, VaultDocumentHistoryView, VaultDocumentView,
+    VaultSearchHitView, VaultState, VaultStatusView, VaultVersionContentView, VaultVersionView,
+    SHARING_WORDING,
+};
+
 use forhemit_journey::{
     AnswerRecord, AnswerValue, InstanceStatus, JourneyDefinition, JourneyInstance, NodeDef,
     NodeKind, QuestionDef,

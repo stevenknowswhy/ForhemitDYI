@@ -1,5 +1,7 @@
 // Tiny shared presentation helpers for the components.
 
+import type { AnswerValue } from "../types";
+
 export const OWNER_CHIP = "You said this — owner-stated";
 export const SYSTEM_CHIP = "Recorded by Forhemit — system";
 
@@ -38,23 +40,44 @@ export function reasonLabel(value: string): string {
   );
 }
 
-export function timeLabel(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString("en-US", {
+export function timeLabel(value: unknown): string {
+  const parsed = wireTimestamp(value);
+  if (parsed !== null) {
+    return parsed.toLocaleString("en-US", {
       year: "numeric", month: "short", day: "numeric",
       hour: "2-digit", minute: "2-digit",
     });
-  } catch {
-    return iso;
   }
+  // Unknown shape — show the raw value rather than "Invalid Date".
+  return String(value ?? "—");
+}
+
+/**
+ * Parses the backend's timestamp wire form into a Date. Rust `time::OffsetDateTime`
+ * serializes as `[year, day_of_year, hour, minute, second, nanosecond,
+ * offset_hour, offset_minute, offset_second]`; ISO strings are also accepted so
+ * test fixtures keep working. Returns null for anything unparseable.
+ */
+export function wireTimestamp(value: unknown): Date | null {
+  if (typeof value === "string") {
+    const fromIso = new Date(value);
+    return Number.isNaN(fromIso.getTime()) ? null : fromIso;
+  }
+  if (!Array.isArray(value) || value.length < 6) return null;
+  const [year, ordinal, hour, minute, second, nanos] = value;
+  if (![year, ordinal, hour, minute, second].every((n) => Number.isInteger(n))) return null;
+  // Day-of-year arithmetic: month 0 + ordinal days lands on the right date.
+  const millis = Math.floor((typeof nanos === "number" ? nanos : 0) / 1_000_000);
+  const parsed = new Date(Date.UTC(year, 0, ordinal, hour, minute, second, millis));
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
 /** One-line display of a wire AnswerValue for answer history lists. */
-export function answerSummary(value: unknown): string {
+export function answerSummary(value: AnswerValue): string {
   if (typeof value === "string") return value === "confirmed" ? "Confirmed" : value;
   if ("single" in value) return String(value.single);
   if ("multi" in value) return value.multi.join(", ");
   if ("ranking" in value) return value.ranking.map((v, i) => `${i + 1}. ${v}`).join("; ");
-  if ("amount" in value) return `$${Number(value.amount).toLocaleString("en-US")}`;
+  if ("amount" in value) return `${Number(value.amount).toLocaleString("en-US")}`;
   return "(complex value)";
 }

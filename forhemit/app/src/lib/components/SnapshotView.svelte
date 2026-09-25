@@ -14,9 +14,11 @@
   let busy = $state(false);
   let kind = $state<FactKind>("industry");
   let textValue = $state("");
-  let numberValue = $state("");
-  let lowerValue = $state("");
-  let upperValue = $state("");
+  // Number inputs bind numbers in Svelte 5 (or "" when empty) — the state type
+  // must say so or arithmetic/trim on it throws inside the click handler.
+  let numberValue = $state<number | "">("");
+  let lowerValue = $state<number | "">("");
+  let upperValue = $state<number | "">("");
   let definition = $state("");
   let revisingFactId = $state<string | null>(null);
   let reviseReason = $state("learned_something_new");
@@ -53,17 +55,23 @@
     definition = "";
   }
 
+  /** A number input's binding: a number once filled, "" when empty (Svelte 5
+   *  may also hand us null on clear — treat every non-finite as empty). */
+  function boundNumber(value: number | "" | null | undefined): number | null {
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
+  }
+
   function buildValue(): FactValue | null {
     const shape = KINDS.find((entry) => entry.value === kind)?.shape;
     if (shape === "text") {
       return textValue.trim() ? { text: textValue.trim() } : null;
     }
     if (shape === "number") {
-      const parsed = Number(numberValue);
-      return Number.isFinite(parsed) && numberValue !== "" ? { number: parsed } : null;
+      const parsed = boundNumber(numberValue);
+      return parsed !== null ? { number: parsed } : null;
     }
-    const lower = lowerValue.trim() ? Number(lowerValue) : null;
-    const upper = upperValue.trim() ? Number(upperValue) : null;
+    const lower = boundNumber(lowerValue);
+    const upper = boundNumber(upperValue);
     if (lower === null && upper === null) return null;
     return { range: { lower, upper } };
   }
@@ -181,10 +189,10 @@
                 revisingFactId = fact.fact_id;
                 kind = fact.kind;
                 if ("text" in fact.value) textValue = fact.value.text;
-                if ("number" in fact.value) numberValue = String(fact.value.number);
+                if ("number" in fact.value) numberValue = fact.value.number;
                 if ("range" in fact.value) {
-                  lowerValue = fact.value.range.lower?.toString() ?? "";
-                  upperValue = fact.value.range.upper?.toString() ?? "";
+                  lowerValue = fact.value.range.lower ?? "";
+                  upperValue = fact.value.range.upper ?? "";
                 }
               }}>Revise</button>
             </div>

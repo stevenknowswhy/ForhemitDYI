@@ -45,7 +45,7 @@ pub use comparison::{
 };
 pub use conflict::{
     ConflictResolution, ConflictSeverity, ConflictType, NewConflict, NonnegotiableConflict,
-    ScenarioConflict,
+    OwnerDecision, ScenarioConflict,
 };
 pub use constraint::{ConstraintType, NewConstraint, ScenarioConstraint};
 pub use engine::{

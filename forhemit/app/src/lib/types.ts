@@ -54,12 +54,12 @@ export interface FutureIncomeChoice {
 }
 
 export type OwnershipParticipant =
-  | { all_employees: null }
-  | { management: null }
+  | "all_employees"
+  | "management"
   | { specific_employee_group: string }
-  | { family: null }
-  | { existing_owners: null }
-  | { outside_investors: null }
+  | "family"
+  | "existing_owners"
+  | "outside_investors"
   | { other: string };
 
 export type EmployeeOwnershipShape =
@@ -68,8 +68,8 @@ export type EmployeeOwnershipShape =
   | "with_other_owners";
 
 export type AllocationParticipant =
-  | { employees: null }
-  | { management: null }
+  | "employees"
+  | "management"
   | { other: string };
 
 export interface AllocationShare {
@@ -95,15 +95,15 @@ export type TransitionTiming =
   | "flexible";
 
 export type PreservationGoal =
-  | { employees_remain: null }
-  | { remains_independent: null }
-  | { same_location: null }
-  | { culture_remains: null }
-  | { leadership_remains: null }
-  | { brand_remains: null }
-  | { family_involved: null }
-  | { community_presence_remains: null }
-  | { customers_served: null }
+  | "employees_remain"
+  | "remains_independent"
+  | "same_location"
+  | "culture_remains"
+  | "leadership_remains"
+  | "brand_remains"
+  | "family_involved"
+  | "community_presence_remains"
+  | "customers_served"
   | { other: string };
 
 export interface PreservationSelection {
@@ -112,15 +112,15 @@ export interface PreservationSelection {
 }
 
 export type Avoidance =
-  | { outside_buyer: null }
-  | { losing_employee_ownership: null }
-  | { long_term_involvement: null }
-  | { leaving_employees_behind: null }
-  | { excessive_debt: null }
-  | { waiting_many_years_for_proceeds: null }
-  | { moving_the_business: null }
-  | { losing_independence: null }
-  | { major_operational_disruption: null }
+  | "outside_buyer"
+  | "losing_employee_ownership"
+  | "long_term_involvement"
+  | "leaving_employees_behind"
+  | "excessive_debt"
+  | "waiting_many_years_for_proceeds"
+  | "moving_the_business"
+  | "losing_independence"
+  | "major_operational_disruption"
   | { other: string };
 
 export interface DestinationContent {
@@ -170,7 +170,7 @@ export interface DestinationVersion {
   destination_id: string;
   version_number: number;
   previous_version_id: string | null;
-  created_at: string;
+  created_at: WireTimestamp;
   created_by: { actor_id: string; display_name: string };
   change: {
     reason: ChangeReason;
@@ -184,7 +184,7 @@ export interface Destination {
   destination_id: string;
   workspace_id: string;
   status: DestinationStatus;
-  created_at: string;
+  created_at: WireTimestamp;
   created_by: { actor_id: string; display_name: string };
   versions: DestinationVersion[];
 }
@@ -219,7 +219,7 @@ export interface AnswerVersionView {
   version: number;
   value: AnswerValue;
   change_reason: string | null;
-  recorded_at: string;
+  recorded_at: WireTimestamp;
 }
 
 export interface AnsweredView {
@@ -278,6 +278,16 @@ export type FactValue =
   | { number: number }
   | { range: { lower: number | null; upper: number | null } };
 
+/**
+ * Wire form of a Rust `time::OffsetDateTime`: the backend serializes it as
+ * `[year, day_of_year, hour, minute, second, nanosecond, offset_hour,
+ * offset_minute, offset_second]` — never an ISO string — so dates must be
+ * parsed structurally (see `wireTimestamp` in bits.ts), not with `new Date`.
+ */
+export type WireTimestamp = [
+  number, number, number, number, number, number, number, number, number,
+];
+
 export interface FactVersion {
   fact_id: string;
   fact_version_id: string;
@@ -288,11 +298,11 @@ export interface FactVersion {
   provenance: string;
   verification: string;
   supersedes: string | null;
-  recorded_at: string;
+  recorded_at: WireTimestamp;
 }
 
 export interface AuditLogLine {
-  at: string;
+  at: WireTimestamp;
   event_type: string;
   engine: string;
   object: string;
@@ -302,4 +312,334 @@ export interface VerifyView {
   verified: boolean;
   event_count: number;
   detail: string;
+}
+
+// ── Scenario views (views/scenario.rs) ─────────────────────────────────
+
+export interface AssumptionView {
+  assumption_id: string;
+  category: string;
+  name: string;
+  description: string | null;
+  value_label: string;
+  provenance: string;
+  verification: string;
+  source_reference: string | null;
+  created_at: WireTimestamp;
+}
+
+export interface UnknownView {
+  unknown_id: string;
+  category: string | null;
+  description: string;
+  importance: string;
+  resolution_status: string;
+  required_action: string | null;
+  created_at: WireTimestamp;
+}
+
+export interface NonnegotiableUnderTestView {
+  nonnegotiable_id: string;
+  destination_objective_id: string;
+  destination_version_id: string;
+  description: string;
+}
+
+export interface NonnegotiableConflictView {
+  nonnegotiable_id: string;
+  destination_objective_id: string;
+  destination_version_id: string;
+  owner_decision: string | null;
+  decided_at: WireTimestamp | null;
+}
+
+export interface ConflictView {
+  conflict_id: string;
+  scenario_version_id: string;
+  conflict_type: string;
+  severity: string;
+  description: string;
+  is_nonnegotiable: boolean;
+  nonnegotiable: NonnegotiableConflictView | null;
+  resolved: boolean;
+  owner_decision: string | null;
+  resolution_reference: string | null;
+  resolved_at: WireTimestamp | null;
+  created_at: WireTimestamp;
+}
+
+export interface BranchView {
+  branch_id: string;
+  parent_scenario_version_id: string;
+  child_scenario_family_id: string;
+  branch_type: string;
+  reason: string;
+  created_at: WireTimestamp;
+}
+
+export interface StatusEntryView {
+  previous_lifecycle: string | null;
+  new_lifecycle: string;
+  previous_readiness: string | null;
+  new_readiness: string;
+  reason: string | null;
+  changed_at: WireTimestamp;
+}
+
+export interface ScenarioVersionView {
+  scenario_version_id: string;
+  family_id: string;
+  version_number: number;
+  name: string;
+  description: string | null;
+  change_reason: string | null;
+  lifecycle: string;
+  readiness: string;
+  is_draft: boolean;
+  destination_version_id: string;
+  business_reality_version_id: string;
+  parent_version_id: string | null;
+  supersedes_version_id: string | null;
+  assumptions: AssumptionView[];
+  unknowns: UnknownView[];
+  nonnegotiables: NonnegotiableUnderTestView[];
+  conflicts: ConflictView[];
+  branches: BranchView[];
+  status_history: StatusEntryView[];
+  finalized_at: WireTimestamp | null;
+  created_at: WireTimestamp;
+}
+
+export interface ScenarioFamilyView {
+  scenario_family_id: string;
+  name: string;
+  scenario_type: string;
+  branched_from_version_id: string | null;
+  archived: boolean;
+  archive_reason: string | null;
+  created_at: WireTimestamp;
+  versions: ScenarioVersionView[];
+}
+
+export interface FamilyAndVersionView {
+  family: ScenarioFamilyView;
+  version: ScenarioVersionView;
+}
+
+export interface ComparisonDimensionView {
+  index: number;
+  dimension_type: string;
+  label: string;
+}
+
+export interface ComparisonCellView {
+  scenario_version_id: string;
+  dimension_index: number;
+  value_label: string | null;
+  outcome: string;
+}
+
+export interface ComparisonView {
+  comparison_id: string;
+  name: string;
+  scenario_version_ids: string[];
+  dimensions: ComparisonDimensionView[];
+  cells: ComparisonCellView[];
+  created_at: WireTimestamp;
+}
+
+// Wire shapes the frontend sends (commands.rs). Values are wire enums —
+// snake_case names decoded by the shell into contract enums.
+
+export interface WireValue {
+  value_type: "number" | "currency" | "percentage" | "duration_months" | "boolean" | "text";
+  value: string;
+  currency: string | null;
+}
+
+export interface ScenarioCreateWire {
+  name: string;
+  scenario_type: string;
+  description: string | null;
+  destination_version_id: string;
+  reality_fact_version_ids: string[];
+}
+
+export interface AssumptionWire {
+  category: string;
+  name: string;
+  description: string | null;
+  value: WireValue;
+  provenance: string;
+  verification: string;
+  nonnegotiable_objective_id: string | null;
+  source_reference: string | null;
+}
+
+export interface UnknownWire {
+  category: string | null;
+  description: string;
+  importance: string;
+  required_action: string | null;
+  source_dependency: string | null;
+}
+
+export interface ConstraintWire {
+  constraint_type: string;
+  name: string;
+  description: string | null;
+  value: WireValue | null;
+  source_reference: string | null;
+}
+
+export interface NonnegotiableWire {
+  destination_objective_id: string;
+  destination_version_id: string;
+  description: string;
+}
+
+export interface ConflictWire {
+  conflict_type: string;
+  severity: string;
+  description: string;
+  source_reference: string | null;
+  affected_object_type: string | null;
+  affected_object_id: string | null;
+}
+
+export interface WhatIfWire {
+  parent_scenario_version_id: string;
+  branch_type: string;
+  reason: string;
+  changed_assumptions: string[];
+  name: string;
+}
+
+export interface ComparisonDimensionWire {
+  dimension_type: string;
+  label: string;
+}
+
+export interface ComparisonResultWire {
+  scenario_version_id: string;
+  dimension_index: number;
+  value: WireValue | null;
+  outcome: string;
+  source_reference: string | null;
+}
+
+export interface ComparisonWire {
+  name: string;
+  scenario_version_ids: string[];
+  dimensions: ComparisonDimensionWire[];
+  results: ComparisonResultWire[];
+}
+
+// ── Vault views (views/vault.rs) ───────────────────────────────────────
+
+export interface VaultStatusView {
+  state: "not_set_up" | "locked" | "ready";
+  vault_id: string | null;
+  document_count: number | null;
+  exports_dir: string;
+}
+
+export interface VaultDocumentView {
+  document_id: string;
+  filename: string;
+  byte_count: number;
+  version_count: number;
+  latest_version_id: string;
+  latest_created_at: string;
+  note: string | null;
+}
+
+export interface VaultVersionView {
+  version_id: string;
+  document_id: string;
+  version_number: number;
+  filename: string;
+  content_hash: string;
+  byte_count: number;
+  note: string | null;
+  restored_from: string | null;
+  previous_version_id: string | null;
+  created_at: string;
+}
+
+/** A document's full history: the backend's `vault_document_history`. */
+export interface VaultDocumentHistoryView {
+  document_id: string;
+  versions: VaultVersionView[];
+}
+
+export interface VaultSearchHitView {
+  document_id: string;
+  version_id: string;
+  filename: string;
+  snippet: string;
+}
+
+export interface VaultVersionContentView {
+  version_id: string;
+  document_id: string;
+  filename: string;
+  byte_count: number;
+  content_base64: string;
+  content_text: string | null;
+}
+
+// ── Package views (views/package.rs) ───────────────────────────────────
+
+export interface ExcludedScenarioView {
+  scenario_version_id: string;
+  name: string;
+  readiness: string;
+}
+
+export interface PackageProvenanceView {
+  journey_version_used: string;
+  destination_version_number: number;
+  business_reality_version_id: string;
+  included_scenario_version_ids: string[];
+  excluded_scenarios: ExcludedScenarioView[];
+  created_at: string;
+}
+
+export interface PackageBlock {
+  block: "line" | "text" | "entry" | "callout" | "nothing_recorded";
+  content:
+    | { label: string; value: string }
+    | string
+    | { title: string; lines: string[] }
+    | { label: string; text: string }
+    | { context: string };
+}
+
+export interface PackageSectionView {
+  number: string;
+  title: string;
+  blocks: PackageBlock[];
+}
+
+export interface PackagePreviewView {
+  created_at: string;
+  provenance: PackageProvenanceView;
+  summary: {
+    what_i_want: PackageBlock[];
+    must_haves: string[];
+    strong_preferences: string[];
+    wants_to_avoid: string[];
+    paths_evaluated: string[];
+    main_questions: string[];
+  };
+  sections: PackageSectionView[];
+  disclosure: string;
+}
+
+export interface ExportedFileView {
+  format: string;
+  file_name: string;
+  saved_path: string;
+  content_base64: string;
 }

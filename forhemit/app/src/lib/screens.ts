@@ -342,8 +342,8 @@ export interface DraftState {
   proceeds: {
     mode: "band" | "custom" | null;
     band: ProceedsBand | null;
-    min: string;
-    max: string;
+    min: number | "";
+    max: number | "";
     pref: NonnegotiableState;
   };
   income: {
@@ -385,7 +385,7 @@ export function freshDraft(): DraftState {
   return {
     welcome: "",
     financial: { choice: null, pref: "unspecified" },
-    proceeds: { mode: null, band: null, min: "", max: "", pref: "unspecified" },
+    proceeds: { mode: null, band: null, min: "" as number | "", max: "" as number | "", pref: "unspecified" },
     income: { interest: null, amount: null, duration: null, pref: "unspecified" },
     participants: { selected: [], specificGroup: "", other: "", pref: "unspecified" },
     shape: { choice: null, pref: "unspecified" },
@@ -400,11 +400,11 @@ export function freshDraft(): DraftState {
 
 function participantWire(value: string, draft: DraftState): OwnershipParticipant | null {
   switch (value) {
-    case "all_employees": return { all_employees: null };
-    case "management": return { management: null };
-    case "family": return { family: null };
-    case "existing_owners": return { existing_owners: null };
-    case "outside_investors": return { outside_investors: null };
+    case "all_employees": return "all_employees";
+    case "management": return "management";
+    case "family": return "family";
+    case "existing_owners": return "existing_owners";
+    case "outside_investors": return "outside_investors";
     case "specific_group":
       return draft.participants.specificGroup.trim()
         ? { specific_employee_group: draft.participants.specificGroup.trim() }
@@ -417,15 +417,18 @@ function participantWire(value: string, draft: DraftState): OwnershipParticipant
 
 function goalWire(value: string, other: string): PreservationGoal | null {
   switch (value) {
-    case "employees_remain": return { employees_remain: null };
-    case "remains_independent": return { remains_independent: null };
-    case "same_location": return { same_location: null };
-    case "culture_remains": return { culture_remains: null };
-    case "leadership_remains": return { leadership_remains: null };
-    case "brand_remains": return { brand_remains: null };
-    case "family_involved": return { family_involved: null };
-    case "community_presence_remains": return { community_presence_remains: null };
-    case "customers_served": return { customers_served: null };
+    case "employees_remain":
+    case "remains_independent":
+    case "same_location":
+    case "culture_remains":
+    case "leadership_remains":
+    case "brand_remains":
+    case "family_involved":
+    case "community_presence_remains":
+    case "customers_served":
+      // Unit variants are plain strings on the wire (verified against the
+      // engine's serde; the old {key: null} objects were never what Rust sent).
+      return value;
     case "other": return other.trim() ? { other: other.trim() } : null;
     default: return null;
   }
@@ -433,18 +436,31 @@ function goalWire(value: string, other: string): PreservationGoal | null {
 
 function avoidanceWire(value: string, other: string): Avoidance | null {
   switch (value) {
-    case "outside_buyer": return { outside_buyer: null };
-    case "losing_employee_ownership": return { losing_employee_ownership: null };
-    case "long_term_involvement": return { long_term_involvement: null };
-    case "leaving_employees_behind": return { leaving_employees_behind: null };
-    case "excessive_debt": return { excessive_debt: null };
-    case "waiting_many_years_for_proceeds": return { waiting_many_years_for_proceeds: null };
-    case "moving_the_business": return { moving_the_business: null };
-    case "losing_independence": return { losing_independence: null };
-    case "major_operational_disruption": return { major_operational_disruption: null };
+    case "outside_buyer":
+    case "losing_employee_ownership":
+    case "long_term_involvement":
+    case "leaving_employees_behind":
+    case "excessive_debt":
+    case "waiting_many_years_for_proceeds":
+    case "moving_the_business":
+    case "losing_independence":
+    case "major_operational_disruption":
+      return value;
     case "other": return other.trim() ? { other: other.trim() } : null;
     default: return null;
   }
+}
+
+/** A wire enum value: unit variants arrive as plain strings, payload
+ *  variants ("Other — described") as one-key objects. Maps any value to
+ *  its variant key; "" for shapes that are neither. */
+function variantKey(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value !== null) {
+    const keys = Object.keys(value);
+    if (keys.length === 1) return keys[0];
+  }
+  return "";
 }
 
 /**
@@ -480,8 +496,12 @@ export function buildContent(draft: DraftState): { content: DestinationContent }
   if (draft.proceeds.mode === "band" && draft.proceeds.band) {
     proceeds = objectiveWithValue({ band: draft.proceeds.band });
   } else if (draft.proceeds.mode === "custom") {
-    const min = draft.proceeds.min.trim() ? Number(draft.proceeds.min) : null;
-    const max = draft.proceeds.max.trim() ? Number(draft.proceeds.max) : null;
+    // The bounds bind to number inputs (numbers once filled, "" when empty),
+    // so parse tolerantly instead of calling string methods on them.
+    const asBound = (value: number | ""): number | null =>
+      typeof value === "number" && Number.isFinite(value) ? value : null;
+    const min = asBound(draft.proceeds.min);
+    const max = asBound(draft.proceeds.max);
     if (min === null && max === null) {
       return { error: "Screen 3: enter at least one bound for your own range, or pick a band." };
     }
@@ -522,8 +542,8 @@ export function buildContent(draft: DraftState): { content: DestinationContent }
       .filter((s) => s.percent > 0)
       .map((s) => ({
         participant:
-          s.group === "employees" ? { employees: null }
-          : s.group === "management" ? { management: null }
+          s.group === "employees" ? "employees"
+          : s.group === "management" ? "management"
           : { other: s.label.trim() || "other" },
         percent: s.percent,
       }));
@@ -707,8 +727,8 @@ export function draftFromContent(content: DestinationContent): DraftState {
       draft.proceeds.band = proceeds.band;
     } else {
       draft.proceeds.mode = "custom";
-      draft.proceeds.min = proceeds.custom_range.minimum?.toString() ?? "";
-      draft.proceeds.max = proceeds.custom_range.maximum?.toString() ?? "";
+      draft.proceeds.min = proceeds.custom_range.minimum ?? "";
+      draft.proceeds.max = proceeds.custom_range.maximum ?? "";
     }
   }
 
@@ -727,16 +747,18 @@ export function draftFromContent(content: DestinationContent): DraftState {
   const participants = unwrap(content.ownership_participants);
   if (participants) {
     draft.participants.pref = content.ownership_participants.preference;
-    draft.participants.selected = participants.map((p) => Object.keys(p)[0]).filter((key) =>
-      ["all_employees", "management", "family", "existing_owners", "outside_investors"].includes(key),
+    draft.participants.selected = participants
+      .map(variantKey)
+      .filter((key) =>
+        ["all_employees", "management", "family", "existing_owners", "outside_investors"].includes(key),
     );
-    const specific = participants.find((p) => "specific_employee_group" in p);
-    if (specific && "specific_employee_group" in specific) {
+    const specific = participants.find((p) => variantKey(p) === "specific_employee_group");
+    if (specific && typeof specific === "object" && "specific_employee_group" in specific) {
       draft.participants.selected.push("specific_group");
       draft.participants.specificGroup = specific.specific_employee_group;
     }
-    const other = participants.find((p) => "other" in p);
-    if (other && "other" in other) {
+    const other = participants.find((p) => variantKey(p) === "other");
+    if (other && typeof other === "object" && "other" in other) {
       draft.participants.selected.push("other");
       draft.participants.other = other.other;
     }
@@ -757,8 +779,8 @@ export function draftFromContent(content: DestinationContent): DraftState {
       draft.allocation.mode = "percentages";
       draft.allocation.shares = allocation.percentages.map((share) => {
         const participant = share.participant;
-        if ("employees" in participant) return { group: "employees" as const, label: "", percent: share.percent };
-        if ("management" in participant) return { group: "management" as const, label: "", percent: share.percent };
+        if (participant === "employees") return { group: "employees" as const, label: "", percent: share.percent };
+        if (participant === "management") return { group: "management" as const, label: "", percent: share.percent };
         return { group: "other" as const, label: participant.other, percent: share.percent };
       });
     }
@@ -782,30 +804,54 @@ export function draftFromContent(content: DestinationContent): DraftState {
     "answered" in content.preservation_goals
       ? content.preservation_goals.answered
       : [];
-  draft.preservation.selected = goals.map((goal) => Object.keys(goal.goal)[0]).filter((key) => key !== "other");
-  const goalOther = goals.find((goal) => "other" in goal.goal);
-  if (goalOther && "other" in goalOther.goal) {
+  // The wire Objective carries the selection inside its Answer value;
+  // unit-variant goals are strings, the "other" goal a payload object.
+  const selections = goals.flatMap((goal) => {
+    const value = goal.value;
+    return typeof value === "object" && value !== null && "answered" in value
+      ? [value.answered]
+      : [];
+  });
+  draft.preservation.selected = selections
+    .map((sel) => variantKey(sel.goal))
+    .filter((key) => key !== "other");
+  for (const goal of goals) {
+    const value = goal.value;
+    if (typeof value !== "object" || value === null || !("answered" in value)) continue;
+    const sel = value.answered;
+    const key = variantKey(sel.goal);
+    if (sel.rank !== null) draft.preservation.ranks[key] = sel.rank;
+    draft.preservation.prefs[key] = goal.preference;
+  }
+  const goalOther = selections.find((sel) => variantKey(sel.goal) === "other");
+  if (goalOther && typeof goalOther.goal === "object" && "other" in goalOther.goal) {
     draft.preservation.selected.push("other");
     draft.preservation.other = goalOther.goal.other;
-  }
-  for (const goal of goals) {
-    const key = Object.keys(goal.goal)[0] === "other" ? "other" : Object.keys(goal.goal)[0];
-    if (goal.rank !== null) draft.preservation.ranks[key] = goal.rank;
-    draft.preservation.prefs[key] = goal.preference;
   }
 
   const avoidances =
     typeof content.avoidances === "object" && content.avoidances !== null && "answered" in content.avoidances
       ? content.avoidances.answered
       : [];
-  draft.avoidances.selected = avoidances.map((a) => Object.keys(a)[0]).filter((key) => key !== "other");
-  const avoidOther = avoidances.find((a) => "other" in a);
-  if (avoidOther && "other" in avoidOther) {
+  const avoidanceList = avoidances.flatMap((a) => {
+    const value = a.value;
+    return typeof value === "object" && value !== null && "answered" in value
+      ? [value.answered]
+      : [];
+  });
+  draft.avoidances.selected = avoidanceList
+    .map(variantKey)
+    .filter((key) => key !== "" && key !== "other");
+  const avoidOther = avoidanceList.find((a) => variantKey(a) === "other");
+  if (avoidOther && typeof avoidOther === "object" && "other" in avoidOther) {
     draft.avoidances.selected.push("other");
     draft.avoidances.other = avoidOther.other;
   }
   for (const a of avoidances) {
-    const key = Object.keys(a)[0];
+    const value = a.value;
+    if (typeof value !== "object" || value === null || !("answered" in value)) continue;
+    const key = variantKey(value.answered);
+    if (key === "") continue;
     draft.avoidances.prefs[key] = a.preference;
   }
 

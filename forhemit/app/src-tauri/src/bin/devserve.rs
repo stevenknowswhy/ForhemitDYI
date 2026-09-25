@@ -132,6 +132,8 @@ fn main() {
             (Method::Get, path) => match asset_under(&config.asset_dir, path) {
                 Some((asset_path, bytes)) => {
                     let content_type = content_type(&asset_path);
+                    // Static header constants — infallible by inspection.
+                    #[allow(clippy::expect_used)]
                     let header =
                         Header::from_bytes("Content-Type", content_type).expect("valid header");
                     let _ = request.respond(Response::from_data(bytes).with_header(header));
@@ -144,6 +146,7 @@ fn main() {
 }
 
 /// Sends a JSON string response and logs a short diagnostic on send failure.
+#[allow(clippy::expect_used)] // header strings are compile-time constants
 fn reply(request: tiny_http::Request, status: u32, body: &str) {
     let header = Header::from_bytes("Content-Type", "application/json; charset=utf-8")
         .expect("valid header");
@@ -219,6 +222,113 @@ fn dispatch(engines: &AppEngines, name: &str, body: &str) -> Result<String, Stri
         )),
         "audit_recent" => to_json(commands::audit_recent(engines)),
         "audit_verify" => to_json(commands::audit_verify(engines)),
+        "scenario_create" => to_json(commands::scenario_create(
+            engines,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_families" => to_json(commands::scenario_families(engines)),
+        "scenario_family_view" => to_json(commands::scenario_family_view(
+            engines,
+            serde_json::from_value(arg("family_id")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_version_view" => to_json(commands::scenario_version_view(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_add_assumption" => to_json(commands::scenario_add_assumption(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_add_unknown" => to_json(commands::scenario_add_unknown(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_resolve_unknown" => to_json(commands::scenario_resolve_unknown(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("unknown_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("status")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("resolution_reference")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_add_constraint" => to_json(commands::scenario_add_constraint(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_add_nonnegotiable" => to_json(commands::scenario_add_nonnegotiable(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_record_conflict" => to_json(commands::scenario_record_conflict(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_resolve_conflict" => to_json(commands::scenario_resolve_conflict(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("conflict_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("owner_decision")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("resolution_reference")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_finalize" => to_json(commands::scenario_finalize(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_set_readiness" => to_json(commands::scenario_set_readiness(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("readiness")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("reason")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_what_if" => to_json(commands::scenario_what_if(
+            engines,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "scenario_comparison" => to_json(commands::scenario_comparison(
+            engines,
+            serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
+        )),
+        "vault_status" => to_json(commands::vault_status(engines)),
+        "vault_setup" => to_json(commands::vault_setup(
+            engines,
+            serde_json::from_value(arg("recovery_passphrase")).map_err(|e| e.to_string())?,
+        )),
+        "vault_recover" => to_json(commands::vault_recover(
+            engines,
+            serde_json::from_value(arg("recovery_passphrase")).map_err(|e| e.to_string())?,
+        )),
+        "vault_import" => to_json(commands::vault_import(
+            engines,
+            serde_json::from_value(arg("filename")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("content_base64")).map_err(|e| e.to_string())?,
+            serde_json::from_value(arg("note")).map_err(|e| e.to_string())?,
+        )),
+        "vault_documents" => to_json(commands::vault_documents(engines)),
+        "vault_document_history" => to_json(commands::vault_document_history(
+            engines,
+            serde_json::from_value(arg("document_id")).map_err(|e| e.to_string())?,
+        )),
+        "vault_document_content" => to_json(commands::vault_document_content(
+            engines,
+            serde_json::from_value(arg("version_id")).map_err(|e| e.to_string())?,
+        )),
+        "vault_search" => to_json(commands::vault_search(
+            engines,
+            serde_json::from_value(arg("query")).map_err(|e| e.to_string())?,
+        )),
+        "vault_backup" => to_json(commands::vault_backup(
+            engines,
+            serde_json::from_value(arg("recovery_passphrase")).map_err(|e| e.to_string())?,
+        )),
+        "package_preview" => to_json(commands::package_preview(engines)),
+        "package_export" => to_json(commands::package_export(
+            engines,
+            serde_json::from_value(arg("format")).map_err(|e| e.to_string())?,
+        )),
         other => Err(format!("unknown command: {other}")),
     }
 }
