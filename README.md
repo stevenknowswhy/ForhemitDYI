@@ -112,3 +112,7 @@ Early-stage design. No application code yet — these documents are the conceptu
 The first published journey will be **Employee Ownership**, with the first MVP release scoped to stop at *Professional Review* rather than attempting to automate closing.
 
 The documents deliberately contain open questions requiring professional legal, tax, securities, lending, and fiduciary review. Nothing here constitutes legal, tax, investment, valuation, or financing advice.
+
+## License
+
+This project is proprietary — Copyright (c) 2026 Forhemit, all rights reserved. Use, modification, and redistribution are prohibited without written permission from Forhemit; see [LICENSE](LICENSE).
