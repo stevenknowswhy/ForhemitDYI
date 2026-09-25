@@ -702,6 +702,25 @@ pub fn scenario_family_view(
     family_view(&engines.scenario, &family)
 }
 
+/// Every scenario family this session has created or branched — the
+/// explorer's browse list. Session-scoped by design: the audit stream is
+/// the durable record until engine persistence lands.
+///
+/// # Errors
+///
+/// The family id lock is poisoned or a family lookup fails.
+pub fn scenario_families(engines: &AppEngines) -> Result<Vec<ScenarioFamilyView>, String> {
+    let mut families = Vec::new();
+    for family_id in engines.scenario_family_ids()? {
+        let family = engines
+            .scenario
+            .family(&family_id)
+            .map_err(|error| error.to_string())?;
+        families.push(family_view(&engines.scenario, &family)?);
+    }
+    Ok(families)
+}
+
 /// One scenario version with its full draft — assumptions, unknowns,
 /// constraints, nonnegotiables under test, and conflicts.
 ///
@@ -1251,6 +1270,22 @@ pub fn vault_document_history(
             engine,
             &DocumentId::new(document_id).map_err(|e| e.to_string())?,
         )
+    })
+}
+
+/// Every imported document — the vault screen's list.
+///
+/// # Errors
+///
+/// The vault is not open this session.
+pub fn vault_documents(engines: &AppEngines) -> Result<Vec<VaultDocumentView>, String> {
+    with_open_vault(engines, |engine| {
+        let ids = engine.list_documents().map_err(|error| error.to_string())?;
+        let mut documents = Vec::new();
+        for id in ids {
+            documents.push(document_view(engine, &id)?);
+        }
+        Ok(documents)
     })
 }
 

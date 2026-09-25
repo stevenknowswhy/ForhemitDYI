@@ -158,6 +158,13 @@ fn scenario_create(
 }
 
 #[tauri::command]
+fn scenario_families(
+    state: tauri::State<'_, AppEngines>,
+) -> Result<Vec<views::ScenarioFamilyView>, String> {
+    commands::scenario_families(&state)
+}
+
+#[tauri::command]
 fn scenario_family_view(
     state: tauri::State<'_, AppEngines>,
     family_id: String,
@@ -328,6 +335,13 @@ fn vault_document_content(
 }
 
 #[tauri::command]
+fn vault_documents(
+    state: tauri::State<'_, AppEngines>,
+) -> Result<Vec<views::VaultDocumentView>, String> {
+    commands::vault_documents(&state)
+}
+
+#[tauri::command]
 fn vault_search(
     state: tauri::State<'_, AppEngines>,
     query: String,
@@ -390,6 +404,7 @@ pub fn run() {
             audit_recent,
             audit_verify,
             scenario_create,
+            scenario_families,
             scenario_family_view,
             scenario_version_view,
             scenario_add_assumption,
@@ -407,6 +422,7 @@ pub fn run() {
             vault_setup,
             vault_recover,
             vault_import,
+            vault_documents,
             vault_document_history,
             vault_document_content,
             vault_search,

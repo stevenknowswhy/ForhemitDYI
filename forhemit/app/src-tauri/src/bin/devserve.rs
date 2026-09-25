@@ -132,6 +132,8 @@ fn main() {
             (Method::Get, path) => match asset_under(&config.asset_dir, path) {
                 Some((asset_path, bytes)) => {
                     let content_type = content_type(&asset_path);
+                    // Static header constants — infallible by inspection.
+                    #[allow(clippy::expect_used)]
                     let header =
                         Header::from_bytes("Content-Type", content_type).expect("valid header");
                     let _ = request.respond(Response::from_data(bytes).with_header(header));
@@ -144,6 +146,7 @@ fn main() {
 }
 
 /// Sends a JSON string response and logs a short diagnostic on send failure.
+#[allow(clippy::expect_used)] // header strings are compile-time constants
 fn reply(request: tiny_http::Request, status: u32, body: &str) {
     let header = Header::from_bytes("Content-Type", "application/json; charset=utf-8")
         .expect("valid header");
@@ -223,6 +226,7 @@ fn dispatch(engines: &AppEngines, name: &str, body: &str) -> Result<String, Stri
             engines,
             serde_json::from_value(arg("request")).map_err(|e| e.to_string())?,
         )),
+        "scenario_families" => to_json(commands::scenario_families(engines)),
         "scenario_family_view" => to_json(commands::scenario_family_view(
             engines,
             serde_json::from_value(arg("family_id")).map_err(|e| e.to_string())?,
@@ -303,6 +307,7 @@ fn dispatch(engines: &AppEngines, name: &str, body: &str) -> Result<String, Stri
             serde_json::from_value(arg("content_base64")).map_err(|e| e.to_string())?,
             serde_json::from_value(arg("note")).map_err(|e| e.to_string())?,
         )),
+        "vault_documents" => to_json(commands::vault_documents(engines)),
         "vault_document_history" => to_json(commands::vault_document_history(
             engines,
             serde_json::from_value(arg("document_id")).map_err(|e| e.to_string())?,
