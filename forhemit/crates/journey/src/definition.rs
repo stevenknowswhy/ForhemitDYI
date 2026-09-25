@@ -113,10 +113,15 @@ impl QuestionDef {
     /// The question's allowed choice values. Fixed choices contribute
     /// their values; a `choices_from` question contributes the values
     /// resolved from its source answers (passed in by the engine, which
-    /// owns the answer state).
-    pub fn allowed_values<'a>(&'a self, resolved: &'a [String]) -> Vec<&'a str> {
+    /// owns the answer state). Resolutions carry the source choices'
+    /// full definitions, so presentation metadata rides along with the
+    /// values.
+    pub fn allowed_values<'a>(&'a self, resolved: &'a [ChoiceDef]) -> Vec<&'a str> {
         if self.choices.is_empty() {
-            resolved.iter().map(String::as_str).collect()
+            resolved
+                .iter()
+                .map(|choice| choice.value.as_str())
+                .collect()
         } else {
             self.choices
                 .iter()
@@ -139,7 +144,7 @@ impl QuestionDef {
         &self,
         node_id: &JourneyNodeId,
         value: &AnswerValue,
-        resolved: &[String],
+        resolved: &[ChoiceDef],
     ) -> Result<(), JourneyError> {
         let invalid = |reason: String| JourneyError::InvalidAnswer {
             node_id: node_id.clone(),
@@ -287,6 +292,18 @@ pub struct ChoiceDef {
     pub value: String,
     /// The label the UI shows, verbatim from the journey document.
     pub label: String,
+    /// Balanced, factual gains of choosing this option — what it
+    /// obtains. Optional; absent where no meaningful tradeoff exists.
+    /// Presentation metadata only: it never affects scoring,
+    /// eligibility, or storage. Authored copy is provisional until the
+    /// advisor content review signs it off, and is never a
+    /// recommendation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pros: Option<Vec<String>>,
+    /// What the choice gives up or risks — same discipline as `pros`:
+    /// balanced, factual, optional, never a recommendation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cons: Option<Vec<String>>,
 }
 
 /// The interaction patterns the v0.2 journey uses — the subset of the
@@ -566,6 +583,96 @@ mod tests {
         assert!(matches!(
             JourneyDefinition::parse(&json),
             Err(JourneyError::DefinitionParse(_))
+        ));
+    }
+
+    #[test]
+    fn parses_choices_with_pros_and_cons() {
+        let json = minimal_valid_json().replace(
+            r#"{"value": "a", "label": "A"}"#,
+            r#"{"value": "a", "label": "A", "pros": ["Cash now"], "cons": ["Upside given up"]}"#,
+        );
+        let definition = JourneyDefinition::parse(&json).unwrap();
+        let choices = &definition.nodes[1].question().unwrap().choices;
+        assert_eq!(
+            choices[0].pros.as_deref(),
+            Some(&["Cash now".to_owned()][..])
+        );
+        assert_eq!(
+            choices[0].cons.as_deref(),
+            Some(&["Upside given up".to_owned()][..])
+        );
+        // Options without tradeoffs stay None — the fields are optional
+        // everywhere.
+        assert_eq!(choices[1].pros, None);
+        assert_eq!(choices[1].cons, None);
+    }
+
+    #[test]
+    fn pros_and_cons_round_trip_and_omit_when_absent() {
+        // Without pros/cons: parses, and serialization omits the fields
+        // entirely — existing data files keep parsing byte-for-byte.
+        let plain = JourneyDefinition::parse(&minimal_valid_json()).unwrap();
+        let serialized = serde_json::to_string(&plain).unwrap();
+        assert!(!serialized.contains("\"pros\""));
+        assert!(!serialized.contains("\"cons\""));
+
+        // With pros/cons: they survive a full serialize/parse round-trip.
+        let with = minimal_valid_json().replace(
+            r#"{"value": "a", "label": "A"}"#,
+            r#"{"value": "a", "label": "A", "pros": ["Gains"], "cons": ["Gives up"]}"#,
+        );
+        let parsed = JourneyDefinition::parse(&with).unwrap();
+        let reparsed: JourneyDefinition =
+            serde_json::from_str(&serde_json::to_string(&parsed).unwrap()).unwrap();
+        assert_eq!(parsed, reparsed);
+        assert_eq!(
+            parsed.nodes[1].question().unwrap().choices[0]
+                .pros
+                .as_deref(),
+            Some(&["Gains".to_owned()][..])
+        );
+    }
+
+    #[test]
+    fn rejects_unknown_fields_on_a_choice() {
+        let json = minimal_valid_json().replace(
+            r#"{"value": "a", "label": "A"}"#,
+            r#"{"value": "a", "label": "A", "rank": 1}"#,
+        );
+        assert!(matches!(
+            JourneyDefinition::parse(&json),
+            Err(JourneyError::DefinitionParse(_))
+        ));
+    }
+
+    #[test]
+    fn validate_answer_reads_resolved_choice_defs() {
+        // A choices_from question validates against resolved ChoiceDefs —
+        // the values constrain the answer; the metadata rides along.
+        let definition = JourneyDefinition::parse(&minimal_valid_json()).unwrap();
+        let node = &definition.nodes[1];
+        let question = node.question().unwrap();
+        let resolved = vec![ChoiceDef {
+            value: "a".to_owned(),
+            label: "A".to_owned(),
+            pros: Some(vec!["Gains".to_owned()]),
+            cons: None,
+        }];
+        assert!(question
+            .validate_answer(
+                &node.node_id,
+                &AnswerValue::Single("a".to_owned()),
+                &resolved
+            )
+            .is_ok());
+        assert!(matches!(
+            question.validate_answer(
+                &node.node_id,
+                &AnswerValue::Single("ghost".to_owned()),
+                &resolved
+            ),
+            Err(JourneyError::InvalidAnswer { .. })
         ));
     }
 
