@@ -47,6 +47,28 @@ can no longer accept updates — they must reinstall from a fresh download.
 This is why the private key lives only in CI secrets / a password manager,
 never in the repo.
 
+## Staged key rotation in progress — v0.0.3-test (2026-09-25)
+
+The keypair embedded in every build through v0.0.2 (key ID `B51BC2941FA4113C`)
+is treated as **exposed** and is being retired in two stages, so installed
+v0.0.2 apps keep receiving updates:
+
+1. **v0.0.3 — the transition release.** Its artifacts are **signed with the
+   current (exposure-flagged) key**: the repo secrets
+   `TAURI_SIGNING_PRIVATE_KEY` / `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` still
+   hold that key and were not touched. Meanwhile `plugins.updater.pubkey` in
+   `tauri.conf.json` already embeds the **new** keypair's public half (key ID
+   `F0AD6824F43AC0A1`). Installed v0.0.2 apps verify v0.0.3 against the
+   current key and self-update; v0.0.3 then trusts the new key for every
+   release that follows.
+2. **Before the next tagged release (v0.0.4+).** Swap both repo secrets to
+   the new keypair. The complete backup —
+   `TAURI_SIGNING_PRIVATE_KEY = <private key>` and
+   `TAURI_SIGNING_PRIVATE_KEY_PASSWORD = <password>` — is
+   `forhemit-signing-secrets-v3.txt` in the owner's Forhemit project file
+   library (move it into the password manager with the earlier backups). The
+   current key **retires** at that swap: it must never sign another release.
+
 ## CI secrets — what activates what
 
 The release workflow (`.github/workflows/release.yml`) checks secret

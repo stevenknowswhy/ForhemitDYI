@@ -1481,7 +1481,7 @@ checksum = "aa9a19cbb55df58761df49b23516a86d432839add4af60fc256da840f66ed35b"
 
 [[package]]
 name = "forhemit-app"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "base64 0.22.1",
  "forhemit-audit",
@@ -1508,7 +1508,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-audit"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "forhemit-contracts",
  "forhemit-enginekit",
@@ -1523,7 +1523,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-contracts"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "schemars 1.2.2",
  "serde",
@@ -1533,7 +1533,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-destination"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "forhemit-contracts",
  "forhemit-enginekit",
@@ -1545,14 +1545,14 @@ dependencies = [
 
 [[package]]
 name = "forhemit-enginekit"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "time",
 ]
 
 [[package]]
 name = "forhemit-journey"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "forhemit-contracts",
  "forhemit-enginekit",
@@ -1565,7 +1565,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-package"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "forhemit-contracts",
  "forhemit-enginekit",
@@ -1577,7 +1577,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-reality"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "forhemit-contracts",
  "forhemit-enginekit",
@@ -1589,7 +1589,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-scenario"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "forhemit-contracts",
  "forhemit-enginekit",
@@ -1602,7 +1602,7 @@ dependencies = [
 
 [[package]]
 name = "forhemit-vault"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "aes-gcm",
  "age",
