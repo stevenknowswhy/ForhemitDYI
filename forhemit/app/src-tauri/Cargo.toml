@@ -15,6 +15,33 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
+forhemit-audit = { path = "../../crates/audit" }
+forhemit-contracts = { workspace = true }
+forhemit-destination = { path = "../../crates/destination" }
+forhemit-enginekit = { workspace = true }
+forhemit-journey = { path = "../../crates/journey" }
+forhemit-reality = { path = "../../crates/reality" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true, features = ["serde"] }
+ulid = { workspace = true }
+
+# Dev-only local harness (`--features dev-server`): serves the same command
+# functions over a localhost socket so a plain browser can dogfood the UI.
+# Never enabled in release builds; the zero-network rule for engine crates
+# is untouched (this is the adapter layer, not an engine).
+tiny_http = { version = "0.12", optional = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[features]
+dev-server = ["dep:tiny_http"]
 
 [lints]
 workspace = true
+
+[[bin]]
+name = "forhemit_devserve"
+path = "src/bin/devserve.rs"
+required-features = ["dev-server"]
