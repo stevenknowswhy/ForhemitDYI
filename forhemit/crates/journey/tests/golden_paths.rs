@@ -623,6 +623,60 @@ fn revising_an_answer_supersedes_without_erasing_history() {
 // event and no persisted state.
 // ---------------------------------------------------------------------------
 
+/// The pros/cons rework left the definition at v0.2: an instance
+/// recorded against the reworked data file still persists, still loads
+/// through the app-restart path (the version-equality check passes),
+/// and resumes on the same question.
+#[test]
+fn an_instance_recorded_against_the_reworked_file_still_loads_at_v0_2() {
+    let definition = forhemit_journey::load_employee_ownership_v0_2().unwrap();
+    assert_eq!(definition.version.as_str(), "0.2");
+    // The reworked file actually carries tradeoff metadata.
+    assert!(definition.nodes.iter().any(|node| node
+        .question()
+        .is_some_and(|question| question.choices.iter().any(|choice| choice.pros.is_some()))));
+
+    let sink = RecordingSink::default();
+    let store = MemoryJourneyStore::new();
+    let engine = JourneyEngine::new(
+        &FixedClock,
+        &sink,
+        &store,
+        WorkspaceId::new("ws_golden").unwrap(),
+    );
+    let actor = owner_actor();
+    let id = JourneyInstanceId::new("inst_fixture").unwrap();
+    let mut instance = engine.start(&definition, id.clone(), &actor).unwrap();
+    engine
+        .record(
+            &mut instance,
+            &definition,
+            &RecordAnswer {
+                node_id: JourneyNodeId::new("primary_objective").unwrap(),
+                value: AnswerValue::Single("substantial_cash_at_closing".to_owned()),
+            },
+            &actor,
+        )
+        .unwrap();
+
+    // The persisted document round-trips through its envelope, and the
+    // engine's load path accepts the stored instance under the same
+    // v0.2 definition — no DefinitionMismatch, walk resumes.
+    let document = instance.to_document();
+    let json = serde_json::to_string(&document).unwrap();
+    let restored: forhemit_journey::JourneyInstanceDocument = serde_json::from_str(&json).unwrap();
+    let restored_instance = forhemit_journey::JourneyInstance::from_document(restored).unwrap();
+    assert_eq!(
+        restored_instance
+            .current_node
+            .as_ref()
+            .map(JourneyNodeId::as_str),
+        Some("secondary_objectives")
+    );
+    let reloaded = engine.load(&definition, &id).unwrap();
+    assert_eq!(reloaded, restored_instance);
+}
+
 #[test]
 fn required_questions_cannot_be_skipped_and_future_answers_are_rejected() {
     let definition = forhemit_journey::load_employee_ownership_v0_2().unwrap();

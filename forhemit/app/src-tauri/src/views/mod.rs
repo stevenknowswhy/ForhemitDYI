@@ -41,6 +41,26 @@ pub struct ChoiceView {
     pub value: String,
     /// The label the UI shows.
     pub label: String,
+    /// Balanced, factual gains of choosing this option — what it
+    /// obtains. Present when the definition's choice carries tradeoff
+    /// copy; never a recommendation, never score-affecting.
+    pub pros: Option<Vec<String>>,
+    /// What the choice gives up or risks — same discipline as `pros`.
+    pub cons: Option<Vec<String>>,
+}
+
+/// A question the owner passed without an answer, labeled for the
+/// decision history. `JourneyView::skipped` carries bare node ids;
+/// this view adds the title and stage the history rail renders.
+#[derive(Clone, Debug, Serialize)]
+pub struct SkippedNodeView {
+    /// The skipped question's node id.
+    pub node_id: String,
+    /// The question's heading.
+    pub title: String,
+    /// The stage the question belongs to — the history rail groups by
+    /// stage.
+    pub stage: String,
 }
 
 /// A question the walk is asking (or re-asking in revise mode).
@@ -161,6 +181,9 @@ pub struct JourneyView {
     pub answered: Vec<AnsweredView>,
     /// Questions passed without an answer.
     pub skipped: Vec<String>,
+    /// The skipped questions with their titles and stages — the
+    /// labeled form the decision history renders.
+    pub skipped_nodes: Vec<SkippedNodeView>,
     /// Nonnegotiables derived from answers.
     pub nonnegotiables: Vec<MarkedNonnegotiableView>,
     /// Questions addressed vs definition total.
@@ -205,6 +228,7 @@ pub fn journey_view(
             .iter()
             .map(|node_id| node_id.as_str().to_owned())
             .collect(),
+        skipped_nodes: skipped_node_views(definition, instance),
         nonnegotiables: instance
             .nonnegotiables
             .iter()
@@ -281,6 +305,8 @@ fn resolved_choices(
             .map(|choice| ChoiceView {
                 value: choice.value.clone(),
                 label: choice.label.clone(),
+                pros: choice.pros.clone(),
+                cons: choice.cons.clone(),
             })
             .collect();
     }
@@ -297,11 +323,36 @@ fn resolved_choices(
                 choices.push(ChoiceView {
                     value: choice.value.clone(),
                     label: choice.label.clone(),
+                    // Inherited from the source question's choice — the
+                    // fields ride along, or secondary questions silently
+                    // drop their tradeoffs.
+                    pros: choice.pros.clone(),
+                    cons: choice.cons.clone(),
                 });
             }
         }
     }
     choices
+}
+
+/// The skipped questions with their titles and stages, in skip order —
+/// the definition lookup the bare `skipped` ids lack.
+fn skipped_node_views(
+    definition: &JourneyDefinition,
+    instance: &JourneyInstance,
+) -> Vec<SkippedNodeView> {
+    instance
+        .skipped
+        .iter()
+        .map(|node_id| {
+            let node = definition.node(node_id);
+            SkippedNodeView {
+                node_id: node_id.as_str().to_owned(),
+                title: node.map_or_else(String::new, |node| node.title.clone()),
+                stage: node.map_or_else(String::new, |node| node.stage.clone()),
+            }
+        })
+        .collect()
 }
 
 /// Content screens between the last visited node (or the start) and the
@@ -417,6 +468,8 @@ fn answered_view(definition: &JourneyDefinition, record: &AnswerRecord) -> Answe
                     .map(|choice| ChoiceView {
                         value: choice.value.clone(),
                         label: choice.label.clone(),
+                        pros: choice.pros.clone(),
+                        cons: choice.cons.clone(),
                     })
                     .collect()
             })
@@ -463,8 +516,8 @@ mod tests {
     #![allow(clippy::unwrap_used, clippy::expect_used)] // tests: failures must panic the test
 
     use super::*;
-    use forhemit_contracts::JourneyInstanceId;
-    use forhemit_journey::{JourneyEngine, MemoryJourneyStore};
+    use forhemit_contracts::{JourneyInstanceId, JourneyNodeId};
+    use forhemit_journey::{JourneyEngine, MemoryJourneyStore, RecordAnswer, SkipNode};
 
     /// Starts a real walk through the engine over the embedded definition.
     fn started_instance(engines: &AppEngines, instance_id: &str) -> JourneyInstance {
@@ -484,6 +537,59 @@ mod tests {
             .unwrap()
     }
 
+    /// Records one answer through a real engine over the embedded
+    /// definition — the same production path the views observe.
+    fn record_answer(
+        engines: &AppEngines,
+        store: &MemoryJourneyStore,
+        instance: &mut JourneyInstance,
+        node: &str,
+        value: AnswerValue,
+    ) {
+        let engine = JourneyEngine::new(
+            engines.clock.as_ref(),
+            engines.tee.as_ref(),
+            store,
+            engines.workspace_id.clone(),
+        );
+        engine
+            .record(
+                instance,
+                &engines.definition,
+                &RecordAnswer {
+                    node_id: JourneyNodeId::new(node).unwrap(),
+                    value,
+                },
+                &engines.actor,
+            )
+            .unwrap();
+    }
+
+    /// Exits one optional question on the walk.
+    fn skip_node(
+        engines: &AppEngines,
+        store: &MemoryJourneyStore,
+        instance: &mut JourneyInstance,
+        node: &str,
+    ) {
+        let engine = JourneyEngine::new(
+            engines.clock.as_ref(),
+            engines.tee.as_ref(),
+            store,
+            engines.workspace_id.clone(),
+        );
+        engine
+            .skip(
+                instance,
+                &engines.definition,
+                &SkipNode {
+                    node_id: JourneyNodeId::new(node).unwrap(),
+                },
+                &engines.actor,
+            )
+            .unwrap();
+    }
+
     #[test]
     fn a_fresh_walk_shows_the_welcome_screen_first() {
         let engines = crate::test_support::opened_engines();
@@ -495,6 +601,133 @@ mod tests {
         assert_eq!(view.progress.total, 24);
         assert_eq!(view.progress.done, 0);
         assert_eq!(view.status, "in_progress");
+    }
+
+    #[test]
+    fn choice_views_carry_the_definitions_pros_and_cons() {
+        let engines = crate::test_support::opened_engines();
+        let instance = started_instance(&engines, "inst_pros_cons");
+        let view = journey_view(&engines, &instance).unwrap();
+        let current = view.current.as_ref().unwrap();
+        assert_eq!(current.node_id, "primary_objective");
+        let cash = current
+            .choices
+            .iter()
+            .find(|choice| choice.value == "substantial_cash_at_closing")
+            .unwrap();
+        // Authored tradeoffs ride through the fixed-choice producer.
+        assert!(!cash.pros.as_ref().unwrap().is_empty());
+        assert!(!cash.cons.as_ref().unwrap().is_empty());
+        // Explicit-uncertainty options stay copyless.
+        let unsure = current
+            .choices
+            .iter()
+            .find(|choice| choice.value == "not_sure_help_me_explore")
+            .unwrap();
+        assert_eq!(unsure.pros, None);
+        assert_eq!(unsure.cons, None);
+    }
+
+    #[test]
+    fn choices_from_questions_inherit_pros_and_cons_from_their_sources() {
+        let engines = crate::test_support::opened_engines();
+        let store = MemoryJourneyStore::new();
+        let mut instance = started_instance(&engines, "inst_inherit");
+        // Two selections keep the ranking question on the walk ahead of
+        // the nonnegotiable sweep.
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "primary_objective",
+            AnswerValue::Single("substantial_cash_at_closing".to_owned()),
+        );
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_objectives",
+            AnswerValue::Multi(vec![
+                "retire_completely".to_owned(),
+                "preserve_jobs".to_owned(),
+            ]),
+        );
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_ranking",
+            AnswerValue::Ranking(vec![
+                "preserve_jobs".to_owned(),
+                "retire_completely".to_owned(),
+            ]),
+        );
+
+        let view = journey_view(&engines, &instance).unwrap();
+        let sweep = view.current.as_ref().unwrap();
+        assert_eq!(sweep.node_id, "nonnegotiable_sweep");
+        let cash = sweep
+            .choices
+            .iter()
+            .find(|choice| choice.value == "substantial_cash_at_closing")
+            .unwrap();
+        // Inherited from the primary objective's authored tradeoffs —
+        // the fields rode along through choices_from resolution.
+        assert!(!cash.pros.as_ref().unwrap().is_empty());
+        assert!(!cash.cons.as_ref().unwrap().is_empty());
+        let retire = sweep
+            .choices
+            .iter()
+            .find(|choice| choice.value == "retire_completely")
+            .unwrap();
+        // The select-up-to-3 sources carry no tradeoff copy, so none is
+        // inherited — options without tradeoffs simply show none.
+        assert_eq!(retire.pros, None);
+        assert_eq!(retire.cons, None);
+    }
+
+    #[test]
+    fn skipped_nodes_carry_their_titles_and_stages() {
+        let engines = crate::test_support::opened_engines();
+        let store = MemoryJourneyStore::new();
+        let mut instance = started_instance(&engines, "inst_skip");
+        // One selection keeps the ranking question from firing, so the
+        // sweep follows the secondary objectives directly.
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "primary_objective",
+            AnswerValue::Single("substantial_cash_at_closing".to_owned()),
+        );
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_objectives",
+            AnswerValue::Multi(vec!["retire_completely".to_owned()]),
+        );
+        skip_node(&engines, &store, &mut instance, "nonnegotiable_sweep");
+        skip_node(&engines, &store, &mut instance, "avoid_outcomes");
+
+        let view = journey_view(&engines, &instance).unwrap();
+        assert_eq!(view.skipped_nodes.len(), 2);
+        assert_eq!(view.skipped_nodes[0].node_id, "nonnegotiable_sweep");
+        assert_eq!(
+            view.skipped_nodes[0].title,
+            "Which of your objectives are nonnegotiable?"
+        );
+        assert_eq!(view.skipped_nodes[0].stage, "nonnegotiables");
+        assert_eq!(view.skipped_nodes[1].node_id, "avoid_outcomes");
+        assert_eq!(view.skipped_nodes[1].stage, "avoid");
+        // The bare-id list is unchanged for existing consumers.
+        assert_eq!(
+            view.skipped,
+            vec![
+                "nonnegotiable_sweep".to_owned(),
+                "avoid_outcomes".to_owned()
+            ]
+        );
     }
 
     #[test]

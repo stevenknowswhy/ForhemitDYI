@@ -16,7 +16,7 @@ use forhemit_enginekit::{AuditSink, Clock};
 use serde::{Deserialize, Serialize};
 
 use crate::answer::{AnswerRecord, AnswerValue, AnswerVersion};
-use crate::definition::JourneyDefinition;
+use crate::definition::{ChoiceDef, JourneyDefinition};
 use crate::error::JourneyError;
 use crate::instance::{InstanceStatus, JourneyInstance};
 use crate::scope::StorageScope;
@@ -522,15 +522,17 @@ impl<'a> JourneyEngine<'a> {
     }
 
     /// The choice set a `choices_from` question resolves from the
-    /// answers so far, in source-question order — values the owner
-    /// actually selected. Fixed-choice questions resolve to an empty
-    /// slice; their allowed values come from the definition.
+    /// answers so far, in source-question order — the source choices'
+    /// full definitions, so presentation metadata (pros/cons) rides
+    /// along with the values the owner actually selected. Fixed-choice
+    /// questions resolve to an empty vec; their choice set lives in the
+    /// definition itself.
     fn resolved_choices(
         &self,
         instance: &JourneyInstance,
         definition: &JourneyDefinition,
         question: &crate::definition::QuestionDef,
-    ) -> Vec<String> {
+    ) -> Vec<ChoiceDef> {
         let mut resolved = Vec::new();
         for source in question.choices_from.iter().flatten() {
             let Some(node) = definition.node(source) else {
@@ -545,7 +547,7 @@ impl<'a> JourneyEngine<'a> {
                     .latest_value(source)
                     .is_some_and(|value| value.contains(&allowed.value))
                 {
-                    resolved.push(allowed.value.clone());
+                    resolved.push(allowed.clone());
                 }
             }
         }
