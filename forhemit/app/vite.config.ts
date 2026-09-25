@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 
@@ -15,4 +16,11 @@ export default defineConfig({
     minify: "esbuild",
     sourcemap: false,
   },
+  test: {
+    environment: "jsdom",
+  },
+  // Under vitest's SSR transform, `svelte` resolves to its server runtime,
+  // where mount/lifecycle functions are unavailable. Force the client
+  // (browser) build for test runs only; production builds are untouched.
+  resolve: process.env.VITEST ? { conditions: ["browser"] } : undefined,
 });
