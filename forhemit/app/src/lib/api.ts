@@ -26,6 +26,7 @@ import type {
   ScenarioFamilyView,
   ScenarioVersionView,
   UnknownWire,
+  VaultDocumentHistoryView,
   VaultDocumentView,
   VaultSearchHitView,
   VaultStatusView,
@@ -71,7 +72,7 @@ async function postCommand<T>(name: string, args: object): Promise<T> {
   return (await response.json()) as T;
 }
 
-async function tauriInvoke<T>(name: string, args: object): Promise<T> {
+async function tauriInvoke<T>(name: string, args: Record<string, unknown>): Promise<T> {
   const { invoke } = await import("@tauri-apps/api/core");
   return invoke<T>(name, args);
 }
@@ -199,7 +200,7 @@ export const api = {
     }),
   vaultDocuments: () => call<VaultDocumentView[]>("vault_documents"),
   vaultDocumentHistory: (documentId: string) =>
-    call<VaultDocumentView>("vault_document_history", { document_id: documentId }),
+    call<VaultDocumentHistoryView>("vault_document_history", { document_id: documentId }),
   vaultDocumentContent: (versionId: string) =>
     call<VaultVersionContentView>("vault_document_content", { version_id: versionId }),
   vaultSearch: (query: string) => call<VaultSearchHitView[]>("vault_search", { query }),

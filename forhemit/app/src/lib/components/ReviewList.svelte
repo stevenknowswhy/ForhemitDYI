@@ -46,7 +46,12 @@
   function built_content_fallback(_draft: DraftState): DestinationContent {
     // Unreachable in practice (the walk gates the review screen); render
     // the draft as unanswered instead of lying about content.
-    return buildContent({ ...draft, welcome: "not_sure_yet" }).content;
+    const built = buildContent({ ...draft, welcome: "not_sure_yet" });
+    if ("error" in built) {
+      // Loud, not silent — a rule the engine would refuse is a bug upstream.
+      throw new Error(built.error);
+    }
+    return built.content;
   }
 </script>
 

@@ -6,8 +6,8 @@
   // provenance block, and the package carries the not-advice disclosure.
   import { api } from "../api";
   import LayerChip from "./LayerChip.svelte";
-  import { PROVENANCES, SCENARIO_TYPES, vocabLabel } from "../vocab";
-  import type { PackagePreviewView, ProvenanceCountView } from "../types";
+  import { timeLabel } from "./bits";
+  import type { PackagePreviewView } from "../types";
 
   let preview = $state<PackagePreviewView | null>(null);
   let loading = $state(true);
@@ -32,19 +32,12 @@
     void loadPreview();
   });
 
-  function provenanceText(counts: ProvenanceCountView[]): string {
-    if (counts.length === 0) return "no facts recorded yet";
-    return counts
-      .map((count) => `${count.count} ${vocabLabel(PROVENANCES, count.provenance).split(" — ")[0]}`)
-      .join(", ");
-  }
-
   async function exportPackage() {
     exporting = true;
     error = null;
     notice = null;
     try {
-      const saved = format === "pdf" ? await api.packageExportPdf() : await api.packageExportHtml();
+      const saved = await api.packageExport(format);
       notice = `Saved “${saved.file_name}” in ${saved.saved_path} — this file is yours to share; nothing was uploaded.`;
       await loadPreview();
     } catch (e) {
@@ -83,19 +76,19 @@
       <dl class="prov-grid">
         <div>
           <dt>Destination</dt>
-          <dd>v{preview.destination_version_number}</dd>
+          <dd>v{preview.provenance.destination_version_number}</dd>
         </div>
         <div>
           <dt>Journey version used</dt>
-          <dd>{preview.journey_version}</dd>
+          <dd>{preview.provenance.journey_version_used}</dd>
         </div>
         <div>
-          <dt>Business Reality facts</dt>
-          <dd>{provenanceText(preview.provenance_counts)}</dd>
+          <dt>Business Reality version</dt>
+          <dd class="mono">{preview.provenance.business_reality_version_id.slice(0, 12)}…</dd>
         </div>
         <div>
           <dt>Assembled</dt>
-          <dd>{preview.generated_at}</dd>
+          <dd>{timeLabel(preview.created_at)}</dd>
         </div>
       </dl>
     </section>
@@ -103,34 +96,24 @@
     <section class="panel">
       <h2>Included in the package</h2>
       <ul class="sections">
-        {#each preview.sections as section (section.key)}
+        {#each preview.sections as section (section.number)}
           <li>
             <strong>{section.title}</strong>
-            <p class="meta">{section.summary}</p>
+            <p class="meta">{section.blocks.length} {section.blocks.length === 1 ? "entry" : "entries"}</p>
           </li>
         {/each}
       </ul>
 
       <h3>Scenarios — included on readiness, not on merit</h3>
-      {#if preview.included_scenarios.length === 0}
+      {#if preview.provenance.included_scenario_version_ids.length === 0}
         <p class="empty">
           No scenario is ready enough to include. Build one to
           READY_FOR_PROFESSIONAL_REVIEW on the Scenarios screen.
         </p>
       {:else}
         <ul class="scenarios">
-          {#each preview.included_scenarios as scenario (scenario.scenario_version_id)}
-            <li>
-              <strong>{scenario.name}</strong>
-              <span class="meta">v{scenario.version_number} · {vocabLabel(SCENARIO_TYPES, scenario.scenario_type)}</span>
-              <p class="meta">
-                {scenario.assumption_count} {scenario.assumption_count === 1 ? "assumption" : "assumptions"},
-                {scenario.open_unknown_count} open {scenario.open_unknown_count === 1 ? "unknown" : "unknowns"},
-                {scenario.unresolved_conflict_count} unresolved
-                {scenario.unresolved_conflict_count === 1 ? "conflict" : "conflicts"} —
-                carried into the package as stated, never smoothed over.
-              </p>
-            </li>
+          {#each preview.provenance.included_scenario_version_ids as scenarioVersionId (scenarioVersionId)}
+            <li><span class="mono">{scenarioVersionId.slice(0, 12)}…</span> — ready for professional review</li>
           {/each}
         </ul>
       {/if}
@@ -142,15 +125,12 @@
         Exclusions are recorded, not hidden: a professional sees what was not
         ready and why it was left out.
       </p>
-      {#if preview.exclusions.length === 0}
+      {#if preview.provenance.excluded_scenarios.length === 0}
         <p class="empty">Nothing excluded.</p>
       {:else}
         <ul class="exclusions">
-          {#each preview.exclusions as exclusion (exclusion.scenario_version_id)}
-            <li>
-              <strong>{exclusion.name}</strong> <span class="meta">v{exclusion.version_number}</span> —
-              {exclusion.reason}
-            </li>
+          {#each preview.provenance.excluded_scenarios as exclusion (exclusion.scenario_version_id)}
+            <li><strong>{exclusion.name}</strong> — {exclusion.readiness}</li>
           {/each}
         </ul>
       {/if}
@@ -193,6 +173,7 @@
   .sections li { border-left: 3px solid var(--accent, #2f6f4f); padding-left: 10px; }
   .exclusions li { border-left: 3px solid #e5c9a3; padding-left: 10px; }
   .meta { color: var(--text-3, #888); font-size: 0.8rem; margin: 2px 0 0; }
+  .mono { font-family: ui-monospace, monospace; font-size: 0.85em; }
   .hint { color: var(--text-2, #555); font-size: 0.9rem; }
   .empty { color: var(--text-3, #888); }
   .export-row { display: flex; gap: 8px; align-items: center; max-width: 560px; }

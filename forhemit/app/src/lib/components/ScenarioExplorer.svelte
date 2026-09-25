@@ -325,6 +325,19 @@
 
   // One comparison dimension per comparison in this first UI; the engine
   // accepts more, and every cell points at dimension 0.
+  // The owner picked versions by name in the "add" dropdown — rows keep
+  // that name (ids are plumbing, not reading material).
+  function versionLabel(versionId: string): string {
+    for (const family of families) {
+      for (const version of family.versions) {
+        if (version.scenario_version_id === versionId) {
+          return `${version.name} v${version.version_number}`;
+        }
+      }
+    }
+    return `${versionId.slice(0, 12)}…`;
+  }
+
   async function recordComparison() {
     error = null;
     try {
@@ -481,7 +494,7 @@
                     {vocabLabel(VERIFICATIONS, assumption.verification)}
                   </div>
                   <label class="override">
-                    <input type="checkbox" bind:checked={branchOverrides} value={assumption.assumption_id} />
+                    <input type="checkbox" bind:group={branchOverrides} value={assumption.assumption_id} />
                     override in branch
                   </label>
                 </li>
@@ -610,7 +623,7 @@
                   {/if}
                   {#if conflict.resolved}
                     <div class="meta">
-                      Decided — {vocabLabel(OWNER_DECISIONS, conflict.nonnegotiable?.owner_decision ?? "")}
+                      Decided — {conflict.owner_decision ?? conflict.nonnegotiable?.owner_decision ?? "(recorded in the audit trail)"}
                     </div>
                   {:else}
                     <div class="decision-row">
@@ -652,7 +665,10 @@
               </button>
             </div>
           </details>
+        {/if}
 
+        {#if headVersion}
+        {#key headVersion.scenario_version_id}
           <details class="panel">
             <summary>What-if branch — explore a change without rewriting anything</summary>
             <div class="form">
@@ -673,6 +689,7 @@
               </button>
             </div>
           </details>
+        {/key}
         {/if}
 
         <details class="panel">
@@ -710,7 +727,7 @@
             </div>
             {#each comparisonVersionIds as versionId (versionId)}
               <div class="cell-row">
-                <span class="meta">{versionId.slice(0, 12)}…</span>
+                <span class="meta">{versionLabel(versionId)}</span>
                 <input type="text" placeholder="Factual reading (optional)" bind:value={comparisonCells[versionId]} />
                 <select bind:value={comparisonCells[`outcome:${versionId}`]}>
                   {#each COMPARISON_OUTCOMES as option (option.value)}
@@ -739,7 +756,7 @@
                 <tbody>
                   {#each comparison.scenario_version_ids as versionId (versionId)}
                     <tr>
-                      <td>{versionId.slice(0, 12)}…</td>
+                      <td>{versionLabel(versionId)}</td>
                       {#each comparison.dimensions as dimension (dimension.index)}
                         {@const cell = comparison.cells.find(
                           (candidate) =>
@@ -795,7 +812,7 @@
             {/if}
             {#each facts as fact (fact.fact_version_id)}
               <label class="fact-row">
-                <input type="checkbox" bind:checked={createFactIds} value={fact.fact_version_id} />
+                <input type="checkbox" bind:group={createFactIds} value={fact.fact_version_id} />
                 {fact.kind} — {fact.period}
               </label>
             {/each}

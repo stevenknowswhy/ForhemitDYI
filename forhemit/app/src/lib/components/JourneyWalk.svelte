@@ -202,7 +202,7 @@
     <LayerChip kind="system" />
     <button type="button" class="primary" onclick={onSnapshot}>Continue to your Business Snapshot →</button>
   </div>
-{:else}
+{:else if displayed}
   <div class="walk">
     <ProgressBar done={view.progress.done} total={view.progress.total}
       label={`Question ${Math.min(view.progress.done + 1, view.progress.total)} of ${view.progress.total}`} />
