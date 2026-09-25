@@ -14,11 +14,15 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 use forhemit_audit::AuditStore;
-use forhemit_contracts::{ActorRecord, AuditEventDraft, JourneyInstanceId, WorkspaceId};
+use forhemit_contracts::{
+    ActorRecord, AuditEventDraft, JourneyInstanceId, ScenarioFamilyId, WorkspaceId,
+};
 use forhemit_destination::Destination;
 use forhemit_enginekit::{AuditError, AuditSink, Clock, SystemClock};
 use forhemit_journey::{JourneyDefinition, SqliteJourneyStore};
 use forhemit_reality::RealityEngine;
+use forhemit_scenario::ScenarioEngine;
+use forhemit_vault::{MemoryKeyStore, OsKeyRing, VaultEngine, VaultKeyStore};
 use serde::{Deserialize, Serialize};
 
 /// The shell's workspace identity. v1 is single-workspace, single-device.
@@ -81,8 +85,23 @@ impl AuditSink<AuditEventDraft> for TeeSink {
     }
 }
 
+/// The vault's open state in the shell: the engine holds the vault key
+/// only while the slot is open — "vault locked" is a state the shell
+/// surfaces, never works around (Vault doc §50).
+pub enum VaultSlot {
+    /// No vault has been created in this workspace yet.
+    NotSetUp,
+    /// The vault is open — import, search, and export all work.
+    Open {
+        /// The engine over the encrypted store and the open key. Boxed so
+        /// the closed state does not pay the engine's size.
+        engine: Box<VaultEngine>,
+    },
+}
+
 /// The shell's domain state: the destination aggregate, the active walk,
-/// and the session audit log.
+/// the vault slot, the in-memory scenario families, and the session
+/// audit log.
 pub struct AppEngines {
     /// The workspace every engine writes under.
     pub workspace_id: WorkspaceId,
@@ -99,11 +118,21 @@ pub struct AppEngines {
     pub tee: Arc<TeeSink>,
     /// The Business Reality engine over the shared sink.
     pub reality: RealityEngine<TeeSink>,
+    /// The scenario engine over the shared sink (in-memory families;
+    /// the audit stream is the durable record).
+    pub scenario: ScenarioEngine<TeeSink>,
+    /// The vault key store — the OS keychain in release builds; the
+    /// shell has no keychain in headless development, so dev builds use
+    /// a memory store and the locked/recovery states are exercised
+    /// across restarts.
+    pub vault_keystore: Arc<dyn VaultKeyStore>,
     /// The pinned EOJ v0.2 definition the app walks.
     pub definition: JourneyDefinition,
     data_dir: PathBuf,
     log: Arc<Mutex<Vec<AuditLogLine>>>,
     session: Mutex<Session>,
+    vault: Mutex<VaultSlot>,
+    scenario_family_ids: Mutex<Vec<ScenarioFamilyId>>,
 }
 
 struct Session {
@@ -174,6 +203,13 @@ impl AppEngines {
             .transpose()
             .map_err(|error| error.to_string())?;
 
+        let scenario = ScenarioEngine::new(tee.clone(), clock.clone(), workspace_id.clone());
+        let vault_keystore: Arc<dyn VaultKeyStore> = if cfg!(debug_assertions) {
+            Arc::new(MemoryKeyStore::default())
+        } else {
+            Arc::new(OsKeyRing)
+        };
+
         Ok(Self {
             workspace_id,
             actor: owner_actor(),
@@ -182,6 +218,8 @@ impl AppEngines {
             journey_store: Arc::new(journey_store),
             tee,
             reality,
+            scenario,
+            vault_keystore,
             definition,
             data_dir: data_dir.to_path_buf(),
             log,
@@ -189,6 +227,8 @@ impl AppEngines {
                 destination,
                 active_journey,
             }),
+            vault: Mutex::new(VaultSlot::NotSetUp),
+            scenario_family_ids: Mutex::new(Vec::new()),
         })
     }
 
@@ -284,6 +324,62 @@ impl AppEngines {
                 instance_id: instance_id.as_str().to_owned(),
             },
         )
+    }
+
+    /// The vault database file's path (exists once a vault was created).
+    #[must_use]
+    pub fn vault_path(&self) -> PathBuf {
+        self.data_dir.join("vault.sqlite3")
+    }
+
+    /// The directory package exports and vault backups are saved to —
+    /// created on demand.
+    ///
+    /// # Errors
+    ///
+    /// The directory cannot be created.
+    pub fn exports_dir(&self) -> Result<PathBuf, String> {
+        let dir = self.data_dir.join("exports");
+        std::fs::create_dir_all(&dir).map_err(|error| format!("create exports dir: {error}"))?;
+        Ok(dir)
+    }
+
+    /// Runs `f` with the vault slot. Lock discipline: never call back
+    /// into `self` from `f`.
+    pub fn with_vault<R>(&self, f: impl FnOnce(&mut VaultSlot) -> R) -> Result<R, String> {
+        let mut slot = self.vault.lock().map_err(|_| "vault lock poisoned")?;
+        Ok(f(&mut slot))
+    }
+
+    /// The scenario families created this session, oldest first — the
+    /// engine keeps no list-all, so the shell tracks the ids it created.
+    ///
+    /// # Errors
+    ///
+    /// The id-list lock is poisoned.
+    pub fn scenario_family_ids(&self) -> Result<Vec<ScenarioFamilyId>, String> {
+        Ok(self
+            .scenario_family_ids
+            .lock()
+            .map_err(|_| "scenario family lock poisoned")?
+            .clone())
+    }
+
+    /// Records a newly created scenario family id so the explorer can
+    /// list it.
+    ///
+    /// # Errors
+    ///
+    /// The id-list lock is poisoned.
+    pub fn remember_scenario_family(&self, family_id: &ScenarioFamilyId) -> Result<(), String> {
+        let mut ids = self
+            .scenario_family_ids
+            .lock()
+            .map_err(|_| "scenario family lock poisoned")?;
+        if !ids.contains(family_id) {
+            ids.push(family_id.clone());
+        }
+        Ok(())
     }
 }
 
