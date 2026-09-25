@@ -10,10 +10,13 @@
   import JourneyWalk from "./lib/components/JourneyWalk.svelte";
   import SnapshotView from "./lib/components/SnapshotView.svelte";
   import AuditView from "./lib/components/AuditView.svelte";
+  import ScenarioExplorer from "./lib/components/ScenarioExplorer.svelte";
+  import VaultView from "./lib/components/VaultView.svelte";
+  import PackageExport from "./lib/components/PackageExport.svelte";
   import LayerChip from "./lib/components/LayerChip.svelte";
   import type { Destination, DestinationVersion } from "./lib/types";
 
-  type View = "home" | "builder" | "journey" | "snapshot" | "audit";
+  type View = "home" | "builder" | "journey" | "snapshot" | "scenarios" | "vault" | "package" | "audit";
 
   let view = $state<View>("home");
   let destination = $state<Destination | null>(null);
@@ -98,6 +101,9 @@
       <button type="button" class:active={view === "journey"} onclick={() => (view = "journey")}>Journey</button>
       <button type="button" class:active={view === "snapshot"} onclick={() => (view = "snapshot")}>Business Snapshot</button>
     {/if}
+    <button type="button" class:active={view === "scenarios"} onclick={() => (view = "scenarios")}>Scenarios</button>
+    <button type="button" class:active={view === "vault"} onclick={() => (view = "vault")}>Vault</button>
+    <button type="button" class:active={view === "package"} onclick={() => (view = "package")}>Review Package</button>
     <button type="button" class:active={view === "audit"} onclick={() => (view = "audit")}>Audit</button>
   </nav>
 </header>
@@ -117,6 +123,12 @@
     <JourneyWalk onSnapshot={() => (view = "snapshot")} />
   {:else if view === "snapshot"}
     <SnapshotView onAudit={() => (view = "audit")} />
+  {:else if view === "scenarios"}
+    <ScenarioExplorer />
+  {:else if view === "vault"}
+    <VaultView />
+  {:else if view === "package"}
+    <PackageExport />
   {:else if view === "audit"}
     <AuditView onHome={() => { view = "home"; void loadDestination(); }} />
   {:else if loading}
