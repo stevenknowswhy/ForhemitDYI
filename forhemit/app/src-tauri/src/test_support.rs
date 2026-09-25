@@ -6,6 +6,7 @@ use crate::state::AppEngines;
 /// Opens engines over a fresh temporary workspace. The temp directory is
 /// intentionally leaked (test process lifetime) so the engines' open
 /// SQLite handles and persisted files stay valid for the whole test.
+#[allow(clippy::expect_used)] // test setup: failing loudly on a scratch dir is the honest failure mode
 pub(crate) fn opened_engines() -> AppEngines {
     let dir = tempfile::TempDir::new().expect("scratch workspace dir");
     let path = dir.path().to_path_buf();
