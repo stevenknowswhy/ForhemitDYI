@@ -31,7 +31,7 @@ publish = false
 [workspace.dependencies]
 forhemit-contracts = { path = "crates/contracts" }
 forhemit-enginekit = { path = "crates/enginekit" }
-aes-gcm = "0.10"
+aes-gcm = "0.11"
 age = "0.11"
 argon2 = "0.5"
 base64 = "0.22"
