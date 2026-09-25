@@ -85,6 +85,12 @@ then every release is the clearly labeled unsigned tester build.
 
 ### macOS — Apple Developer Program
 
+**Current mode:** updater-signed, OS-unsigned — releases carry valid minisign
+updater signatures, but the `.app`/`.dmg` are ad-hoc codesigned and not
+notarized until the Apple Developer Program enrollment below is done. The
+Gatekeeper workarounds in [INSTALL.md](./INSTALL.md) still apply to these
+builds.
+
 1. Enroll in the Apple Developer Program (organization or individual) and
    wait for activation.
 2. Create a **Developer ID Application** certificate (Xcode or
