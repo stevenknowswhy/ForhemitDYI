@@ -91,25 +91,33 @@ jobs:
           HAS_SIGNING_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY != '' }}
         run: |
           if [ "$HAS_SIGNING_KEY" = "true" ]; then
+            echo "signed=true" >> "$GITHUB_OUTPUT"
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
             echo "releaseName=Forhemit ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
             echo "releaseBody=Installer and updater artifacts for ${GITHUB_REF_NAME}. v1 is local-only: the app never uploads your information; the only network call is the explicit update check, which refuses unsigned or stale manifests." >> "$GITHUB_OUTPUT"
           else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
             echo "prerelease=true" >> "$GITHUB_OUTPUT"
             echo "releaseName=Forhemit ${GITHUB_REF_NAME} — unsigned tester build" >> "$GITHUB_OUTPUT"
             echo "releaseBody=TESTER BUILD — not notarized (macOS) and not Authenticode-signed (Windows); the auto-updater is disabled for this build because its artifacts carry no updater signature. Install steps, including the Gatekeeper and SmartScreen workarounds this build requires: distribution/INSTALL.md in the repository. v1 is local-only: the app never uploads your information." >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build and stage release artifacts
+      # Signing secrets are set ONLY on the signed step. GitHub exposes absent
+      # secrets as empty strings, and set-but-empty env entries make the
+      # bundler treat signing as configured: an empty TAURI_SIGNING_PRIVATE_KEY
+      # fails to decode as a secret key, an empty APPLE_CERTIFICATE fails the
+      # macOS keychain import. Absent secrets must be absent env entries.
+      # The unsigned build also omits the release overlay — with no key there
+      # is nothing to sign updater artifacts with, so we do not ask for them.
+      - name: Build and stage release artifacts (signed)
+        if: steps.label.outputs.signed == 'true'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Updater artifact signing (minisign). Absent = no updater
-          # artifacts, no latest.json, labeled unsigned.
+          # Updater artifact signing (minisign).
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          # macOS: Developer ID signing + notarization. Absent = ad-hoc
-          # signing, clearly labeled not-yet-notarized.
+          # macOS: Developer ID signing + notarization.
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
@@ -117,7 +125,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           # Windows: Authenticode (the action imports the .pfx and signs the
-          # NSIS/MSI installers). Absent = unsigned installers.
+          # NSIS/MSI installers).
           WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         with:
@@ -132,10 +140,21 @@ jobs:
           # setup.exe as the Windows update artifact when both bundles exist.
           uploadUpdaterJson: true
           updaterJsonPreferNsis: true
-          # The release overlay turns on updater artifact creation; unsigned
-          # tester builds (no key) still build — they just produce no
-          # updater artifacts to sign.
           args: ${{ matrix.args }} --config src-tauri/tauri.release.conf.json
+
+      - name: Build and stage release artifacts (unsigned tester)
+        if: steps.label.outputs.signed != 'true'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: forhemit/app
+          tagName: ${{ github.ref_name }}
+          releaseName: ${{ steps.label.outputs.releaseName }}
+          releaseBody: ${{ steps.label.outputs.releaseBody }}
+          releaseDraft: true
+          prerelease: ${{ steps.label.outputs.prerelease }}
+          args: ${{ matrix.args }}
 
   # Visible only after every target succeeded — latest.json is complete.
   publish-release:
