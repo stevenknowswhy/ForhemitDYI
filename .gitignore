@@ -21,3 +21,7 @@ forhemit/target/
 # Frontend dependencies and build output (app/)
 forhemit/app/node_modules/
 forhemit/app/dist/
+
+# Generated at release time by src-tauri/scripts/gen-azure-signing-config.mjs
+# (Azure Artifact Signing overlay) — never project content.
+forhemit/app/src-tauri/tauri.azure-signing.conf.json

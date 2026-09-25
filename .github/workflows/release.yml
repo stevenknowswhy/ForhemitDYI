@@ -11,6 +11,13 @@
 # - OS-level signing is additive: set the Apple (Developer ID + notarization)
 #   or Windows (Authenticode) secrets and the action signs — no workflow
 #   change. Absent secrets mean ad-hoc / unsigned installers.
+# - Windows Authenticode has two MUTUALLY EXCLUSIVE paths: the .pfx import
+#   (WINDOWS_CERTIFICATE*) or Azure Artifact Signing — the cloud signer, run
+#   via signtool + Microsoft's signing dlib through a generated
+#   bundle.windows.signCommand overlay. A signing-config gate job fails the
+#   run when both paths are set (ambiguous) or the Azure set is partial; it
+#   never silently picks a signer. With no signing secrets at all the run is
+#   byte-for-byte the plain unsigned build.
 #
 # The release is created as a DRAFT and published only after every target
 # finishes, so `latest.json` is complete (all platforms) the moment it is
@@ -34,8 +41,64 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # Windows signing has two mutually exclusive secret sets (see
+  # distribution/SIGNING.md): the .pfx import or Azure Artifact Signing.
+  # Ambiguity is a config error, so it fails the run before any build starts
+  # rather than silently picking a signer — and a half-configured cloud
+  # signer must not quietly ship unlabeled unsigned installers either.
+  # Outputs the resolved mode for the build job: none | pfx | azure.
+  signing-config:
+    name: signing config gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      mode: ${{ steps.gate.outputs.mode }}
+    steps:
+      - name: Refuse ambiguous or partial signing configuration
+        id: gate
+        env:
+          HAS_PFX: ${{ secrets.WINDOWS_CERTIFICATE != '' }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          AZURE_SIGNING_CERT_PROFILE: ${{ secrets.AZURE_SIGNING_CERT_PROFILE }}
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+        run: |
+          azure_names="AZURE_TENANT_ID AZURE_CLIENT_ID AZURE_CLIENT_SECRET AZURE_SIGNING_ACCOUNT AZURE_SIGNING_CERT_PROFILE AZURE_SIGNING_ENDPOINT"
+          azure_set=0
+          azure_missing=""
+          for name in $azure_names; do
+            if [ -n "${!name}" ]; then
+              azure_set=$((azure_set + 1))
+            else
+              azure_missing="${azure_missing:+$azure_missing, }$name"
+            fi
+          done
+
+          if [ "$azure_set" -gt 0 ] && [ "$azure_set" -lt 6 ]; then
+            echo "::error::Partial Azure Artifact Signing configuration: missing ${azure_missing}. Set all six secrets (distribution/SIGNING.md) or none of them — a half-configured cloud signer must not silently ship unsigned installers."
+            exit 1
+          fi
+
+          if [ "$HAS_PFX" = "true" ] && [ "$azure_set" -eq 6 ]; then
+            echo "::error::Ambiguous Windows signing configuration: both WINDOWS_CERTIFICATE (.pfx) and the Azure Artifact Signing secrets are set. Unset one of the two paths — this workflow refuses to guess which signer to use."
+            exit 1
+          fi
+
+          if [ "$azure_set" -eq 6 ]; then
+            mode=azure
+          elif [ "$HAS_PFX" = "true" ]; then
+            mode=pfx
+          else
+            mode=none
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "Windows signing mode: ${mode}"
+
   build:
     name: build (${{ matrix.platform }} ${{ matrix.target }})
+    needs: signing-config
     strategy:
       fail-fast: false
       matrix:
@@ -102,15 +165,85 @@ jobs:
             echo "releaseBody=TESTER BUILD — not notarized (macOS) and not Authenticode-signed (Windows); the auto-updater is disabled for this build because its artifacts carry no updater signature. Install steps, including the Gatekeeper and SmartScreen workarounds this build requires: distribution/INSTALL.md in the repository. v1 is local-only: the app never uploads your information." >> "$GITHUB_OUTPUT"
           fi
 
-      # Signing secrets are set ONLY on the signed step. GitHub exposes absent
-      # secrets as empty strings, and set-but-empty env entries make the
-      # bundler treat signing as configured: an empty TAURI_SIGNING_PRIVATE_KEY
-      # fails to decode as a secret key, an empty APPLE_CERTIFICATE fails the
-      # macOS keychain import. Absent secrets must be absent env entries.
-      # The unsigned build also omits the release overlay — with no key there
-      # is nothing to sign updater artifacts with, so we do not ask for them.
-      - name: Build and stage release artifacts (signed)
-        if: steps.label.outputs.signed == 'true'
+      # Azure Artifact Signing path (mode == 'azure'): prepare the Microsoft
+      # signing dlib and generate the config overlay that routes Windows
+      # signing through signtool. The overlay's signCommand runs as a child of
+      # `tauri build`, BEFORE the bundler hashes/updates-signs each artifact —
+      # so the minisign signatures in latest.json cover the signed bytes.
+      # The client secret never touches disk: the dlib authenticates from the
+      # three AZURE_* env vars set on the Azure build step below
+      # (DefaultAzureCredential → EnvironmentCredential).
+      - name: Prepare Azure Artifact Signing (dlib + sign overlay)
+        if: matrix.platform == 'windows-latest' && needs.signing-config.outputs.mode == 'azure' && steps.label.outputs.signed == 'true'
+        shell: pwsh
+        env:
+          AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          AZURE_SIGNING_CERT_PROFILE: ${{ secrets.AZURE_SIGNING_CERT_PROFILE }}
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ProgressPreference = 'SilentlyContinue'
+          $dir = Join-Path $env:RUNNER_TEMP 'azure-signing'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+
+          # Signing dlib (pinned): a nupkg is just a zip. The dlib needs
+          # .NET 8 + the VC++ runtime — both preinstalled on hosted runners.
+          Invoke-WebRequest -Uri 'https://www.nuget.org/api/v2/package/Microsoft.ArtifactSigning.Client/1.0.128' -OutFile (Join-Path $dir 'dlib.nupkg')
+          Expand-Archive -Path (Join-Path $dir 'dlib.nupkg') -DestinationPath (Join-Path $dir 'dlib')
+          $dlib = Get-ChildItem (Join-Path $dir 'dlib') -Recurse -Filter 'Azure.CodeSigning.Dlib.dll' |
+            Where-Object { $_.FullName -match 'x64' } |
+            Select-Object -First 1
+          if (-not $dlib) { throw 'Azure.CodeSigning.Dlib.dll (x64) not found in the extracted dlib package' }
+
+          # signtool from the newest installed Windows SDK; the dlib needs
+          # >= 10.0.22621.
+          $kits = 'C:\Program Files (x86)\Windows Kits\10\bin'
+          $signtoolDir = Get-ChildItem $kits -Directory |
+            Where-Object { $_.Name -match '^\d+(\.\d+){3}$' -and (Test-Path (Join-Path $_.FullName 'x64\signtool.exe')) } |
+            Sort-Object { [version]$_.Name } -Descending |
+            Select-Object -First 1
+          if (-not $signtoolDir) { throw "signtool.exe not found under $kits" }
+          if ([version]$signtoolDir.Name -lt [version]'10.0.22621.0') { throw "signtool $($signtoolDir.Name) is too old for the Azure dlib (need >= 10.0.22621.0)" }
+          $signtool = Join-Path $signtoolDir.FullName 'x64\signtool.exe'
+
+          if (-not $env:AZURE_SIGNING_ENDPOINT) { throw 'AZURE_SIGNING_ENDPOINT is empty — the signing-config gate should have caught this' }
+          $metadata = Join-Path $dir 'metadata.json'
+          @{
+            Endpoint = $env:AZURE_SIGNING_ENDPOINT
+            CodeSigningAccountName = $env:AZURE_SIGNING_ACCOUNT
+            CertificateProfileName = $env:AZURE_SIGNING_CERT_PROFILE
+            # Pin auth to the service principal (env creds): the dlib's
+            # DefaultAzureCredential must never fall back to managed-identity
+            # or interactive attempts on a headless runner.
+            ExcludeCredentials = @(
+              'WorkloadIdentityCredential', 'ManagedIdentityCredential', 'SharedTokenCacheCredential',
+              'VisualStudioCredential', 'VisualStudioCodeCredential', 'AzureCliCredential',
+              'AzurePowerShellCredential', 'AzureDeveloperCliCredential', 'InteractiveBrowserCredential'
+            )
+          } | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 $metadata
+
+          # Merge the static release overlay with the Azure signCommand.
+          $env:TAURI_AZURE_SIGNTOOL = $signtool
+          $env:TAURI_AZURE_DLIB = $dlib.FullName
+          $env:TAURI_AZURE_METADATA = $metadata
+          node "$env:GITHUB_WORKSPACE\forhemit\app\src-tauri\scripts\gen-azure-signing-config.mjs"
+          if ($LASTEXITCODE -ne 0) { throw "gen-azure-signing-config failed with exit $LASTEXITCODE" }
+
+          Write-Host "Azure Artifact Signing: endpoint=$($env:AZURE_SIGNING_ENDPOINT) account=$($env:AZURE_SIGNING_ACCOUNT) profile=$($env:AZURE_SIGNING_CERT_PROFILE)"
+          Write-Host "signtool: $signtool"
+          Write-Host "dlib: $($dlib.FullName)"
+
+      # Signing secrets are set ONLY on the matching signed step. GitHub
+      # exposes absent secrets as empty strings, and set-but-empty env entries
+      # make the bundler treat signing as configured: an empty
+      # TAURI_SIGNING_PRIVATE_KEY fails to decode as a secret key, an empty
+      # APPLE_CERTIFICATE fails the macOS keychain import. Absent secrets must
+      # be absent env entries — hence one signed step per Windows path, so the
+      # Azure step can simply omit the .pfx entries. The unsigned build also
+      # omits the release overlay — with no key there is nothing to sign
+      # updater artifacts with, so we do not ask for them.
+      - name: Build and stage release artifacts (signed, .pfx)
+        if: steps.label.outputs.signed == 'true' && needs.signing-config.outputs.mode != 'azure'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,6 +274,47 @@ jobs:
           uploadUpdaterJson: true
           updaterJsonPreferNsis: true
           args: ${{ matrix.args }} --config src-tauri/tauri.release.conf.json
+
+      # Azure variant of the signed build: identical except the .pfx entries
+      # are absent (the gate guarantees they are unset in azure mode) and the
+      # Windows runner points --config at the generated signCommand overlay.
+      # On macOS/Linux the Azure overlay does not exist (and its signCommand
+      # is only read by the Windows bundler), so those targets keep the
+      # static release overlay.
+      - name: Build and stage release artifacts (signed, Azure Artifact Signing)
+        if: steps.label.outputs.signed == 'true' && needs.signing-config.outputs.mode == 'azure'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Updater artifact signing (minisign).
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # macOS: Developer ID signing + notarization.
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Azure Artifact Signing auth for the dlib — read via
+          # DefaultAzureCredential (EnvironmentCredential) when signtool runs.
+          # Account/profile/endpoint live in the dlib's metadata.json instead.
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        with:
+          projectPath: forhemit/app
+          tagName: ${{ github.ref_name }}
+          releaseName: ${{ steps.label.outputs.releaseName }}
+          releaseBody: ${{ steps.label.outputs.releaseBody }}
+          releaseDraft: true
+          prerelease: ${{ steps.label.outputs.prerelease }}
+          # Static-JSON updater: latest.json is generated from the signed
+          # artifacts and attached to the draft release; prefer the NSIS
+          # setup.exe as the Windows update artifact when both bundles exist.
+          uploadUpdaterJson: true
+          updaterJsonPreferNsis: true
+          args: ${{ matrix.args }} --config ${{ matrix.platform == 'windows-latest' && 'src-tauri/tauri.azure-signing.conf.json' || 'src-tauri/tauri.release.conf.json' }}
 
       - name: Build and stage release artifacts (unsigned tester)
         if: steps.label.outputs.signed != 'true'
