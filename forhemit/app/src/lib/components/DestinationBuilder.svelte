@@ -20,7 +20,10 @@
   import LayerChip from "./LayerChip.svelte";
   import ProgressBar from "./ProgressBar.svelte";
   import NonnegotiableRow from "./NonnegotiableRow.svelte";
+  import ProsConsColumn from "./ProsConsColumn.svelte";
+  import DecisionHistory from "./DecisionHistory.svelte";
   import ReviewList from "./ReviewList.svelte";
+  import { builderHistory, selectedScreenChoice } from "./builderHistory";
 
   let { onDone, onHome, seed = null }:
     { onDone: (destination: Destination) => void; onHome: () => void; seed?: DestinationContent | null } =
@@ -40,6 +43,8 @@
   const isReview = $derived(screen.interaction === "review");
   const progressDone = $derived(position);
   const progressTotal = $derived(SCREENS.length - 1);
+  const historyNodes = $derived(builderHistory(draft, position));
+  const selectedChoice = $derived(selectedScreenChoice(screen, draft));
 
   // Editing an existing destination: pre-fill the draft from the stored
   // content and mark the save as a new version.
@@ -56,6 +61,27 @@
   function back() {
     error = null;
     if (position > 0) position -= 1;
+  }
+
+  /** The pros/cons moment: hold the screen ~600ms after a single-select
+   *  pick so the tradeoff column registers, then auto-advance. Any other
+   *  navigation off this screen (manual Continue, Back, a rail jump)
+   *  invalidates the pending advance — the guard makes late timers no-ops. */
+  function settleThenNext() {
+    const at = position;
+    setTimeout(() => {
+      if (position === at) next();
+    }, 600);
+  }
+
+  /** Jump-to-any-step over the 13 screens: the draft is never touched, so
+   *  every answer given so far survives the jump. Nothing persists until
+   *  the final wholesale submit. */
+  function jumpToScreen(screenId: string) {
+    const index = SCREENS.findIndex((s) => s.id === screenId);
+    if (index === -1) return;
+    error = null;
+    position = index;
   }
 
   // Toggle a multi-select participant value.
@@ -155,6 +181,8 @@
 <div class="builder">
   <ProgressBar done={progressDone} total={progressTotal} label={`Screen ${screen.number} of ${SCREENS.length}`} />
 
+  <DecisionHistory answered={historyNodes} skipped={[]} revisingNodeId={null} onSelect={jumpToScreen} />
+
   {#if editMode}
     <div class="edit-banner">
       <strong>Editing your destination</strong> — a new version will be created; the original is
@@ -179,6 +207,10 @@
     <span class="screen-number">{screen.number}</span> {screen.title}
   </h2>
   <p class="prompt">{screen.prompt}</p>
+  <details class="why-disclosure">
+    <summary>Why this screen</summary>
+    <p>{screen.why}</p>
+  </details>
 
   {#if screen.interaction === "decision"}
     <div class="choices">
@@ -189,11 +221,10 @@
           class:selected={draft.welcome === choice.value}
           onclick={() => {
             draft.welcome = choice.value;
-            next();
+            settleThenNext();
           }}
         >
           <span class="choice-label">{choice.label}</span>
-          {#if choice.detail}<span class="choice-detail">{choice.detail}</span>{/if}
         </button>
       {/each}
     </div>
@@ -206,14 +237,14 @@
           class:selected={draft.financial.choice === choice.value}
           onclick={() => {
             draft.financial.choice = choice.value as never;
-            next();
+            settleThenNext();
           }}
         >
           <span class="choice-label">{choice.label}</span>
         </button>
       {/each}
       <button type="button" class="choice subtle" class:selected={draft.financial.choice === null && draft.welcome !== ""}
-        onclick={() => { draft.financial.choice = null; next(); }}>
+        onclick={() => { draft.financial.choice = null; settleThenNext(); }}>
         <span class="choice-label">I'm not sure</span>
         <span class="choice-detail">A first-class answer — never forced certainty.</span>
       </button>
@@ -474,6 +505,10 @@
     {/each}
   {/if}
 
+  {#if selectedChoice}
+    <ProsConsColumn pros={selectedChoice.pros} cons={selectedChoice.cons} />
+  {/if}
+
   {#if error}
     <p class="error" role="alert">{error}</p>
   {/if}
@@ -482,7 +517,6 @@
     <button type="button" class="secondary" onclick={back} disabled={position === 0 || busy}>
       ← Back
     </button>
-    <span class="why">{screen.why}</span>
     {#if isReview}
       <button type="button" class="primary" disabled={busy} onclick={() => void finish("confirm")}>
         {editMode ? "Save new version" : "Confirm — this is the outcome I'm trying to create"}
@@ -512,7 +546,10 @@
     width: 30px; height: 30px; border-radius: 50%;
     background: var(--accent, #2f6f4f); color: white; font-size: 0.85rem;
   }
-  .prompt { color: var(--text-2, #555); margin: 0 0 16px; }
+  .prompt { color: var(--text-2, #555); margin: 0 0 8px; }
+  .why-disclosure { margin: 0 0 16px; font-size: 0.85rem; }
+  .why-disclosure summary { cursor: pointer; color: var(--text-3, #777); width: fit-content; }
+  .why-disclosure p { margin: 8px 0 0; color: var(--text-2, #555); }
   .choices { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
   .choice {
     text-align: left; padding: 12px 16px; border-radius: 10px;
@@ -541,7 +578,6 @@
   .nav {
     display: flex; align-items: center; gap: 12px; margin-top: 20px; flex-wrap: wrap;
   }
-  .nav .why { flex: 1; font-size: 0.78rem; color: var(--text-3, #888); font-style: italic; }
   button.primary, button.secondary {
     padding: 10px 18px; border-radius: 10px; font: inherit; cursor: pointer; border: 1px solid transparent;
   }
