@@ -166,4 +166,11 @@ jobs:
       - name: Publish the drafted release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false --latest
+        run: |
+          # One call cannot both un-draft and mark latest: GitHub validates
+          # "latest" while the release is still a draft in the same request
+          # (422 "Latest release cannot be draft or prerelease"). Flip the
+          # states first, then mark latest.
+          gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false
+          gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --prerelease=false
+          gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --latest
