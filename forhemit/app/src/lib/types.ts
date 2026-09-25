@@ -88,7 +88,7 @@ export type OwnerRole =
   | "continuing_owner_operator";
 
 export type TransitionTiming =
-  | "within_12_months"
+  | "within12_months"
   | "1_to_3_years"
   | "3_to_5_years"
   | "more_than_five_years"
@@ -228,6 +228,7 @@ export interface AnsweredView {
   text: string;
   interaction: string;
   choices: ChoiceView[];
+  decision_layer: string | null;
   value: AnswerValue;
   versions: AnswerVersionView[];
 }

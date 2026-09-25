@@ -8,7 +8,7 @@
   import { answerSummary, reasonLabel, timeLabel } from "./bits";
   import LayerChip from "./LayerChip.svelte";
   import ProgressBar from "./ProgressBar.svelte";
-  import type { AnswerValue, JourneyView, QuestionView } from "../types";
+  import type { AnsweredView, AnswerValue, JourneyView, QuestionView } from "../types";
 
   let { onSnapshot }: { onSnapshot: () => void } = $props();
 
@@ -24,18 +24,21 @@
   let multiDraft = $state<string[]>([]);
   let rankDraft = $state<string[]>([]);
 
-  function resetDrafts(question: QuestionView | null) {
+  function seedDrafts(value: AnswerValue | null) {
     singleDraft = null;
     multiDraft = [];
     rankDraft = [];
     numericDraft = "";
-    if (question?.current_value) {
-      const value = question.current_value;
+    if (value) {
       if (typeof value === "object" && "single" in value) singleDraft = value.single;
       if (typeof value === "object" && "multi" in value) multiDraft = value.multi;
       if (typeof value === "object" && "ranking" in value) rankDraft = value.ranking;
       if (typeof value === "object" && "amount" in value) numericDraft = String(value.amount);
     }
+  }
+
+  function resetDrafts(question: QuestionView | null) {
+    seedDrafts(question?.current_value ?? null);
   }
 
   async function load() {
@@ -62,7 +65,9 @@
     busy = true;
     try {
       if (revisingNodeId) {
-        view = await api.journeyRevise(view.current.node_id, value, reviseReason);
+        // Revise the node whose answer is being changed — never the
+        // node the walk happens to be sitting on.
+        view = await api.journeyRevise(revisingNodeId, value, reviseReason);
         revisingNodeId = null;
       } else {
         view = await api.journeyRecord(view.current.node_id, value);
@@ -73,6 +78,16 @@
     } finally {
       busy = false;
     }
+  }
+
+  function startRevision(answer: AnsweredView) {
+    revisingNodeId = answer.node_id;
+    seedDrafts(answer.value);
+  }
+
+  function cancelRevision() {
+    revisingNodeId = null;
+    resetDrafts(view?.current ?? null);
   }
 
   async function skip() {
@@ -96,7 +111,7 @@
 
   function submitMulti() {
     if (multiDraft.length === 0) return;
-    const interaction = view?.current?.interaction;
+    const interaction = displayed?.interaction;
     void submit(
       interaction === "select_up_to_3"
         ? { multi: multiDraft.slice(0, 3) }
@@ -136,7 +151,31 @@
     else multiDraft = [...multiDraft, value];
   }
 
-  const layer = $derived(layerLabel(view?.current?.decision_layer ?? null));
+  // While revising, the walk re-asks the past question in place, pre-filled
+  // with its recorded value; otherwise it shows the current question.
+  const revising = $derived(
+    revisingNodeId
+      ? view?.answered.find((answer) => answer.node_id === revisingNodeId) ?? null
+      : null,
+  );
+  const displayed = $derived<QuestionView | null>(
+    revising
+      ? {
+          node_id: revising.node_id,
+          title: revising.title,
+          text: revising.text,
+          why_we_ask: null,
+          interaction: revising.interaction,
+          choices: revising.choices,
+          required: true,
+          decision_layer: revising.decision_layer,
+          stage: "revise",
+          is_current: false,
+          current_value: revising.value,
+        }
+      : view?.current ?? null,
+  );
+  const layer = $derived(layerLabel(displayed?.decision_layer ?? null));
 </script>
 
 {#if error}
@@ -175,9 +214,9 @@
       </div>
     {/each}
 
-    {#if revisingNodeId}
+    {#if revising}
       <div class="revise-banner">
-        <strong>Revising “{view.current.title}”</strong> — a new answer version is created; the old one is kept.
+        <strong>Revising “{revising.title}”</strong> — a new answer version is created; the old one is kept.
         <label class="field">
           Why are you changing this answer?
           <select bind:value={reviseReason}>
@@ -192,10 +231,10 @@
       </div>
     {/if}
 
-    <h2>{view.current.title}</h2>
-    <p class="prompt">{view.current.text}</p>
-    {#if view.current.why_we_ask}
-      <p class="why">Why we ask: {view.current.why_we_ask}</p>
+    <h2>{displayed.title}</h2>
+    <p class="prompt">{displayed.text}</p>
+    {#if displayed.why_we_ask}
+      <p class="why">Why we ask: {displayed.why_we_ask}</p>
     {/if}
 
     {#if layer}
@@ -203,8 +242,8 @@
     {/if}
 
     <div class="choices">
-      {#if view.current.interaction === "single_select" || view.current.interaction === "yes_no"}
-        {#each view.current.choices as choiceItem}
+      {#if displayed.interaction === "single_select" || displayed.interaction === "yes_no"}
+        {#each displayed.choices as choiceItem}
           <button type="button" class="choice" class:selected={singleDraft === choiceItem.value}
             onclick={() => (singleDraft = choiceItem.value)}>
             <span class="choice-label">{choiceItem.label}</span>
@@ -214,8 +253,8 @@
           onclick={() => (singleDraft = "not_sure")}>
           <span class="choice-label">I'm not sure</span>
         </button>
-      {:else if view.current.interaction === "multi_select" || view.current.interaction === "select_up_to_3"}
-        {#each view.current.choices as choiceItem}
+      {:else if displayed.interaction === "multi_select" || displayed.interaction === "select_up_to_3"}
+        {#each displayed.choices as choiceItem}
           <button type="button" class="choice" class:selected={multiDraft.includes(choiceItem.value)}
             onclick={() => toggleMulti(choiceItem.value)}>
             <span class="choice-label">{choiceItem.label}</span>
@@ -225,9 +264,9 @@
           onclick={() => toggleMulti("not_sure")}>
           <span class="choice-label">I'm not sure</span>
         </button>
-      {:else if view.current.interaction === "ranking"}
+      {:else if displayed.interaction === "ranking"}
         <p class="note">Pick the items that matter, in order — most important first.</p>
-        {#each view.current.choices as choiceItem}
+        {#each displayed.choices as choiceItem}
           <div class="rank-row">
             <button type="button" class="choice rank-main" class:selected={rankDraft.includes(choiceItem.value)}
               onclick={() => toggleRank(choiceItem.value)}>
@@ -244,7 +283,7 @@
             {/if}
           </div>
         {/each}
-      {:else if view.current.interaction === "numeric"}
+      {:else if displayed.interaction === "numeric"}
         <label class="field">
           Your amount (whole dollars)
           <input type="number" min="0" bind:value={numericDraft} placeholder="e.g. 500000" />
@@ -252,32 +291,32 @@
         <button type="button" class="choice subtle" onclick={() => void submit({ amount: 0 })}>
           <span class="choice-label">I'm not sure — skip the number for now</span>
         </button>
-      {:else if view.current.interaction === "confirm"}
+      {:else if displayed.interaction === "confirm"}
         <p class="note">Review your answers below, then confirm to continue.</p>
       {:else}
-        <p class="note">This question type ({view.current.interaction}) shows its options when the journey defines them.</p>
+        <p class="note">This question type ({displayed.interaction}) shows its options when the journey defines them.</p>
       {/if}
     </div>
 
     <div class="nav">
-      {#if !view.current.required}
+      {#if !displayed.required && !revisingNodeId}
         <button type="button" class="secondary" onclick={() => void skip()} disabled={busy}>
           Skip this question
         </button>
       {/if}
-      {#if view.current.interaction === "confirm"}
+      {#if displayed.interaction === "confirm"}
         <button type="button" class="primary" onclick={() => void submit("confirmed")} disabled={busy}>
           I confirm — continue
         </button>
-      {:else if view.current.interaction === "numeric"}
+      {:else if displayed.interaction === "numeric"}
         <button type="button" class="primary" onclick={submitAmount} disabled={busy || !numericDraft}>
           {revisingNodeId ? "Save new answer version" : "Record answer"} →
         </button>
-      {:else if view.current.interaction === "ranking"}
+      {:else if displayed.interaction === "ranking"}
         <button type="button" class="primary" onclick={submitRanking} disabled={busy || rankDraft.length === 0}>
           {revisingNodeId ? "Save new answer version" : "Record answer"} →
         </button>
-      {:else if view.current.interaction === "multi_select" || view.current.interaction === "select_up_to_3"}
+      {:else if displayed.interaction === "multi_select" || displayed.interaction === "select_up_to_3"}
         <button type="button" class="primary" onclick={submitMulti} disabled={busy || multiDraft.length === 0}>
           {revisingNodeId ? "Save new answer version" : "Record answer"} →
         </button>
@@ -287,7 +326,7 @@
         </button>
       {/if}
       {#if revisingNodeId}
-        <button type="button" class="secondary" onclick={() => { revisingNodeId = null; }}>
+        <button type="button" class="secondary" onclick={cancelRevision}>
           Cancel revision
         </button>
       {/if}
@@ -303,7 +342,7 @@
                 <strong>{answer.title}</strong>
                 <span class="answer-value">{renderAnswerValue(answer.value, answer.choices)}</span>
                 <button type="button" class="link"
-                  onclick={() => { revisingNodeId = answer.node_id; resetDrafts(view?.current ?? null); }}>
+                  onclick={() => startRevision(answer)}>
                   Change answer
                 </button>
               </div>

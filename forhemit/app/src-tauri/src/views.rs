@@ -78,6 +78,8 @@ pub struct AnsweredView {
     pub interaction: String,
     /// The resolved choice set (for re-asking in revise mode).
     pub choices: Vec<ChoiceView>,
+    /// The decision layer the answer belongs to, if any.
+    pub decision_layer: Option<String>,
     /// The latest answer value.
     pub value: AnswerValue,
     /// The answer's version history, oldest first.
@@ -263,8 +265,7 @@ fn resolved_choices(
     }
     let mut choices = Vec::new();
     for source in question.choices_from.iter().flatten() {
-        let Some(source_question) = definition.node(source).and_then(|node| node.question())
-        else {
+        let Some(source_question) = definition.node(source).and_then(|node| node.question()) else {
             continue;
         };
         for choice in &source_question.choices {
@@ -353,10 +354,7 @@ fn screen_view(node: &NodeDef) -> ScreenView {
 }
 
 /// Every answered question in visit order with its version history.
-fn answered_views(
-    definition: &JourneyDefinition,
-    instance: &JourneyInstance,
-) -> Vec<AnsweredView> {
+fn answered_views(definition: &JourneyDefinition, instance: &JourneyInstance) -> Vec<AnsweredView> {
     instance
         .visited
         .iter()
@@ -398,6 +396,10 @@ fn answered_view(definition: &JourneyDefinition, record: &AnswerRecord) -> Answe
                     .collect()
             })
             .unwrap_or_default(),
+        decision_layer: question
+            .as_ref()
+            .and_then(|question| question.decision_layer.as_ref())
+            .map(|layer| snake_case(&format!("{layer:?}"))),
         value: record.latest().value.clone(),
         versions,
     }
@@ -464,10 +466,7 @@ mod tests {
         let view = journey_view(&engines, &instance).unwrap();
         assert_eq!(view.screens_to_show.len(), 1);
         assert_eq!(view.screens_to_show[0].node_id, "welcome");
-        assert_eq!(
-            view.current.as_ref().unwrap().node_id,
-            "primary_objective"
-        );
+        assert_eq!(view.current.as_ref().unwrap().node_id, "primary_objective");
         assert_eq!(view.progress.total, 24);
         assert_eq!(view.progress.done, 0);
         assert_eq!(view.status, "in_progress");

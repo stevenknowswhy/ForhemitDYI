@@ -174,7 +174,7 @@ export const SCREENS: ScreenDef[] = [
     why: "Sets the timing area of your Desired Outcome.",
     interaction: "timing",
     choices: [
-      { value: "within_12_months", label: "Within 12 months" },
+      { value: "within12_months", label: "Within 12 months" },
       { value: "1_to_3_years", label: "1–3 years" },
       { value: "3_to_5_years", label: "3–5 years" },
       { value: "more_than_five_years", label: "More than 5 years" },
@@ -319,8 +319,10 @@ export function emptyObjective<T>(): Objective<T> {
   };
 }
 
-export function objectiveWithValue<T>(value: Answer<T>): Objective<T> {
-  return { ...emptyObjective<T>(), value };
+export function objectiveWithValue<T>(value: T): Objective<T> {
+  // The wire's Answer<T> is "unanswered" | "not_sure" | { answered: T };
+  // call sites pass the substantive value, so wrap it as Answered here.
+  return { ...emptyObjective<T>(), value: { answered: value } };
 }
 
 export function notSureObjective<T>(): Objective<T> {
