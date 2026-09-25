@@ -18,11 +18,19 @@ Three distinct things get "signed" in this pipeline. They are often confused:
 under `plugins.updater.pubkey`. Every build carries it; the updater refuses to
 install anything not signed by the matching private key.
 
-> **⚠️ The currently committed key is a development/test keypair.**
-> It was generated to wire and test the pipeline before signing credentials
-> exist (the open owner decision: Apple Developer ID + Windows certificate —
-> see the pinned spec, "Open questions"). **Rotate before any public
-> distribution:**
+> **⚠️ The updater keypair was rotated on 2026-09-25** (owner-delegated
+> generation): the committed `plugins.updater.pubkey` is the current key,
+> replacing the original development/test keypair. The **private** key goes
+> in the repo secrets `TAURI_SIGNING_PRIVATE_KEY` and
+> `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`; until they are set, a recoverable
+> copy of the private key lives in the owner's Forhemit project file library
+> (`forhemit-updater-signing.key` + `forhemit-updater-signing.key.password`)
+> pending storage in the owner's password manager. Once stored there, the
+> key lives only in CI secrets / the password manager — never in the repo.
+> Installs from tag `v0.0.1-test` embed the retired dev key and cannot
+> receive updates — testers reinstall once (see "Key loss" below).
+>
+> **Future rotations** follow the same procedure:
 >
 > 1. `cd forhemit/app && npm run tauri signer generate -- -w ~/.tauri/forhemit.key`
 >    (use a password; keep it with the key)
@@ -92,8 +100,9 @@ then every release is the clearly labeled unsigned tester build.
    - `APPLE_ID` — that Apple ID's email
    - `APPLE_PASSWORD` — the app-specific password (not the account password)
    - `APPLE_TEAM_ID` — the 10-character team ID
-5. First signed release: consider rotating the updater key first (warning
-   above) so production updater signatures start with the production key.
+5. First signed release: the updater keypair was rotated on 2026-09-25
+   (warning above), so production updater signatures already start with the
+   production key.
 
 ### Windows — Azure Artifact Signing (formerly Trusted Signing)
 

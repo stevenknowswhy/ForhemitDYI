@@ -283,9 +283,11 @@ mod tests {
         OffsetDateTime::parse("2026-09-25T00:00:00Z", &Rfc3339).unwrap()
     }
 
-    /// The base64 public-key line embedded in tauri.conf.json — the dev/test
-    /// updater key (see distribution/SIGNING.md; rotate before public
-    /// distribution).
+    /// The base64 public-key line of the pre-rotation dev/test updater key —
+    /// kept here (with its matching fixture signature) because the verdict
+    /// tests need a self-contained (pubkey, signature) pair and do not read
+    /// tauri.conf.json. The key embedded in the config is the 2026-09-25
+    /// rotation (see distribution/SIGNING.md).
     const FIXTURE_PUBKEY: &str = "RWQcppctTHfjatQgKtXwQBXPvIQohBtJFXraye3ZVK6eYJ2qDyiyTr1g";
 
     /// Fixed artifact bytes the fixture signature covers.
