@@ -2,7 +2,7 @@
   "journey_id": "employee_ownership",
   "title": "Employee Ownership Journey",
   "version": "0.2",
-  "description": "Explore employee ownership for your business: clarify what you want from a transition, explore potential paths, and prepare a plan to discuss with qualified professional advisors. Transcribed verbatim from the pinned journey truth (Employee Ownership Journey v0.2 - Optimized Guided Journey.md); stages 14-19 scenario and team screens are content nodes whose detail the scenario engine and review-package export own.",
+  "description": "Explore employee ownership for your business: clarify what you want from a transition, explore potential paths, and prepare a plan to discuss with qualified professional advisors. Transcribed verbatim from the pinned journey truth (Employee Ownership Journey v0.2 - Optimized Guided Journey.md); stages 14-19 scenario and team screens are content nodes whose detail the scenario engine and review-package export own. PROVISIONAL CONTENT: the pros/cons copy on choices below is draft tradeoff framing authored for the decision-experience rework — it is balanced and factual by rule, never a recommendation, and remains provisional until the advisor content review gate signs it off.",
   "source": "Employee Ownership Journey v0.2 - Optimized Guided Journey.md",
   "start_node": "welcome",
   "nodes": [
@@ -23,9 +23,42 @@
         "why_we_ask": "Your selection establishes the initial Owner Objective. The journey does not ask about ESOPs or other structures yet.",
         "interaction": "single_select",
         "choices": [
-          { "value": "substantial_cash_at_closing", "label": "Get substantial cash at closing" },
-          { "value": "income_over_time", "label": "Create income over time" },
-          { "value": "employees_own_the_company", "label": "Have my employees own the company" },
+          {
+            "value": "substantial_cash_at_closing",
+            "label": "Get substantial cash at closing",
+            "pros": [
+              "Cash now — simplest to reinvest or diversify",
+              "A clean break at closing"
+            ],
+            "cons": [
+              "Future upside if the company keeps growing is given up",
+              "Your role ends unless separately contracted"
+            ]
+          },
+          {
+            "value": "income_over_time",
+            "label": "Create income over time",
+            "pros": [
+              "Predictable personal cash flow for years",
+              "Retains upside during the payout period"
+            ],
+            "cons": [
+              "Depends on the buyer's continued performance",
+              "Inflation erodes fixed payments; exit is delayed"
+            ]
+          },
+          {
+            "value": "employees_own_the_company",
+            "label": "Have my employees own the company",
+            "pros": [
+              "Legacy and culture are preserved",
+              "Employees gain a real stake"
+            ],
+            "cons": [
+              "Slowest path to personal liquidity",
+              "Requires transition capital and governance setup"
+            ]
+          },
           { "value": "not_sure_help_me_explore", "label": "I'm not sure. Help me explore" }
         ],
         "required": true,
@@ -109,15 +142,60 @@
         "why_we_ask": "This creates your negative constraints — the platform now knows not only what you want, but also what you do not want.",
         "interaction": "multi_select",
         "choices": [
-          { "value": "losing_employee_ownership", "label": "Losing employee ownership" },
-          { "value": "outside_buyer", "label": "Selling to an outside buyer" },
-          { "value": "long_term_involvement", "label": "Remaining involved long-term" },
-          { "value": "excessive_debt", "label": "Taking on excessive debt" },
-          { "value": "waiting_years_for_proceeds", "label": "Waiting many years for proceeds" },
-          { "value": "disrupting_employees", "label": "Disrupting employees" },
-          { "value": "moving_the_company", "label": "Moving the company" },
-          { "value": "losing_control_quickly", "label": "Losing control too quickly" },
-          { "value": "unfamiliar_partners", "label": "Taking on unfamiliar partners" },
+          {
+            "value": "losing_employee_ownership",
+            "label": "Losing employee ownership",
+            "pros": ["Scenarios preserve employee-ownership paths"],
+            "cons": ["Exits that trade ownership for speed or certainty are excluded"]
+          },
+          {
+            "value": "outside_buyer",
+            "label": "Selling to an outside buyer",
+            "pros": ["Exploration stays with employee, management, and community paths"],
+            "cons": ["Outside buyers are often the highest-priced bidders — top-of-market exits are excluded"]
+          },
+          {
+            "value": "long_term_involvement",
+            "label": "Remaining involved long-term",
+            "pros": ["Scenarios keep your exit timeline short"],
+            "cons": ["Structures that reward a long transition tenure are excluded"]
+          },
+          {
+            "value": "excessive_debt",
+            "label": "Taking on excessive debt",
+            "pros": ["Scenarios favor lower-leverage structures"],
+            "cons": ["Debt-financed paths — which can preserve more ownership — are constrained"]
+          },
+          {
+            "value": "waiting_years_for_proceeds",
+            "label": "Waiting many years for proceeds",
+            "pros": ["Paths that front-load value are favored"],
+            "cons": ["Deferred-payment structures that can raise the total are constrained"]
+          },
+          {
+            "value": "disrupting_employees",
+            "label": "Disrupting employees",
+            "pros": ["Scenarios weigh workforce continuity heavily"],
+            "cons": ["Restructurings that might raise value but disturb roles are excluded"]
+          },
+          {
+            "value": "moving_the_company",
+            "label": "Moving the company",
+            "pros": ["Scenarios keep the business in place"],
+            "cons": ["Paths that assume relocation are excluded"]
+          },
+          {
+            "value": "losing_control_quickly",
+            "label": "Losing control too quickly",
+            "pros": ["Staged transitions that keep you in charge longer are favored"],
+            "cons": ["Fast, clean-break handovers are constrained"]
+          },
+          {
+            "value": "unfamiliar_partners",
+            "label": "Taking on unfamiliar partners",
+            "pros": ["Exploration favors known counterparties"],
+            "cons": ["Institutional or private-equity capital sources are constrained"]
+          },
           { "value": "nothing_specific", "label": "Nothing specific" }
         ],
         "required": false,
@@ -135,9 +213,24 @@
         "text": "When would you ideally like the transition to happen?",
         "interaction": "single_select",
         "choices": [
-          { "value": "within_1_year", "label": "Within 1 year" },
-          { "value": "one_to_three_years", "label": "1-3 years" },
-          { "value": "three_to_five_years", "label": "3-5 years" },
+          {
+            "value": "within_1_year",
+            "label": "Within 1 year",
+            "pros": ["Fastest route to your goal — momentum and a known date"],
+            "cons": ["Little preparation time; fewer paths may fit the deadline"]
+          },
+          {
+            "value": "one_to_three_years",
+            "label": "1-3 years",
+            "pros": ["Time to prepare the business while keeping a clear clock"],
+            "cons": ["Some personal plans wait on the transition"]
+          },
+          {
+            "value": "three_to_five_years",
+            "label": "3-5 years",
+            "pros": ["The longest runway — value and readiness can compound before a sale"],
+            "cons": ["Proceeds and role changes arrive later"]
+          },
           { "value": "flexible", "label": "I'm flexible" },
           { "value": "not_sure", "label": "I'm not sure" }
         ],
@@ -157,8 +250,18 @@
         "why_we_ask": "If yes, timing becomes a hard constraint.",
         "interaction": "yes_no",
         "choices": [
-          { "value": "yes", "label": "Yes" },
-          { "value": "no", "label": "No" }
+          {
+            "value": "yes",
+            "label": "Yes",
+            "pros": ["Timing becomes a hard constraint every scenario must fit"],
+            "cons": ["Paths that need longer are excluded, even when they fit you otherwise"]
+          },
+          {
+            "value": "no",
+            "label": "No",
+            "pros": ["Scenarios may trade timing for value or structure"],
+            "cons": ["Suggested paths may carry dates well outside your ideal"]
+          }
         ],
         "required": true,
         "storage_scope": "local_private",
@@ -178,9 +281,24 @@
         "text": "After the transaction, how involved would you like to be?",
         "interaction": "single_select",
         "choices": [
-          { "value": "leave_completely", "label": "I want to leave completely" },
-          { "value": "stay_temporarily", "label": "I could stay temporarily" },
-          { "value": "remain_involved", "label": "I'd like to remain involved" }
+          {
+            "value": "leave_completely",
+            "label": "I want to leave completely",
+            "pros": ["A clean break — your time is fully yours at closing"],
+            "cons": ["Continuity rests on the team and the structure; your knowledge must transfer"]
+          },
+          {
+            "value": "stay_temporarily",
+            "label": "I could stay temporarily",
+            "pros": ["You can steady the handover without a long commitment"],
+            "cons": ["A defined exit date still arrives — and can be hard to extend"]
+          },
+          {
+            "value": "remain_involved",
+            "label": "I'd like to remain involved",
+            "pros": ["An ongoing role, income, and influence in the company's future"],
+            "cons": ["Liquidity and freedom arrive gradually rather than at closing"]
+          }
         ],
         "required": true,
         "storage_scope": "local_private",
@@ -197,9 +315,24 @@
         "text": "How long would you be comfortable remaining involved?",
         "interaction": "single_select",
         "choices": [
-          { "value": "less_than_6_months", "label": "Less than 6 months" },
-          { "value": "six_to_eighteen_months", "label": "6-18 months" },
-          { "value": "over_eighteen_months", "label": "18+ months" },
+          {
+            "value": "less_than_6_months",
+            "label": "Less than 6 months",
+            "pros": ["The shortest handover commitment"],
+            "cons": ["Very short tenures can strain continuity and buyer confidence"]
+          },
+          {
+            "value": "six_to_eighteen_months",
+            "label": "6-18 months",
+            "pros": ["Enough time for a structured handover with a clear end"],
+            "cons": ["Your commitment spans one to two business cycles"]
+          },
+          {
+            "value": "over_eighteen_months",
+            "label": "18+ months",
+            "pros": ["Maximum continuity — time to mentor successors and protect value"],
+            "cons": ["Your exit stretches over years; full liquidity is furthest away"]
+          },
           { "value": "flexible", "label": "I'm flexible" }
         ],
         "required": false,
@@ -223,8 +356,18 @@
         "why_we_ask": "Marking it nonnegotiable means it is a must-have for you to move forward.",
         "interaction": "yes_no",
         "choices": [
-          { "value": "yes", "label": "Yes" },
-          { "value": "no", "label": "No" }
+          {
+            "value": "yes",
+            "label": "Yes",
+            "pros": ["Your involvement terms become a hard constraint"],
+            "cons": ["Structures that need different involvement are excluded"]
+          },
+          {
+            "value": "no",
+            "label": "No",
+            "pros": ["Scenarios may adjust your role for a better overall fit"],
+            "cons": ["Suggested paths may assume more or less involvement than you want"]
+          }
         ],
         "required": true,
         "storage_scope": "local_private",
@@ -250,10 +393,30 @@
         "why_we_ask": "Now that the system understands your priorities. If you choose Essential, employee ownership becomes nonnegotiable and the system does not need to ask this again later.",
         "interaction": "single_select",
         "choices": [
-          { "value": "essential", "label": "Essential" },
-          { "value": "very_important", "label": "Very important" },
-          { "value": "explore_it", "label": "I'd like to explore it" },
-          { "value": "open_to_other_options", "label": "I'm open to other options" },
+          {
+            "value": "essential",
+            "label": "Essential",
+            "pros": ["Employee ownership becomes nonnegotiable — every scenario must preserve it"],
+            "cons": ["Paths without meaningful employee ownership are excluded"]
+          },
+          {
+            "value": "very_important",
+            "label": "Very important",
+            "pros": ["Scenarios favor structures with strong employee ownership"],
+            "cons": ["A scenario may still trade some ownership for a goal you rank higher"]
+          },
+          {
+            "value": "explore_it",
+            "label": "I'd like to explore it",
+            "pros": ["Employee-ownership structures stay in the comparison set"],
+            "cons": ["No commitment — other paths remain equally live"]
+          },
+          {
+            "value": "open_to_other_options",
+            "label": "I'm open to other options",
+            "pros": ["The widest path set stays on the table"],
+            "cons": ["Employee ownership may appear in fewer scenarios"]
+          },
           { "value": "not_sure", "label": "I'm not sure" }
         ],
         "required": true,
@@ -441,9 +604,33 @@
         "why_we_ask": "Only now does the application dive deeper into proceeds.",
         "interaction": "single_select",
         "choices": [
-          { "value": "mostly_cash_at_closing", "label": "Mostly cash at closing" },
-          { "value": "mix_cash_and_future_payments", "label": "A mix of cash and future payments" },
-          { "value": "mostly_income_over_time", "label": "Mostly income over time" },
+          {
+            "value": "mostly_cash_at_closing",
+            "label": "Mostly cash at closing",
+            "pros": [
+              "Certainty — value is set and paid at the closing table",
+              "Simplest to reinvest or diversify"
+            ],
+            "cons": ["The total may be lower than structures that defer part of the price"]
+          },
+          {
+            "value": "mix_cash_and_future_payments",
+            "label": "A mix of cash and future payments",
+            "pros": ["Cash at closing plus payments over time"],
+            "cons": ["Part of your value depends on the buyer's future performance"]
+          },
+          {
+            "value": "mostly_income_over_time",
+            "label": "Mostly income over time",
+            "pros": [
+              "Predictable personal cash flow for years",
+              "Retains upside during the payout period"
+            ],
+            "cons": [
+              "Depends on the buyer's continued performance",
+              "Full liquidity is delayed"
+            ]
+          },
           { "value": "flexible", "label": "I'm flexible" },
           { "value": "not_sure", "label": "I'm not sure" }
         ],
@@ -463,7 +650,12 @@
         "why_we_ask": "A quantitative threshold is introduced only where useful — the journey avoids demanding a number from someone who has no idea yet.",
         "interaction": "yes_no",
         "choices": [
-          { "value": "yes", "label": "Yes" },
+          {
+            "value": "yes",
+            "label": "Yes",
+            "pros": ["Scenarios can be tested against a concrete number"],
+            "cons": ["An early target may need revision once valuation work begins"]
+          },
           { "value": "not_yet", "label": "Not yet" }
         ],
         "required": false,
@@ -502,8 +694,24 @@
         "why_we_ask": "Seller financing appears only when your answers make it relevant.",
         "interaction": "single_select",
         "choices": [
-          { "value": "yes", "label": "Yes" },
-          { "value": "show_me_other_options", "label": "Show me other options" },
+          {
+            "value": "yes",
+            "label": "Yes",
+            "pros": [
+              "Part of the price can be structured as payments over time",
+              "Widens the set of workable structures"
+            ],
+            "cons": [
+              "Payments depend on the business's future performance",
+              "Your exit stays partially open until the note is paid"
+            ]
+          },
+          {
+            "value": "show_me_other_options",
+            "label": "Show me other options",
+            "pros": ["Exploration continues without a seller note"],
+            "cons": ["The seller-note liquidity pathway is not opened"]
+          },
           { "value": "not_sure", "label": "I'm not sure" }
         ],
         "required": false,
@@ -527,9 +735,24 @@
         "why_we_ask": "This launches the Seller-Note Liquidity pathway.",
         "interaction": "single_select",
         "choices": [
-          { "value": "keep_it", "label": "Keep it" },
-          { "value": "sell_part_of_it", "label": "Explore selling part of it" },
-          { "value": "sell_all_of_it", "label": "Explore selling all of it" },
+          {
+            "value": "keep_it",
+            "label": "Keep it",
+            "pros": ["You hold the full remaining value and all future interest"],
+            "cons": ["Payment risk stays with you, and the note is hard to sell or borrow against"]
+          },
+          {
+            "value": "sell_part_of_it",
+            "label": "Explore selling part of it",
+            "pros": ["Part of the note becomes cash now while some payments keep coming"],
+            "cons": ["Sold portions typically price below face value"]
+          },
+          {
+            "value": "sell_all_of_it",
+            "label": "Explore selling all of it",
+            "pros": ["The full note becomes cash — no further payment risk"],
+            "cons": ["All future payments and upside go to the buyer, at a discount"]
+          },
           { "value": "not_sure", "label": "I'm not sure" }
         ],
         "required": false,
