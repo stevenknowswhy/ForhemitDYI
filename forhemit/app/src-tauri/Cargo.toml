@@ -23,7 +23,7 @@ forhemit-journey = { path = "../../crates/journey" }
 forhemit-reality = { path = "../../crates/reality" }
 serde = { workspace = true }
 serde_json = { workspace = true }
-time = { workspace = true, features = ["serde"] }
+time = { workspace = true, features = ["serde", "formatting"] }
 ulid = { workspace = true }
 
 # Dev-only local harness (`--features dev-server`): serves the same command

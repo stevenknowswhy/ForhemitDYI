@@ -376,7 +376,11 @@ fn answered_view(definition: &JourneyDefinition, record: &AnswerRecord) -> Answe
             version: version.version,
             value: version.value.clone(),
             change_reason: version.change_reason.clone(),
-            recorded_at: version.recorded_at.to_string(),
+            recorded_at: version
+                .recorded_at
+                .format(&time::format_description::well_known::Rfc3339)
+                .map(|formatted| formatted.to_string())
+                .unwrap_or_else(|_| version.recorded_at.to_string()),
         })
         .collect();
     AnsweredView {
