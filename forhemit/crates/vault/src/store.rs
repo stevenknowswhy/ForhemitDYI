@@ -3,12 +3,13 @@
 //! §56 items 1–8 and 11–12).
 //!
 //! What never touches disk here: plaintext document content, plaintext
-//! filenames, and the vault key. Filenames are sealed with each version's
-//! document key; content is sealed with the same key and a distinct
-//! nonce; document keys are stored only wrapped by the keychain-held
-//! vault key. What is deliberately readable: document and version IDs,
-//! timestamps, byte counts, and content hashes (hashes enable duplicate
-//! detection and integrity checks without exposing content).
+//! filenames, plaintext notes, and the vault key. Filenames, notes, and
+//! content are sealed with each version's document key (each under its
+//! own AAD namespace); document keys are stored only wrapped by the
+//! keychain-held vault key. What is deliberately readable: document and
+//! version IDs, timestamps, byte counts, and content hashes (hashes
+//! enable duplicate detection and integrity checks without exposing
+//! content).
 //!
 //! This module is deliberately low-level: identifiers are supplied by the
 //! caller (the engine facade mints ULIDs), and every write is one
@@ -82,7 +83,8 @@ CREATE TABLE IF NOT EXISTS document_versions (
     wrapped_dek           BLOB NOT NULL,
     content_hash          TEXT NOT NULL,
     byte_count            INTEGER NOT NULL,
-    note                  TEXT,
+    note_nonce_b64        TEXT,
+    note_ciphertext       BLOB,
     restored_from_version_id TEXT,
     supersedes_version_id    TEXT,
     UNIQUE(document_id, sequence)
@@ -120,6 +122,10 @@ fn content_aad(version_id: &DocumentVersionId) -> Vec<u8> {
 
 fn filename_aad(version_id: &DocumentVersionId) -> Vec<u8> {
     format!("forhemit-vault:filename:{version_id}").into_bytes()
+}
+
+fn note_aad(version_id: &DocumentVersionId) -> Vec<u8> {
+    format!("forhemit-vault:note:{version_id}").into_bytes()
 }
 
 fn dek_aad(vault_id: &VaultId, document_id: &DocumentId) -> Vec<u8> {
@@ -357,15 +363,32 @@ impl VaultStore {
             filename.as_bytes(),
             "seal document filename",
         )?;
+        // The note is owner-authored context ("password sent
+        // separately") — sealed exactly like the filename: version DEK,
+        // its own nonce and AAD namespace.
+        let (note_nonce_b64, note_ciphertext) = match note {
+            Some(note_text) => {
+                let note_nonce = crypto::random_nonce();
+                let note_ciphertext = crypto::seal(
+                    &dek,
+                    &note_nonce,
+                    &note_aad(version_id),
+                    note_text.as_bytes(),
+                    "seal document note",
+                )?;
+                (Some(crypto::encode_b64(&note_nonce)), Some(note_ciphertext))
+            }
+            None => (None, None),
+        };
         transaction.execute(
             "INSERT INTO document_versions (
                 version_id, document_id, sequence, created_at_unix_nanos,
                 filename_nonce_b64, filename_ciphertext,
                 content_nonce_b64, content_ciphertext,
                 wrapped_dek_nonce_b64, wrapped_dek,
-                content_hash, byte_count, note,
+                content_hash, byte_count, note_nonce_b64, note_ciphertext,
                 restored_from_version_id, supersedes_version_id
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)",
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
             rusqlite::params![
                 version_id.as_str(),
                 document_id.as_str(),
@@ -379,7 +402,8 @@ impl VaultStore {
                 wrapped_dek,
                 content_hash.as_str(),
                 plaintext.len() as i64,
-                note,
+                note_nonce_b64,
+                note_ciphertext,
                 restored_from.map(|id| id.as_str()),
                 supersedes.map(|id| id.as_str()),
             ],
@@ -401,7 +425,7 @@ impl VaultStore {
                     filename_nonce_b64, filename_ciphertext,
                     content_nonce_b64, content_ciphertext,
                     wrapped_dek_nonce_b64, wrapped_dek,
-                    content_hash, byte_count, note,
+                    content_hash, byte_count, note_nonce_b64, note_ciphertext,
                     restored_from_version_id, supersedes_version_id
              FROM document_versions WHERE version_id = ?1",
         )?;
@@ -422,14 +446,14 @@ impl VaultStore {
                 filename,
                 content_hash: crypto::sha256_hex(&plaintext),
                 byte_count: row.get(10)?,
-                note: row.get(11)?,
+                note: self.decrypt_note(vault_key, &document_id, version_id, row)?,
                 created_at_unix_nanos: i128::from(row.get::<_, i64>(2)?),
                 restored_from: row
-                    .get::<_, Option<String>>(12)?
+                    .get::<_, Option<String>>(13)?
                     .map(|id| DocumentVersionId::new(&id))
                     .transpose()?,
                 previous_version_id: row
-                    .get::<_, Option<String>>(13)?
+                    .get::<_, Option<String>>(14)?
                     .map(|id| DocumentVersionId::new(&id))
                     .transpose()?,
             },
@@ -719,5 +743,128 @@ impl VaultStore {
         )?;
         String::from_utf8(filename.to_vec())
             .map_err(|_| VaultError::Internal("decrypted filename was not UTF-8".to_owned()))
+    }
+
+    /// Decrypts the version's note, if it carries one — sealed exactly
+    /// like the filename (same DEK, note-specific AAD). A nonce without
+    /// ciphertext or the reverse is an internal inconsistency, surfaced
+    /// rather than silently read as "no note".
+    fn decrypt_note(
+        &self,
+        vault_key: &VaultKey,
+        document_id: &DocumentId,
+        version_id: &DocumentVersionId,
+        row: &rusqlite::Row<'_>,
+    ) -> Result<Option<String>, VaultError> {
+        let note_nonce_b64: Option<String> = row.get("note_nonce_b64")?;
+        let note_ciphertext: Option<Vec<u8>> = row.get("note_ciphertext")?;
+        let (nonce_b64, ciphertext) = match (note_nonce_b64, note_ciphertext) {
+            (Some(nonce_b64), Some(ciphertext)) => (nonce_b64, ciphertext),
+            (None, None) => return Ok(None),
+            (None, Some(_)) | (Some(_), None) => {
+                return Err(VaultError::Internal(
+                    "note nonce and ciphertext must be stored together".to_owned(),
+                ))
+            }
+        };
+        let dek = self.unwrap_dek(vault_key, document_id, row)?;
+        let mut nonce = [0u8; crypto::NONCE_LEN];
+        nonce.copy_from_slice(&crypto::decode_b64(&nonce_b64)?);
+        let plaintext = crypto::open(
+            &dek,
+            &nonce,
+            &note_aad(version_id),
+            &ciphertext,
+            "open document note",
+        )?;
+        String::from_utf8(plaintext.to_vec())
+            .map(Some)
+            .map_err(|_| VaultError::Internal("decrypted note was not UTF-8".to_owned()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used, clippy::expect_used)] // test code: failures must panic the test
+
+    use super::*;
+
+    /// A file-backed store — the note-sealing assertions read the raw
+    /// database image, which in-memory stores do not have.
+    fn file_store(name: &str) -> (VaultStore, std::path::PathBuf) {
+        let dir = std::env::temp_dir().join(format!("forhemit-vault-notes-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join(name);
+        let _ = std::fs::remove_file(&path); // fresh database per test
+        let store = VaultStore::open(VaultId::new("vault-note-test").unwrap(), &path).unwrap();
+        (store, path)
+    }
+
+    fn vault_key() -> VaultKey {
+        VaultKey::from_bytes(crypto::generate_key())
+    }
+
+    #[test]
+    fn note_round_trips_and_is_sealed_at_rest() {
+        let (store, path) = file_store("note-sealed.sqlite3");
+        let key = vault_key();
+        let document_id = DocumentId::new("doc-note-1").unwrap();
+        let version_id = DocumentVersionId::new("ver-note-1").unwrap();
+        let note = "password sent separately";
+        store
+            .insert_version(
+                &key,
+                &document_id,
+                &version_id,
+                1,
+                "board-pack.pdf",
+                b"document body",
+                Some(note),
+                0,
+                None,
+                None,
+            )
+            .unwrap();
+
+        // The round trip returns the note.
+        let stored = store.read_version_with_content(&key, &version_id).unwrap();
+        assert_eq!(stored.version.note.as_deref(), Some(note));
+
+        // Ciphertext at rest: the plaintext note appears nowhere in the
+        // database image (the same noncontainment check the backup tests
+        // use) — including its most sensitive token on its own.
+        let on_disk = store.snapshot_bytes().unwrap();
+        assert!(!on_disk.windows(note.len()).any(|w| w == note.as_bytes()));
+        assert!(!on_disk.windows(10).any(|w| w == b"separately"));
+        // And the filename is absent too — the note now matches the
+        // filename's sealing pattern exactly.
+        assert!(!on_disk
+            .windows("board-pack.pdf".len())
+            .any(|w| w == b"board-pack.pdf"));
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn versions_without_a_note_round_trip_as_none() {
+        let (store, path) = file_store("note-none.sqlite3");
+        let key = vault_key();
+        let version_id = DocumentVersionId::new("ver-note-2").unwrap();
+        store
+            .insert_version(
+                &key,
+                &DocumentId::new("doc-note-2").unwrap(),
+                &version_id,
+                1,
+                "silent.txt",
+                b"body",
+                None,
+                0,
+                None,
+                None,
+            )
+            .unwrap();
+        let stored = store.read_version_with_content(&key, &version_id).unwrap();
+        assert_eq!(stored.version.note, None);
+        let _ = std::fs::remove_file(&path);
     }
 }
