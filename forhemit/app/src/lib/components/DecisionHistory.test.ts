@@ -149,6 +149,16 @@ describe("groupDecisions", () => {
     expect(group.entries[1].revisable).toBe(false);
   });
 
+  it("defaults a missing revisable flag to true — draft-model hosts stay clickable", () => {
+    // The Destination Builder's draft decisions carry no revisability
+    // metadata (revisions are a draft edit there, not an engine event) —
+    // the entry must stay clickable unless the engine said otherwise.
+    const node = { ...makeAnswered({ node_id: "n1", title: "Your destination", stage: "welcome" }) };
+    delete (node as { revisable?: boolean }).revisable;
+    const [group] = groupDecisions([node], []);
+    expect(group.entries[0].revisable).toBe(true);
+  });
+
   it("lands bare skipped ids in a final Skipped group showing the raw id", () => {
     const answered = [makeAnswered({ node_id: "n1", title: "Timing", stage: "timing" })];
     const groups = groupDecisions(answered, ["legacy_node_id"]);

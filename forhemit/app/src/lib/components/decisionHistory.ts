@@ -69,7 +69,10 @@ export function groupDecisions(
       summary: renderAnswerValue(answer.value, answer.choices),
       versions: answer.versions.length,
       skipped: false,
-      revisable: answer.revisable,
+      // Only an explicit false (the engine's own refusal) is read-only;
+      // hosts that don't model engine eligibility — the Destination
+      // Builder's draft decisions — default to revisable.
+      revisable: answer.revisable !== false,
     });
   }
 
