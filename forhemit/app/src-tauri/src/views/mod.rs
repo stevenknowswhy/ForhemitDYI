@@ -74,6 +74,10 @@ pub struct QuestionView {
     pub text: String,
     /// Why the journey asks.
     pub why_we_ask: Option<String>,
+    /// The question node's optional long-form copy. Rendered only behind
+    /// the walk's "Why we ask" disclosure — it never pushes the question
+    /// below the fold.
+    pub body: Option<String>,
     /// The interaction pattern (`single_select`, `ranking`, …).
     pub interaction: String,
     /// The choice set — resolved from earlier answers when the question
@@ -121,6 +125,14 @@ pub struct AnsweredView {
     pub choices: Vec<ChoiceView>,
     /// The decision layer the answer belongs to, if any.
     pub decision_layer: Option<String>,
+    /// The stage the answer belongs to — the history rail groups by
+    /// stage.
+    pub stage: String,
+    /// Whether the engine would accept a revision of this answer right
+    /// now — the same eligibility predicate `revise` enforces. Ineligible
+    /// answers render read-only in the history rail ("no longer
+    /// applicable") instead of clickable.
+    pub revisable: bool,
     /// The latest answer value.
     pub value: AnswerValue,
     /// The answer's version history, oldest first.
@@ -262,6 +274,7 @@ fn question_view(
         title: node.title.clone(),
         text: question.text.clone(),
         why_we_ask: question.why_we_ask.clone(),
+        body: node.body.clone(),
         interaction: interaction_name(question),
         choices: resolved_choices(definition, instance, question),
         required: question.required,
@@ -432,13 +445,17 @@ fn answered_views(definition: &JourneyDefinition, instance: &JourneyInstance) ->
         .iter()
         .filter_map(|node_id| {
             let record = instance.answer(node_id)?;
-            Some(answered_view(definition, record))
+            Some(answered_view(definition, instance, record))
         })
         .collect()
 }
 
 /// The display view of one answered question.
-fn answered_view(definition: &JourneyDefinition, record: &AnswerRecord) -> AnsweredView {
+fn answered_view(
+    definition: &JourneyDefinition,
+    instance: &JourneyInstance,
+    record: &AnswerRecord,
+) -> AnsweredView {
     let node = definition.node(&record.node_id);
     let question = node.and_then(|node| node.question());
     let versions = record
@@ -478,6 +495,11 @@ fn answered_view(definition: &JourneyDefinition, record: &AnswerRecord) -> Answe
             .as_ref()
             .and_then(|question| question.decision_layer.as_ref())
             .map(|layer| snake_case(&format!("{layer:?}"))),
+        stage: node.map_or_else(String::new, |node| node.stage.clone()),
+        // The engine's own eligibility predicate — the exact check
+        // `revise` enforces, so the rail never offers a revision the
+        // engine would refuse.
+        revisable: instance.is_eligible(definition, &record.node_id),
         value: record.latest().value.clone(),
         versions,
     }
@@ -517,7 +539,9 @@ mod tests {
 
     use super::*;
     use forhemit_contracts::{JourneyInstanceId, JourneyNodeId};
-    use forhemit_journey::{JourneyEngine, MemoryJourneyStore, RecordAnswer, SkipNode};
+    use forhemit_journey::{
+        JourneyEngine, MemoryJourneyStore, RecordAnswer, ReviseAnswer, SkipNode,
+    };
 
     /// Starts a real walk through the engine over the embedded definition.
     fn started_instance(engines: &AppEngines, instance_id: &str) -> JourneyInstance {
@@ -728,6 +752,144 @@ mod tests {
                 "avoid_outcomes".to_owned()
             ]
         );
+    }
+
+    /// Revises one answered question through a real engine — the same
+    /// production path the views observe.
+    fn revise_answer(
+        engines: &AppEngines,
+        store: &MemoryJourneyStore,
+        instance: &mut JourneyInstance,
+        node: &str,
+        value: AnswerValue,
+    ) {
+        let engine = JourneyEngine::new(
+            engines.clock.as_ref(),
+            engines.tee.as_ref(),
+            store,
+            engines.workspace_id.clone(),
+        );
+        engine
+            .revise(
+                instance,
+                &engines.definition,
+                &ReviseAnswer {
+                    node_id: JourneyNodeId::new(node).unwrap(),
+                    value,
+                    change_reason: "priorities_changed".to_owned(),
+                },
+                &engines.actor,
+            )
+            .unwrap();
+    }
+
+    #[test]
+    fn answered_views_carry_stage_and_revisable() {
+        let engines = crate::test_support::opened_engines();
+        let store = MemoryJourneyStore::new();
+        let mut instance = started_instance(&engines, "inst_stage");
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "primary_objective",
+            AnswerValue::Single("substantial_cash_at_closing".to_owned()),
+        );
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_objectives",
+            AnswerValue::Multi(vec![
+                "retire_completely".to_owned(),
+                "preserve_jobs".to_owned(),
+            ]),
+        );
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_ranking",
+            AnswerValue::Ranking(vec![
+                "preserve_jobs".to_owned(),
+                "retire_completely".to_owned(),
+            ]),
+        );
+
+        let view = journey_view(&engines, &instance).unwrap();
+        assert_eq!(view.answered.len(), 3);
+        // Stages come from the definition lookup, in visit order — the
+        // grouping key the decision history renders.
+        assert_eq!(view.answered[0].stage, "primary_objective");
+        assert!(!view.answered[1].stage.is_empty());
+        assert_eq!(view.answered[2].stage, "prioritize");
+        // Every answered question is eligible on this path, so all are
+        // revisable.
+        assert!(view.answered.iter().all(|answer| answer.revisable));
+    }
+
+    #[test]
+    fn an_answer_whose_condition_stopped_holding_is_not_revisable() {
+        let engines = crate::test_support::opened_engines();
+        let store = MemoryJourneyStore::new();
+        let mut instance = started_instance(&engines, "inst_ineligible");
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "primary_objective",
+            AnswerValue::Single("substantial_cash_at_closing".to_owned()),
+        );
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_objectives",
+            AnswerValue::Multi(vec![
+                "retire_completely".to_owned(),
+                "preserve_jobs".to_owned(),
+            ]),
+        );
+        // The ranking question fires on count_at_least(secondary, 2).
+        record_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_ranking",
+            AnswerValue::Ranking(vec![
+                "preserve_jobs".to_owned(),
+                "retire_completely".to_owned(),
+            ]),
+        );
+        // Revising the source question down to one selection strands the
+        // already-answered ranking question: its condition no longer
+        // holds, so the engine would refuse its revision (the answer is
+        // kept — never rewritten).
+        revise_answer(
+            &engines,
+            &store,
+            &mut instance,
+            "secondary_objectives",
+            AnswerValue::Multi(vec!["retire_completely".to_owned()]),
+        );
+
+        let view = journey_view(&engines, &instance).unwrap();
+        let ranking = view
+            .answered
+            .iter()
+            .find(|answer| answer.node_id == "secondary_ranking")
+            .unwrap();
+        assert!(!ranking.revisable);
+        // The answer itself is untouched — revision of it is refused, the
+        // record is kept.
+        assert_eq!(ranking.versions.len(), 1);
+        // Unconditional answers stay revisable.
+        let objective = view
+            .answered
+            .iter()
+            .find(|answer| answer.node_id == "primary_objective")
+            .unwrap();
+        assert!(objective.revisable);
     }
 
     #[test]

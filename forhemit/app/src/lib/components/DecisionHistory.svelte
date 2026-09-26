@@ -69,9 +69,16 @@
           {#each group.entries as entry}
             <li>
               {#if entry.skipped}
-                <span class="node skipped">
+                <span class="node static">
                   <span class="node-title">{entry.title}</span>
                   <span class="tag">skipped</span>
+                </span>
+              {:else if !entry.revisable}
+                <!-- The engine would refuse the revision (its condition no
+                     longer holds) — rendered read-only, never clickable. -->
+                <span class="node static">
+                  <span class="node-title">{entry.title}</span>
+                  <span class="tag">no longer applicable</span>
                 </span>
               {:else}
                 <button type="button" class="node" class:revising={entry.nodeId === revisingNodeId}
@@ -167,7 +174,7 @@
     border-color: var(--accent, #2f6f4f);
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #2f6f4f) 25%, transparent);
   }
-  .node.skipped {
+  .node.static {
     cursor: default;
     border-style: dashed;
     color: var(--text-3, #999);

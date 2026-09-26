@@ -20,6 +20,7 @@ export function makeAnswered(fields: {
   value?: AnswerValue;
   choices?: ChoiceView[];
   versions?: AnsweredNode["versions"];
+  revisable?: boolean;
 }): AnsweredNode {
   const value = fields.value ?? { single: "value_a" };
   return {
@@ -29,6 +30,7 @@ export function makeAnswered(fields: {
     choices: fields.choices ?? [],
     value,
     versions: fields.versions ?? [makeVersion(1, value)],
+    revisable: true,
     ...fields,
   };
 }

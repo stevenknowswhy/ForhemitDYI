@@ -204,6 +204,9 @@ export interface QuestionView {
   title: string;
   text: string;
   why_we_ask: string | null;
+  // The question node's optional long-form copy — rendered only behind
+  // the walk's "Why we ask" disclosure, never above the fold.
+  body: string | null;
   interaction: string;
   choices: ChoiceView[];
   required: boolean;
@@ -234,6 +237,12 @@ export interface AnsweredView {
   interaction: string;
   choices: ChoiceView[];
   decision_layer: string | null;
+  // The stage the answer belongs to — the history rail's grouping key.
+  stage: string;
+  // Whether the engine would accept a revision of this answer right now
+  // (the same eligibility predicate `journey_revise` enforces). Ineligible
+  // answers render read-only in the history rail — never clickable.
+  revisable: boolean;
   value: AnswerValue;
   versions: AnswerVersionView[];
 }

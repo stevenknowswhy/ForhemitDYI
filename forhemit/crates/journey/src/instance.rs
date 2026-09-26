@@ -177,12 +177,10 @@ impl JourneyInstance {
     /// The eligibility check ("Ask Only When Relevant", EOJ v0.2 §28):
     /// a question with no condition is always eligible; a conditional
     /// question fires only when its condition holds on the answers so
-    /// far.
-    pub(crate) fn is_eligible(
-        &self,
-        definition: &JourneyDefinition,
-        node_id: &JourneyNodeId,
-    ) -> bool {
+    /// far. Public read-only: the shell's view layer reports this same
+    /// predicate per answered node (the `revisable` view flag) so the
+    /// history rail never offers a revision the engine would refuse.
+    pub fn is_eligible(&self, definition: &JourneyDefinition, node_id: &JourneyNodeId) -> bool {
         let Some(node) = definition.node(node_id) else {
             return false;
         };
