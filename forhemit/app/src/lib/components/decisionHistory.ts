@@ -21,6 +21,11 @@ export interface HistoryEntry {
   /** Recorded answer versions; the engine appends, never rewrites. */
   versions: number;
   skipped: boolean;
+  /** Whether the engine would accept a revision of this answer right
+   * now — false renders the entry read-only ("no longer applicable"),
+   * never clickable. Skipped steps carry false too: nothing is recorded
+   * to revise. */
+  revisable: boolean;
 }
 
 /** Decisions grouped by journey stage, stages in first-appearance order —
@@ -64,6 +69,7 @@ export function groupDecisions(
       summary: renderAnswerValue(answer.value, answer.choices),
       versions: answer.versions.length,
       skipped: false,
+      revisable: answer.revisable,
     });
   }
 
@@ -77,6 +83,7 @@ export function groupDecisions(
         summary: "",
         versions: 0,
         skipped: true,
+        revisable: false,
       });
     } else {
       groupFor(node.stage).entries.push({
@@ -85,6 +92,7 @@ export function groupDecisions(
         summary: "",
         versions: 0,
         skipped: true,
+        revisable: false,
       });
     }
   }

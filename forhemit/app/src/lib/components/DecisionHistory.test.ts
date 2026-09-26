@@ -134,6 +134,21 @@ describe("groupDecisions", () => {
     expect(groups[0].entries[1].skipped).toBe(true);
   });
 
+  it("carries each answer's revisable flag through to its entry", () => {
+    const answered = [
+      makeAnswered({ node_id: "n1", title: "Timing", stage: "timing" }),
+      makeAnswered({
+        node_id: "n2",
+        title: "Ranking",
+        stage: "timing",
+        revisable: false,
+      }),
+    ];
+    const [group] = groupDecisions(answered, []);
+    expect(group.entries[0].revisable).toBe(true);
+    expect(group.entries[1].revisable).toBe(false);
+  });
+
   it("lands bare skipped ids in a final Skipped group showing the raw id", () => {
     const answered = [makeAnswered({ node_id: "n1", title: "Timing", stage: "timing" })];
     const groups = groupDecisions(answered, ["legacy_node_id"]);
@@ -181,6 +196,20 @@ describe("DecisionHistory", () => {
     // Skipped steps are never clickable.
     const buttons = [...container.querySelectorAll("button.node")];
     expect(buttons.some((b) => b.textContent?.includes("Who leads after you?"))).toBe(false);
+  });
+
+  it("renders an answered node the engine can no longer revise read-only, never clickable", () => {
+    const onSelect = vi.fn();
+    const container = render({
+      answered: [makeAnswered({ node_id: "n1", title: "Ranked priorities", stage: "timing", revisable: false })],
+      onSelect,
+    });
+    expect(container.textContent).toContain("no longer applicable");
+    // The node renders as text, not a button — nothing to click.
+    const buttons = [...container.querySelectorAll("button.node")];
+    expect(buttons.some((b) => b.textContent?.includes("Ranked priorities"))).toBe(false);
+    expect(container.querySelector("button.node")).toBeNull();
+    expect(onSelect).not.toHaveBeenCalled();
   });
 
   it("lands bare skipped ids in a final Skipped group showing the raw id", () => {
